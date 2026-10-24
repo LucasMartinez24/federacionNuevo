@@ -1,0 +1,280 @@
+<main class="w-full min-h-screen bg-court-base flex flex-col font-body-base antialiased text-on-surface">
+  <div class="flex flex-col w-full">
+    <section class="min-h-screen w-full flex overflow-hidden bg-court-base relative select-none">
+      <!-- LEFT PANEL: Hero & Institutional Branding (Desktop Split) -->
+      <div
+        class="w-1/2 hidden lg:flex flex-col justify-between p-12 xl:p-14 relative overflow-hidden bg-court-base border-r border-border-subtle/50">
+        <!-- Ambient Lighting & Stadium Halos -->
+        <div
+          class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-accent-cyan-deep/20 blur-[130px] pointer-events-none">
+        </div>
+        <div
+          class="absolute top-1/2 -translate-y-1/2 -right-40 w-[420px] h-[420px] rounded-full bg-on-primary-container/30 blur-[150px] pointer-events-none">
+        </div>
+        <div
+          class="absolute -bottom-24 left-1/4 w-80 h-80 rounded-full bg-accent-ihf-blue/15 blur-[120px] pointer-events-none">
+        </div>
+
+        <!-- Court Geometry Markings Overlay -->
+        <svg class="absolute inset-0 w-full h-full text-text-primary/[0.03] pointer-events-none" fill="none"
+          stroke="currentColor" viewBox="0 0 600 800">
+          <circle cx="300" cy="400" r="160" stroke-dasharray="4 8" stroke-width="1.5"></circle>
+          <path d="M 0 240 Q 300 320 600 240" stroke-width="1.5"></path>
+          <path d="M 0 560 Q 300 480 600 560" stroke-width="1.5"></path>
+          <line stroke-dasharray="8 8" stroke-width="1" x1="300" x2="300" y1="0" y2="800"></line>
+        </svg>
+
+        <!-- Institutional Watermark Header -->
+        <header class="relative z-10 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-primary-container shadow-[0_0_12px_currentColor]"></span>
+            <p class="font-label-caps text-label-caps tracking-widest uppercase text-text-secondary">
+              FEDERACIÓN JUJEÑA DE HANDBALL • CAH HOMOLOGADO
+            </p>
+          </div>
+          <div class="px-2.5 py-1 rounded-full bg-surface-container-high/60 backdrop-blur-md border border-white/5">
+            <span class="font-stat-label text-stat-label tracking-widest text-primary uppercase">FEDA JUJUY 2026</span>
+          </div>
+        </header>
+
+        <!-- Brand Centerpiece -->
+        <div class="my-auto relative z-10 max-w-xl pr-6">
+          <!-- Federation Crest -->
+          <div class="relative inline-block mb-6 group">
+            <div
+              class="absolute -inset-4 rounded-3xl bg-primary-container/20 blur-xl opacity-75 group-hover:opacity-100 transition-opacity">
+            </div>
+            <img alt="Federación Jujeña de Handball Crest"
+              class="relative w-32 xl:w-36 h-auto drop-shadow-[0_0_35px_rgba(56,189,248,0.35)] transform transition-transform duration-500 hover:scale-105"
+              src="/img/logo.png" />
+          </div>
+
+          <div
+            class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-container-high/80 backdrop-blur-md shadow-sm mb-4 border border-white/5">
+            <span class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_currentColor]"></span>
+            <span class="font-label-caps text-label-caps tracking-widest text-primary uppercase">
+              PORTAL INTEGRAL DE GESTIÓN &amp; COMPETICIONES
+            </span>
+          </div>
+
+          <h1
+            class="font-display-hero text-display-hero tracking-tight text-text-primary uppercase leading-none drop-shadow-md">
+            FEDERACIÓN JUJEÑA<br />
+            <span
+              class="bg-gradient-to-r from-primary-container via-primary to-accent-cyan-deep bg-clip-text text-transparent">
+              DE HANDBALL
+            </span>
+          </h1>
+
+          <p class="font-body-base text-body-base text-text-secondary mt-5 max-w-lg leading-relaxed">
+            Sistema único de gestión deportiva, padrón federativo de atletas, planillas de partido electrónicas y
+            tribunal de disciplina reglamentario de la Provincia de Jujuy.
+          </p>
+
+          <!-- Authority & Status Badges Bento -->
+          <div class="grid grid-cols-2 gap-4 mt-8">
+            <div
+              class="p-4 rounded-2xl bg-court-card/75 backdrop-blur-md shadow-xl flex items-center gap-3.5 hover:bg-court-card-hover border border-white/5 transition-colors">
+              <div class="p-2.5 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center">
+                <span class="material-symbols-outlined text-[24px]"
+                  style="font-variation-settings: 'FILL' 1;">shield</span>
+              </div>
+              <div class="min-w-0">
+                <p class="font-title-sm text-title-sm text-text-primary truncate">Acceso Seguro SSL</p>
+                <p class="font-label-caps text-label-caps text-text-muted uppercase tracking-wider">Padrón Oficial 2026
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="p-4 rounded-2xl bg-court-card/75 backdrop-blur-md shadow-xl flex items-center gap-3.5 hover:bg-court-card-hover border border-white/5 transition-colors">
+              <div
+                class="p-2.5 rounded-xl bg-primary-container/10 text-primary-container flex items-center justify-center">
+                <span class="material-symbols-outlined text-[24px]"
+                  style="font-variation-settings: 'FILL' 1;">sports_handball</span>
+              </div>
+              <div class="min-w-0">
+                <p class="font-title-sm text-title-sm text-text-primary truncate">Gestión Federativa</p>
+                <p class="font-label-caps text-label-caps text-text-muted uppercase tracking-wider">Clubes • Árbitros •
+                  Mesa</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Institutional Footer Metainfo -->
+        <footer
+          class="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-2 pt-6 border-t border-border-subtle/40">
+          <p class="font-label-caps text-label-caps text-text-muted">
+            © REC TECHNOLOGIES - 2026 San Salvador de Jujuy, Jujuy, Argentina.
+          </p>
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span>
+            <span class="font-label-caps text-label-caps text-text-muted uppercase">Personería Jurídica CAH</span>
+          </div>
+        </footer>
+      </div>
+
+      <!-- RIGHT PANEL: Authentication Workspace -->
+      <div
+        class="w-full lg:w-1/2 min-h-screen flex flex-col justify-between p-6 sm:p-10 lg:p-14 relative bg-surface-container-lowest/90 overflow-y-auto">
+        <!-- Top Action Navigation Bar -->
+        <div class="flex items-center justify-between w-full max-w-md mx-auto">
+          <a routerLink="/"
+            class="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary transition-all duration-200 group cursor-pointer">
+            <span
+              class="material-symbols-outlined text-sm transform group-hover:-translate-x-1 transition-transform">arrow_back</span>
+            <span class="font-label-caps text-label-caps uppercase tracking-wider">Volver al sitio público</span>
+          </a>
+        </div>
+
+        <!-- Main Form Container -->
+        <div class="my-auto w-full max-w-md mx-auto py-8">
+          <!-- Header Branding & Directives -->
+          <div class="mb-8">
+            <div
+              class="inline-block px-3 py-1 rounded-md bg-primary-container/10 mb-3 border border-primary-container/20">
+              <p class="font-label-caps text-label-caps tracking-widest text-primary-container uppercase">
+                PLATAFORMA OFICIAL FJH
+              </p>
+            </div>
+            <h2
+              class="font-display-hero text-[34px] sm:text-headline-lg font-extrabold text-text-primary tracking-tight uppercase leading-tight">
+              INICIAR SESIÓN
+            </h2>
+            <p class="font-body-base text-body-base text-text-secondary mt-2">
+              Ingresa tus credenciales oficiales de club, árbitro o administración provincial homologada.
+            </p>
+          </div>
+
+          <!-- Angular Form Element -->
+          <form (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+            <!-- Field: Usuario / DNI -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label class="font-label-caps text-label-caps uppercase tracking-wider text-text-secondary">
+                  USUARIO
+                </label>
+                <span class="font-stat-label text-stat-label uppercase tracking-widest text-text-muted">REQUERIDO</span>
+              </div>
+              <div
+                [class.border-accent-crimson-deep]="error()?.field === 'username' || error()?.field === 'all'"
+                [class.border-border-subtle]="error()?.field !== 'username' && error()?.field !== 'all'"
+                class="h-14 w-full rounded-2xl bg-court-card/90 px-4 flex items-center gap-3 border focus-within:border-primary-container focus-within:bg-court-card-active focus-within:shadow-[0_0_18px_rgba(56,189,248,0.2)] transition-all">
+                <span class="material-symbols-outlined text-text-muted text-[22px]">person</span>
+                <input [ngModel]="username()" (ngModelChange)="onUsernameChange($event)" name="username"
+                  autocomplete="username"
+                  class="bg-transparent text-text-primary font-body-medium text-body-medium w-full outline-none placeholder:text-text-muted/60"
+                  placeholder="ej. admin123 o club_gorriti" type="text" required />
+              </div>
+            </div>
+
+            <!-- Field: Password / Clave -->
+            <div class="mt-1">
+              <div class="flex items-center justify-between mb-2">
+                <label class="font-label-caps text-label-caps uppercase tracking-wider text-text-secondary">
+                  CONTRASEÑA
+                </label>
+                <a routerLink="/soporte"
+                  class="font-label-caps text-label-caps text-primary hover:text-primary-container tracking-wider transition-colors cursor-pointer">
+                  ¿Olvidaste tu clave?
+                </a>
+              </div>
+              <div
+                [class.border-accent-crimson-deep]="error()?.field === 'password' || error()?.field === 'all'"
+                [class.border-border-subtle]="error()?.field !== 'password' && error()?.field !== 'all'"
+                class="h-14 w-full rounded-2xl bg-court-card/90 px-4 flex items-center gap-3 border focus-within:border-primary-container focus-within:bg-court-card-active focus-within:shadow-[0_0_18px_rgba(56,189,248,0.2)] transition-all">
+                <span class="material-symbols-outlined text-text-muted text-[22px]">lock</span>
+                <input [ngModel]="password()" (ngModelChange)="onPasswordChange($event)" name="password"
+                  [type]="showPassword() ? 'text' : 'password'" autocomplete="current-password"
+                  class="bg-transparent text-text-primary font-body-medium text-body-medium w-full outline-none placeholder:text-text-muted/60 tracking-wider"
+                  placeholder="••••••••••••" required />
+                <button (click)="togglePassword()" type="button"
+                  [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Ver contraseña'"
+                  class="text-text-muted hover:text-text-primary p-1.5 rounded-lg transition-colors flex items-center justify-center cursor-pointer">
+                  <span class="material-symbols-outlined text-[20px]">
+                    {{ showPassword() ? 'visibility_off' : 'visibility' }}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Session Utilities Row -->
+            <div class="flex items-center justify-between pt-1">
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" [ngModel]="rememberMe()" (ngModelChange)="rememberMe.set($event)"
+                  name="rememberMe"
+                  class="w-4 h-4 rounded bg-court-card text-accent-cyan-deep accent-primary-container cursor-pointer" />
+                <span class="font-body-medium text-xs text-text-secondary select-none">
+                  Recordar sesión en este equipo
+                </span>
+              </label>
+              <span class="font-stat-label text-stat-label text-text-muted uppercase">ROL DELEGADO</span>
+            </div>
+
+            <!-- Error Feedback Container -->
+            @if (error(); as err) {
+            <div
+              class="p-4 rounded-2xl bg-error-container/20 text-error flex items-start gap-3.5 my-2 shadow-lg border border-error-container/50 animate-pulse">
+              <span class="material-symbols-outlined text-accent-crimson-deep text-[24px] shrink-0"
+                style="font-variation-settings: 'FILL' 1;">error</span>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between gap-2">
+                  <p class="font-body-bold text-xs uppercase tracking-wider text-error">{{ err.title }}</p>
+                  <button (click)="clearError()" type="button"
+                    class="text-text-muted hover:text-text-primary p-0.5 transition-colors cursor-pointer"
+                    aria-label="Cerrar mensaje de error">
+                    <span class="material-symbols-outlined text-[16px]">close</span>
+                  </button>
+                </div>
+                <p class="font-body-base text-xs text-secondary mt-1 leading-snug">
+                  {{ err.message }}
+                </p>
+                @if (err.hint) {
+                <div class="mt-2 pt-2 border-t border-error-container/30 flex items-start gap-1.5 text-text-secondary text-[11px] leading-tight">
+                  <span class="material-symbols-outlined text-primary text-[15px] shrink-0">info</span>
+                  <span>{{ err.hint }}</span>
+                </div>
+                }
+              </div>
+            </div>
+            }
+
+            <!-- Primary Action Submit Button -->
+            <button type="submit" [disabled]="loading()"
+              class="h-14 w-full mt-3 rounded-2xl bg-gradient-to-r from-primary-container via-primary to-accent-cyan-deep text-on-primary font-body-bold text-title-sm uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-xl shadow-accent-cyan-deep/20 hover:shadow-primary-container/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer">
+              @if (!loading()) {
+              <span class="material-symbols-outlined text-[20px]"
+                style="font-variation-settings: 'FILL' 1;">login</span>
+              <span>INGRESAR AL SISTEMA FEDERATIVO</span>
+              } @else {
+              <span class="material-symbols-outlined animate-spin text-[20px]">sync</span>
+              <span>AUTENTICANDO CREDENCIALES...</span>
+              }
+            </button>
+          </form>
+
+        </div>
+
+        <!-- Workspace Footer & Help Desk -->
+        <footer class="w-full max-w-md mx-auto text-center pt-6 border-t border-border-subtle/30">
+          <p class="font-body-medium text-xs text-text-muted">
+            ¿Problemas para ingresar o necesitas blanqueo de clave?
+          </p>
+          <a routerLink="/soporte"
+            class="inline-flex items-center gap-1.5 mt-2 font-body-bold text-xs text-primary-container hover:text-primary transition-colors cursor-pointer">
+            <span class="material-symbols-outlined text-[16px]">help_outline</span>
+            <span>Contactar a la Mesa de Entradas FJH</span>
+          </a>
+          <div class="mt-4 pt-3 flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-text-muted text-[14px]"
+              style="font-variation-settings: 'FILL' 1;">verified_user</span>
+            <span class="font-stat-label text-stat-label tracking-wider text-text-muted uppercase">
+              Sistema de Autenticación Unificado FJH v4.2 • Cifrado E2E
+            </span>
+          </div>
+        </footer>
+      </div>
+    </section>
+  </div>
+</main>

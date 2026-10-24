@@ -1,0 +1,1288 @@
+<div class="flex flex-col w-full pb-20">
+  <!-- Toast Notificación de Acción Rápida -->
+  @if (actionMessage(); as msg) {
+  <div
+    class="fixed bottom-6 right-6 z-50 p-4 rounded-xl bg-court-card border border-primary/50 shadow-2xl flex items-center gap-3 animate-fade-in backdrop-blur-md">
+    <span class="material-symbols-outlined text-primary text-[22px]">check_circle</span>
+    <span class="font-body-medium text-[13px] text-text-primary">{{ msg }}</span>
+  </div>
+  }
+
+  <!-- Top Command Telemetry Header -->
+  <section class="w-full bg-court-surface px-4 sm:px-6 md:px-8 py-5 border-b border-border-subtle/40 shadow-md">
+    <div class="max-w-[1360px] mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+      <!-- Title & Live Status -->
+      <div class="flex flex-col gap-1">
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary-container/20 text-primary font-stat-label text-stat-label border border-primary/20">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            EN VIVO • SERVIDOR CAH FEDERATIVO
+          </span>
+          <span class="text-text-muted font-body-base text-[12px]">•</span>
+          <span class="font-stat-label text-stat-label text-text-secondary tracking-widest uppercase">
+            Nodo San Salvador de Jujuy
+          </span>
+        </div>
+        <h1 class="font-headline-lg text-headline-lg text-text-primary tracking-tight">
+          CENTRO DE CONTROL FEDERATIVO
+        </h1>
+        <div class="flex flex-wrap items-center gap-2 text-text-secondary font-body-medium text-[13px]">
+          <span class="text-primary font-body-bold">Temporada Oficial 2026</span>
+          <span class="text-text-muted">•</span>
+          <span>Torneo Apertura "Éxodo Jujeño"</span>
+          <span class="text-text-muted">•</span>
+          <span class="inline-flex items-center gap-1 text-tertiary">
+            <span class="material-symbols-outlined text-[16px]">sync_saved_locally</span>
+            Sincronizado CAH Nacional (14:32:08 ART)
+          </span>
+        </div>
+      </div>
+
+      <!-- Quick Executive Actions -->
+      <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+        <button
+          (click)="abrirRegistroClub()"
+          class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-court-card-hover hover:bg-court-card-active text-text-primary font-body-bold text-[13px] shadow-sm transition-all cursor-pointer border border-border-subtle/60"
+          type="button">
+          <span class="material-symbols-outlined text-[18px] text-tertiary">add_business</span>
+          + Registrar Club
+        </button>
+        <button
+          (click)="abrirCargaFalloTribunal()"
+          class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-court-card-hover hover:bg-court-card-active text-text-primary font-body-bold text-[13px] shadow-sm transition-all cursor-pointer border border-border-subtle/60"
+          type="button">
+          <span class="material-symbols-outlined text-[18px] text-accent-crimson-deep">gavel</span>
+          + Cargar Fallo Tribunal
+        </button>
+        <button
+          (click)="exportarPadronExcel()"
+          class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-primary-container to-accent-cyan-deep hover:from-primary hover:to-accent-cyan-deep text-on-primary-container font-body-bold text-[13px] shadow-[0_0_14px_rgba(56,189,248,0.3)] transition-all cursor-pointer"
+          type="button">
+          <span class="material-symbols-outlined text-[18px]">download_for_offline</span>
+          Exportar Padrón Excel
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Urgent Operational Attention Strip -->
+  <section class="w-full bg-court-base px-4 sm:px-6 md:px-8 pt-5">
+    <div class="max-w-[1360px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Amber Operational Alert -->
+      <div
+        class="relative overflow-hidden rounded-xl bg-court-card p-4 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-border-subtle/50">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-lg bg-accent-amber/15 text-accent-amber flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[24px]">hourglass_top</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-stat-label text-stat-label uppercase px-2 py-0.5 rounded bg-accent-amber/20 text-accent-amber">
+                Auditoría Requerida
+              </span>
+              <span class="font-stat-label text-[11px] text-text-muted">Cierre Fecha 5</span>
+            </div>
+            <h3 class="font-title-sm text-title-sm text-text-primary mt-1 font-bold">
+              {{ pendingAthletes() > 0 ? pendingAthletes() : '12' }} Fichajes pendientes de aprobación
+            </h3>
+            <p class="font-body-base text-[13px] text-text-secondary mt-0.5">
+              Vencimiento administrativo improrrogable: <span class="font-body-bold text-accent-amber">Jueves 20:00 hs</span>
+            </p>
+          </div>
+        </div>
+        <button
+          (click)="filtrarPorUrgencia('fichajes')"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-accent-amber hover:bg-amber-400 text-court-base font-body-bold text-[12px] uppercase tracking-wider shrink-0 transition-colors shadow-sm cursor-pointer"
+          type="button">
+          <span>Auditar Lote</span>
+          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </button>
+      </div>
+
+      <!-- Crimson Referee Alert -->
+      <div
+        class="relative overflow-hidden rounded-xl bg-court-card p-4 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-border-subtle/50">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-lg bg-accent-crimson-deep/15 text-accent-crimson-deep flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[24px]">insert_drive_file</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-stat-label text-stat-label uppercase px-2 py-0.5 rounded bg-accent-crimson-deep/20 text-accent-crimson-deep">
+                Alerta Arbitral
+              </span>
+              <span class="font-stat-label text-[11px] text-text-muted">Partidos en 48 hs</span>
+            </div>
+            <h3 class="font-title-sm text-title-sm text-text-primary mt-1 font-bold">
+              2 Partidos sin mesa ni jueces confirmados
+            </h3>
+            <p class="font-body-base text-[13px] text-text-secondary mt-0.5">
+              Sedes afectadas: <span class="font-body-bold text-text-primary">Polideportivo Cuyaya y San Pedro</span>
+            </p>
+          </div>
+        </div>
+        <button
+          (click)="filtrarPorUrgencia('arbitral')"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-accent-crimson-deep hover:bg-rose-600 text-text-primary font-body-bold text-[12px] uppercase tracking-wider shrink-0 transition-colors shadow-sm cursor-pointer"
+          type="button">
+          <span>Designar Ahora</span>
+          <span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Multi-Metric KPI Grid -->
+  <section class="w-full bg-court-base px-4 sm:px-6 md:px-8 py-5">
+    <div class="max-w-[1360px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- KPI 1: Clubes Afiliados -->
+      <div class="rounded-xl bg-court-card p-4 shadow-sm border border-border-subtle/50 hover:bg-court-card-hover transition-colors">
+        <div class="flex items-start justify-between">
+          <span class="font-stat-label text-stat-label uppercase text-text-secondary tracking-wider">
+            Total Clubes Afiliados
+          </span>
+          <span class="material-symbols-outlined text-primary text-[22px]">shield</span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span class="font-scoreboard-score text-[38px] text-text-primary [font-variant-numeric:tabular-nums]">
+            {{ totalClubs() > 0 ? totalClubs() : 14 }}
+          </span>
+          <span class="font-stat-label text-stat-label px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary font-bold">
+            +2 vs 2024
+          </span>
+        </div>
+        <p class="font-body-base text-[12px] text-text-muted mt-2">
+          {{ fullClubsCount() }} Afiliados Plenos • {{ guestClubsCount() }} Invitados Provinciales
+        </p>
+        <div class="w-full bg-surface-container-highest h-1 rounded-full mt-3 overflow-hidden">
+          <div class="bg-primary h-full w-[85%] rounded-full"></div>
+        </div>
+      </div>
+
+      <!-- KPI 2: Padrón Habilitado -->
+      <div class="rounded-xl bg-court-card p-4 shadow-sm border border-border-subtle/50 hover:bg-court-card-hover transition-colors">
+        <div class="flex items-start justify-between">
+          <span class="font-stat-label text-stat-label uppercase text-text-secondary tracking-wider">
+            Padrón Habilitado
+          </span>
+          <span class="material-symbols-outlined text-tertiary text-[22px]">verified</span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span class="font-scoreboard-score text-[38px] text-text-primary [font-variant-numeric:tabular-nums]">
+            {{ enabledAthletes() > 0 ? enabledAthletes() : 648 }}
+          </span>
+          <span class="font-stat-label text-stat-label text-tertiary font-bold">
+            {{ enabledPercentage() }}%
+          </span>
+        </div>
+        <p class="font-body-base text-[12px] text-text-muted mt-2">
+          Con Apto Médico & Ergometría al día
+        </p>
+        <div class="w-full bg-surface-container-highest h-1 rounded-full mt-3 overflow-hidden">
+          <div class="bg-tertiary h-full rounded-full" [style.width.%]="enabledPercentage()"></div>
+        </div>
+      </div>
+
+      <!-- KPI 3: Actas Digitales Pendientes -->
+      <div class="rounded-xl bg-court-card p-4 shadow-sm border border-border-subtle/50 hover:bg-court-card-hover transition-colors">
+        <div class="flex items-start justify-between">
+          <span class="font-stat-label text-stat-label uppercase text-text-secondary tracking-wider">
+            Actas Digitales Pendientes
+          </span>
+          <span class="material-symbols-outlined text-primary-container text-[22px]">scoreboard</span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span class="font-scoreboard-score text-[38px] text-text-primary [font-variant-numeric:tabular-nums]">
+            {{ actasPendientes().length }}
+          </span>
+          <span class="font-stat-label text-stat-label px-2 py-0.5 rounded bg-primary-container/20 text-primary-container font-bold">
+            Fecha 4
+          </span>
+        </div>
+        <p class="font-body-base text-[12px] text-text-muted mt-2">
+          Planillas oficiales en revisión de mesa arbitral
+        </p>
+        <div class="w-full bg-surface-container-highest h-1 rounded-full mt-3 overflow-hidden">
+          <div class="bg-primary-container h-full w-[45%] rounded-full"></div>
+        </div>
+      </div>
+
+      <!-- KPI 4: Tribunal de Penas -->
+      <div class="rounded-xl bg-court-card p-4 shadow-sm border border-border-subtle/50 hover:bg-court-card-hover transition-colors">
+        <div class="flex items-start justify-between">
+          <span class="font-stat-label text-stat-label uppercase text-text-secondary tracking-wider">
+            Tribunal de Penas
+          </span>
+          <span class="material-symbols-outlined text-accent-crimson-deep text-[22px]">gavel</span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span class="font-scoreboard-score text-[38px] text-accent-crimson-deep [font-variant-numeric:tabular-nums]">
+            {{ sanciones().length }}
+          </span>
+          <span class="font-stat-label text-stat-label px-2 py-0.5 rounded bg-accent-crimson-deep/20 text-accent-crimson-deep font-bold">
+            Alta Prioridad
+          </span>
+        </div>
+        <p class="font-body-base text-[12px] text-text-muted mt-2">
+          Sanciones vigentes para aplicar en Fecha 5
+        </p>
+        <div class="w-full bg-surface-container-highest h-1 rounded-full mt-3 overflow-hidden">
+          <div class="bg-accent-crimson-deep h-full w-[70%] rounded-full"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Workspace Section with Segmented Tabs -->
+  <section class="w-full bg-court-base px-4 sm:px-6 md:px-8 py-2">
+    <div class="max-w-[1360px] mx-auto flex flex-col gap-5">
+      <!-- Navigation Tabs Switcher -->
+      <div class="w-full bg-court-surface p-1.5 rounded-xl flex items-center gap-1.5 overflow-x-auto shadow-inner border border-border-subtle/50">
+        <button
+          (click)="setActiveTab('fichajes')"
+          [class.bg-court-card-active]="activeTab() === 'fichajes'"
+          [class.text-primary]="activeTab() === 'fichajes'"
+          [class.shadow-[0_0_14px_rgba(56,189,248,0.2)]]="activeTab() === 'fichajes'"
+          [class.text-text-secondary]="activeTab() !== 'fichajes'"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:text-text-primary hover:bg-court-card font-body-bold text-[13px] shrink-0 transition-all cursor-pointer"
+          type="button">
+          <span class="material-symbols-outlined text-[18px]">pending_actions</span>
+          <span>Bandeja de Fichajes / Auditoría</span>
+          <span class="px-2 py-0.5 rounded-full bg-accent-amber text-court-base font-stat-label text-[10px] font-extrabold">
+            {{ pendingAthletes() > 0 ? pendingAthletes() : '12' }}
+          </span>
+        </button>
+
+        <button
+          (click)="setActiveTab('clubes')"
+          [class.bg-court-card-active]="activeTab() === 'clubes'"
+          [class.text-primary]="activeTab() === 'clubes'"
+          [class.shadow-[0_0_14px_rgba(56,189,248,0.2)]]="activeTab() === 'clubes'"
+          [class.text-text-secondary]="activeTab() !== 'clubes'"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:text-text-primary hover:bg-court-card font-body-bold text-[13px] shrink-0 transition-all cursor-pointer"
+          type="button">
+          <span class="material-symbols-outlined text-[18px]">shield</span>
+          <span>Directorio de Clubes</span>
+          <span class="px-2 py-0.5 rounded-full bg-court-card-active text-text-secondary font-stat-label text-[10px]">
+            {{ totalClubs() > 0 ? totalClubs() : '14' }}
+          </span>
+        </button>
+
+        <button
+          (click)="setActiveTab('actas')"
+          [class.bg-court-card-active]="activeTab() === 'actas'"
+          [class.text-primary]="activeTab() === 'actas'"
+          [class.shadow-[0_0_14px_rgba(56,189,248,0.2)]]="activeTab() === 'actas'"
+          [class.text-text-secondary]="activeTab() !== 'actas'"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:text-text-primary hover:bg-court-card font-body-bold text-[13px] shrink-0 transition-all cursor-pointer"
+          type="button">
+          <span class="material-symbols-outlined text-[18px]">scoreboard</span>
+          <span>Monitoreo de Actas & Partidos</span>
+          <span class="px-2 py-0.5 rounded-full bg-court-card-active text-text-secondary font-stat-label text-[10px]">
+            {{ actasPendientes().length }}
+          </span>
+        </button>
+
+        <button
+          (click)="setActiveTab('tribunal')"
+          [class.bg-court-card-active]="activeTab() === 'tribunal'"
+          [class.text-primary]="activeTab() === 'tribunal'"
+          [class.shadow-[0_0_14px_rgba(56,189,248,0.2)]]="activeTab() === 'tribunal'"
+          [class.text-text-secondary]="activeTab() !== 'tribunal'"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:text-text-primary hover:bg-court-card font-body-bold text-[13px] shrink-0 transition-all cursor-pointer"
+          type="button">
+          <span class="material-symbols-outlined text-[18px]">gavel</span>
+          <span>Tribunal de Penas & Disciplina</span>
+          <span class="px-2 py-0.5 rounded-full bg-accent-crimson-deep/20 text-accent-crimson-deep font-stat-label text-[10px] font-extrabold">
+            {{ sanciones().length }}
+          </span>
+        </button>
+      </div>
+
+      <!-- MAIN MASTER AUDIT WORKSPACE (Visible on 'fichajes' tab) -->
+      @if (activeTab() === 'fichajes') {
+      <div class="flex flex-col gap-5 w-full">
+        <!-- Club Selector Horizontal Scroller (With REAL Club Photos / Logos) -->
+        <div class="w-full bg-court-card rounded-xl p-4 shadow-md border border-border-subtle/50 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[18px]">domain</span>
+              <span class="font-stat-label text-stat-label uppercase tracking-widest text-text-secondary">
+                Selección de Club Para Auditoría Federativa
+              </span>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                (click)="selectClub(null)"
+                class="text-text-secondary hover:text-text-primary text-[12px] font-body-medium transition-colors cursor-pointer"
+                [class.text-primary]="selectedClubId() === null"
+                type="button">
+                Ver Todos ({{ totalAthletes() }})
+              </button>
+              <button
+                (click)="abrirRegistroClub()"
+                class="text-primary hover:text-primary-fixed text-[12px] font-body-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                type="button">
+                <span class="material-symbols-outlined text-[14px]">add</span>
+                Nueva Institución
+              </button>
+            </div>
+          </div>
+
+          <!-- Club Pills Grid with Actual Team Photos / Logos -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-2.5 pt-1">
+            @for (club of clubes(); track club.id; let idx = $index) {
+            <div
+              (click)="selectClub(club.id)"
+              [class.bg-court-card-active]="selectedClubId() === club.id"
+              [class.shadow-[0_0_12px_rgba(56,189,248,0.25)]]="selectedClubId() === club.id"
+              [class.border-primary/40]="selectedClubId() === club.id"
+              [class.bg-court-surface]="selectedClubId() !== club.id"
+              class="p-2.5 rounded-lg border border-border-subtle/40 hover:bg-court-card-hover flex items-center justify-between gap-2.5 cursor-pointer transition-all group">
+              
+              <!-- Logo / Iniciales + Name -->
+              <div class="flex items-center gap-2.5 min-w-0">
+                @if (hasValidLogo(club)) {
+                <img
+                  [src]="getClubLogoUrl(club.logoUrl)"
+                  [alt]="club.nombre"
+                  (error)="onClubLogoError(club.id)"
+                  class="w-8 h-8 rounded-lg object-contain bg-court-base/80 p-1 border border-white/10 shrink-0 group-hover:scale-105 transition-transform" />
+                } @else {
+                <div
+                  class="w-8 h-8 rounded-lg bg-court-card-active border border-primary/25 text-primary flex items-center justify-center font-stat-label text-[10px] font-extrabold shrink-0 shadow-sm tracking-wide">
+                  {{ getClubInitials(club) }}
+                </div>
+                }
+                
+                <div class="flex flex-col min-w-0">
+                  <span
+                    [class.text-primary]="selectedClubId() === club.id"
+                    [class.text-text-primary]="selectedClubId() !== club.id"
+                    class="font-body-bold text-[13px] truncate">
+                    {{ idx + 1 }}. {{ club.siglas || club.nombre }}
+                  </span>
+                  <span class="font-stat-label text-[10px] text-text-secondary truncate">
+                    {{ getAthletesCountForClub(club.id) }} Atletas
+                  </span>
+                </div>
+              </div>
+
+              <!-- Status indicator dot/badge -->
+              <div class="shrink-0 flex items-center">
+                @if (getPendingCountForClub(club.id) > 0) {
+                <span class="px-1.5 py-0.5 rounded bg-accent-amber/20 text-accent-amber font-stat-label text-[10px] font-bold">
+                  {{ getPendingCountForClub(club.id) }} P
+                </span>
+                } @else {
+                <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                }
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Active Institution Command Bar Full Width -->
+        <div class="w-full bg-court-card rounded-xl p-4 sm:p-5 shadow-md border border-border-subtle/50 flex flex-col gap-4 overflow-hidden">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap">
+            <div class="flex items-center gap-4">
+              <!-- Real Club Logo in Full Badge or Initials -->
+              @if (hasValidLogo(activeClub())) {
+              <div class="relative w-14 h-14 rounded-xl bg-court-card-active border border-border-subtle flex items-center justify-center p-1.5 shadow-sm shrink-0">
+                <img
+                  [src]="getClubLogoUrl(activeClub()?.logoUrl)"
+                  [alt]="activeClub()?.nombre"
+                  (error)="onClubLogoError(activeClub()?.id)"
+                  class="w-full h-full object-contain drop-shadow" />
+              </div>
+              } @else {
+              <div class="w-14 h-14 rounded-xl bg-court-card-active border border-primary/30 text-primary flex items-center justify-center font-scoreboard-score text-[18px] sm:text-[20px] font-extrabold shadow-sm shrink-0 tracking-wider">
+                {{ getClubInitials(activeClub()) }}
+              </div>
+              }
+
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <h2 class="font-title-sm text-title-sm text-text-primary font-bold">
+                    {{ activeClub()?.nombre || 'Club Instituto Atlético y Formativo (CIAF Jujuy)' }}
+                  </h2>
+                  <span
+                    class="px-2 py-0.5 rounded-full font-stat-label text-[10px] font-bold"
+                    [class.bg-primary-container-20]="!activeClub()?.esInvitado"
+                    [class.text-primary]="!activeClub()?.esInvitado"
+                    [class.bg-accent-amber-20]="activeClub()?.esInvitado"
+                    [class.text-accent-amber]="activeClub()?.esInvitado">
+                    {{ activeClub()?.esInvitado ? 'Club Invitado Provincial' : 'Afiliado Pleno CAH-FJH' }}
+                  </span>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-text-secondary font-body-base text-[12px]">
+                  <span class="inline-flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[15px] text-text-muted">location_on</span>
+                    Polideportivo Cuyaya, San Salvador de Jujuy
+                  </span>
+                  <span class="inline-flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[15px] text-text-muted">badge</span>
+                    Delegado: Prof. Alberto Silvetti (+54 388 421-9988)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Action Links -->
+            <div class="flex flex-wrap items-center gap-2 shrink-0 sm:w-auto">
+              <button
+                (click)="abrirRegistroClub()"
+                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-court-card-hover hover:bg-court-card-active text-text-primary font-body-bold text-[12px] transition-colors shrink-0 cursor-pointer border border-border-subtle"
+                type="button">
+                <span class="material-symbols-outlined text-[16px] text-primary">person_add</span>
+                + Añadir Jugador
+              </button>
+              <button
+                (click)="exportarPadronExcel()"
+                class="w-9 h-9 flex items-center justify-center rounded-lg bg-court-card-hover hover:bg-court-card-active text-text-secondary hover:text-text-primary transition-colors shrink-0 cursor-pointer border border-border-subtle"
+                title="Exportar Padrón"
+                type="button">
+                <span class="material-symbols-outlined text-[18px]">download</span>
+              </button>
+              <button
+                (click)="mostrarMensaje('Canal de notificación con el delegado habilitado.')"
+                class="w-9 h-9 flex items-center justify-center rounded-lg bg-court-card-hover hover:bg-court-card-active text-text-secondary hover:text-text-primary transition-colors shrink-0 cursor-pointer border border-border-subtle"
+                title="Notificar Delegado"
+                type="button">
+                <span class="material-symbols-outlined text-[18px]">send</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Stats Bar Within Club -->
+          <div class="grid grid-cols-3 gap-2 p-2.5 rounded-lg bg-court-surface border border-border-subtle/50">
+            <div class="flex flex-col items-center justify-center py-1">
+              <span class="font-stat-label text-stat-label text-text-muted uppercase">Padrón Total</span>
+              <span class="font-body-bold text-[18px] text-text-primary [font-variant-numeric:tabular-nums]">
+                {{ activeClubStats().total }}
+              </span>
+            </div>
+            <div class="flex flex-col items-center justify-center py-1 border-x border-border-subtle/40">
+              <span class="font-stat-label text-stat-label text-tertiary uppercase">Habilitados FJH</span>
+              <span class="font-body-bold text-[18px] text-tertiary [font-variant-numeric:tabular-nums]">
+                {{ activeClubStats().enabled }}
+              </span>
+            </div>
+            <div class="flex flex-col items-center justify-center py-1">
+              <span class="font-stat-label text-stat-label text-accent-amber uppercase">En Revisión</span>
+              <span class="font-body-bold text-[18px] text-accent-amber [font-variant-numeric:tabular-nums]">
+                {{ activeClubStats().pending }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Filters & Category Navigation -->
+          <div class="flex flex-col gap-3">
+            <div class="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar">
+              @for (cat of ['Todas', 'Primera Masc.', 'Primera Fem.', 'Juveniles', 'Cadetes', 'Menores', 'Infantiles']; track cat) {
+              <button
+                (click)="selectedCategory.set(cat)"
+                [class.bg-court-card-active]="selectedCategory() === cat"
+                [class.text-primary]="selectedCategory() === cat"
+                [class.border-primary/40]="selectedCategory() === cat"
+                [class.bg-court-surface]="selectedCategory() !== cat"
+                [class.text-text-secondary]="selectedCategory() !== cat"
+                class="px-3 py-1.5 rounded-lg border border-border-subtle/50 hover:text-text-primary font-body-bold text-[12px] shrink-0 transition-colors cursor-pointer"
+                type="button">
+                {{ cat }}
+              </button>
+              }
+            </div>
+
+            <!-- Search and Filter Header -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+              <div class="relative flex-1">
+                <span class="material-symbols-outlined text-[18px] text-text-muted absolute left-3 top-2.5">search</span>
+                <input
+                  [(ngModel)]="searchTerm"
+                  class="w-full bg-court-surface rounded-lg pl-9 pr-3 py-2 text-text-primary text-[13px] font-body-base placeholder:text-text-muted outline-none border border-border-subtle/60 focus:border-primary/50 focus:bg-court-card-active transition-all"
+                  placeholder="Filtrar por DNI, Nombre o Apellido dentro de esta nómina..."
+                  type="text" />
+              </div>
+              <div class="flex items-center gap-2">
+                <select
+                  [(ngModel)]="selectedStatusFilter"
+                  class="bg-court-surface text-text-primary rounded-lg px-3 py-2 text-[12px] font-body-bold outline-none cursor-pointer border border-border-subtle/60">
+                  <option value="Todos">Todos los Estados</option>
+                  <option value="Pendientes de Auditoría">Pendientes de Auditoría ({{ pendingAthletes() }})</option>
+                  <option value="Solo Habilitados">Solo Habilitados ({{ enabledAthletes() }})</option>
+                  <option value="Documentación Incompleta">Documentación Incompleta</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Batch Action Banner -->
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-court-surface border border-border-subtle/50 text-[12px]">
+            <div class="flex items-center gap-2.5">
+              <input
+                type="checkbox"
+                [checked]="selectedPlayerIds().size === filteredJugadores().length && filteredJugadores().length > 0"
+                (change)="toggleSelectAll()"
+                class="cursor-pointer" />
+              <span class="font-body-bold text-text-primary">
+                {{ selectedPlayerIds().size }} atletas seleccionados en esta vista
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                (click)="aprobarSeleccionados()"
+                [disabled]="selectedPlayerIds().size === 0"
+                class="px-3 py-1.5 rounded-lg bg-tertiary-container hover:bg-emerald-600 text-on-tertiary font-body-bold text-[11px] uppercase tracking-wider transition-colors shadow-sm cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                type="button">
+                Aprobar Seleccionados
+              </button>
+              <button
+                (click)="observarSeleccionados()"
+                [disabled]="selectedPlayerIds().size === 0"
+                class="px-3 py-1.5 rounded-lg bg-accent-amber hover:bg-amber-400 text-court-base font-body-bold text-[11px] uppercase tracking-wider transition-colors shadow-sm cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                type="button">
+                Observar / Subsanar
+              </button>
+            </div>
+          </div>
+
+          <!-- High-Scannability Player Roster Table (Optimized Full Width) -->
+          <div class="w-full overflow-x-auto rounded-lg border border-border-subtle/50">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-court-surface font-stat-label text-stat-label text-text-muted uppercase tracking-wider border-b border-border-subtle/50">
+                  <th class="py-3 px-3 text-center w-10">
+                    <input
+                      type="checkbox"
+                      [checked]="selectedPlayerIds().size === filteredJugadores().length && filteredJugadores().length > 0"
+                      (change)="toggleSelectAll()"
+                      class="cursor-pointer" />
+                  </th>
+                  <th class="py-3 px-3">Atleta / DNI / Categoría</th>
+                  <th class="py-3 px-3">Semáforo Documental</th>
+                  <th class="py-3 px-3">Estado Federativo</th>
+                  <th class="py-3 px-3 text-right">Acciones Rápidas</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-subtle/30 text-[13px] font-body-base">
+                @for (player of filteredJugadores(); track player.id) {
+                <tr
+                  (click)="openAthleteModal(player)"
+                  class="hover:bg-court-card-hover transition-colors group cursor-pointer"
+                  [class.bg-court-card-active]="selectedPlayer()?.id === player.id"
+                  [class.bg-court-card]="selectedPlayer()?.id !== player.id">
+                  
+                  <!-- Checkbox Column -->
+                  <td class="py-3 px-3 text-center" (click)="$event.stopPropagation()">
+                    <input
+                      type="checkbox"
+                      [checked]="isPlayerSelected(player.id)"
+                      (change)="togglePlayerSelect(player.id)"
+                      class="cursor-pointer" />
+                  </td>
+
+                  <!-- Atleta / DNI / Categoría -->
+                  <td class="py-3 px-3">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-full bg-court-surface text-primary flex items-center justify-center font-bold text-[13px] shrink-0 border border-border-subtle">
+                        {{ player.nombreCompleto.substring(0, 2).toUpperCase() }}
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="font-body-bold text-text-primary text-[14px] group-hover:text-primary transition-colors">
+                          {{ player.nombreCompleto }}
+                        </span>
+                        <div class="flex items-center gap-2 text-text-muted text-[11px] mt-0.5">
+                          <span>DNI {{ player.dni }}</span>
+                          <span>•</span>
+                          <span class="text-text-secondary">{{ player.categoria || 'Primera Masc.' }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Semáforo Documental -->
+                  <td class="py-3 px-3">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <span
+                        class="px-2 py-0.5 rounded font-stat-label text-[10px]"
+                        [class.bg-tertiary-container-20]="player.fichaJugadorUrl"
+                        [class.text-tertiary]="player.fichaJugadorUrl"
+                        [class.bg-court-surface]="!player.fichaJugadorUrl"
+                        [class.text-text-muted]="!player.fichaJugadorUrl">
+                        Ficha {{ player.fichaJugadorUrl ? 'OK' : 'Pendiente' }}
+                      </span>
+
+                      @if (player.estado === 'Aprobado' || player.estado === 'Habilitado') {
+                      <span class="px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary font-stat-label text-[10px]">
+                        Apto Válido 12/26
+                      </span>
+                      } @else if (player.estado === 'Observado') {
+                      <span class="px-2 py-0.5 rounded bg-accent-amber/20 text-accent-amber font-stat-label text-[10px] font-bold">
+                        Falta Ergometría
+                      </span>
+                      } @else {
+                      <span class="px-2 py-0.5 rounded bg-accent-crimson-deep/20 text-accent-crimson-deep font-stat-label text-[10px] font-extrabold flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-accent-crimson-deep animate-pulse"></span>
+                        Apto Vencido
+                      </span>
+                      }
+
+                      <span
+                        class="px-2 py-0.5 rounded font-stat-label text-[10px]"
+                        [class.bg-tertiary-container-20]="player.autorizacionUrl"
+                        [class.text-tertiary]="player.autorizacionUrl"
+                        [class.bg-court-surface]="!player.autorizacionUrl"
+                        [class.text-text-muted]="!player.autorizacionUrl">
+                        Tutor {{ player.autorizacionUrl ? 'OK' : 'N/A' }}
+                      </span>
+                    </div>
+                  </td>
+
+                  <!-- Estado Federativo -->
+                  <td class="py-3 px-3">
+                    @if (player.estado === 'Aprobado' || player.estado === 'Habilitado') {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-tertiary-container/20 text-tertiary font-stat-label text-[10px] font-extrabold uppercase tracking-wider">
+                      <span class="material-symbols-outlined text-[12px]">check_circle</span>
+                      Habilitado FJH
+                    </span>
+                    } @else if (player.estado === 'Observado') {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent-amber/20 text-accent-amber font-stat-label text-[10px] font-extrabold uppercase tracking-wider">
+                      <span class="material-symbols-outlined text-[12px]">warning</span>
+                      Doc. Incompleta
+                    </span>
+                    } @else if (player.estado === 'Rechazado') {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent-crimson-deep/20 text-accent-crimson-deep font-stat-label text-[10px] font-extrabold uppercase tracking-wider">
+                      <span class="material-symbols-outlined text-[12px]">cancel</span>
+                      Inhabilitado
+                    </span>
+                    } @else {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent-amber/20 text-accent-amber font-stat-label text-[10px] font-extrabold uppercase tracking-wider">
+                      <span class="material-symbols-outlined text-[12px]">schedule</span>
+                      Pendiente Auditoría
+                    </span>
+                    }
+                  </td>
+
+                  <!-- Acciones Rápidas -->
+                  <td class="py-3 px-3 text-right">
+                    <div class="inline-flex items-center gap-1.5" (click)="$event.stopPropagation()">
+                      <button
+                        (click)="openAthleteModal(player)"
+                        class="px-3 py-1.5 rounded-lg bg-primary-container text-on-primary-container font-body-bold text-[11px] hover:bg-primary transition-colors inline-flex items-center gap-1 shadow-sm cursor-pointer"
+                        type="button">
+                        <span class="material-symbols-outlined text-[14px]">assignment</span>
+                        Ver Doc
+                      </button>
+
+                      @if (player.estado === 'Pendiente') {
+                      <button
+                        (click)="cambiarEstado(player, 'Aprobado')"
+                        class="px-2.5 py-1.5 rounded-lg bg-tertiary-container/20 hover:bg-tertiary-container text-tertiary font-body-bold text-[11px] transition-colors inline-flex items-center gap-1 cursor-pointer"
+                        type="button">
+                        <span class="material-symbols-outlined text-[14px]">check</span>
+                        Aprobar
+                      </button>
+                      }
+
+                      <button
+                        (click)="openAthleteModal(player)"
+                        class="px-2.5 py-1.5 rounded-lg bg-accent-amber/20 hover:bg-accent-amber/30 text-accent-amber font-body-bold text-[11px] transition-colors inline-flex items-center gap-1 cursor-pointer"
+                        type="button">
+                        <span class="material-symbols-outlined text-[14px]">report_problem</span>
+                        Observar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                } @empty {
+                <tr>
+                  <td colspan="5" class="py-8 text-center text-text-muted">
+                    <div class="flex flex-col items-center justify-center gap-2">
+                      <span class="material-symbols-outlined text-[32px] text-text-muted">folder_open</span>
+                      <p class="font-body-medium">No se encontraron atletas para los filtros seleccionados.</p>
+                    </div>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Pagination & Footer Telemetry -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-text-muted text-[12px] pt-1">
+            <span>Mostrando {{ filteredJugadores().length }} de {{ totalAthletes() }} deportistas federados</span>
+            <div class="flex items-center gap-1">
+              <button class="px-2.5 py-1 rounded bg-court-surface text-text-muted hover:text-text-primary transition-colors disabled:opacity-50 cursor-pointer" disabled type="button">Anterior</button>
+              <button class="px-2.5 py-1 rounded bg-court-card-active text-primary font-body-bold cursor-pointer" type="button">1</button>
+              <button class="px-2.5 py-1 rounded bg-court-surface text-text-muted hover:text-text-primary transition-colors cursor-pointer" type="button">2</button>
+              <button class="px-2.5 py-1 rounded bg-court-surface text-text-muted hover:text-text-primary transition-colors cursor-pointer" type="button">Siguiente</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- MODULE B: DIRECTORIO DE CLUBES (Visible when activeTab() === 'clubes') -->
+      @if (activeTab() === 'clubes') {
+      <div class="w-full bg-court-card rounded-xl p-5 shadow-md border border-border-subtle/50 flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[20px]">groups</span>
+            <h2 class="font-title-sm text-title-sm text-text-primary font-bold">
+              Directorio Institucional & Estado Administrativo FJH
+            </h2>
+          </div>
+          <span class="font-stat-label text-stat-label text-text-secondary uppercase">
+            Actualizado CAH Abril 2026
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          @for (club of clubes(); track club.id) {
+          <div
+            (click)="selectClub(club.id); setActiveTab('fichajes')"
+            class="p-4 rounded-xl bg-court-surface hover:bg-court-card-hover border border-border-subtle/50 transition-all flex flex-col justify-between gap-3 cursor-pointer group">
+            
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                @if (hasValidLogo(club)) {
+                <img
+                  [src]="getClubLogoUrl(club.logoUrl)"
+                  [alt]="club.nombre"
+                  (error)="onClubLogoError(club.id)"
+                  class="w-10 h-10 rounded-lg object-contain bg-court-base p-1 border border-white/5 shrink-0 group-hover:scale-105 transition-transform" />
+                } @else {
+                <div
+                  class="w-10 h-10 rounded-lg bg-court-card-active border border-primary/25 text-primary flex items-center justify-center font-stat-label text-[12px] font-extrabold shrink-0 shadow-sm tracking-wide">
+                  {{ getClubInitials(club) }}
+                </div>
+                }
+                <div class="flex flex-col">
+                  <span class="font-body-bold text-[14px] text-text-primary truncate">
+                    {{ club.nombre }}
+                  </span>
+                  <span class="font-stat-label text-[10px] text-text-muted">
+                    {{ club.siglas }}
+                  </span>
+                </div>
+              </div>
+
+              @if (getPendingCountForClub(club.id) > 0) {
+              <span class="px-2 py-0.5 rounded bg-accent-amber/20 text-accent-amber font-stat-label text-[10px] font-bold shrink-0">
+                {{ getPendingCountForClub(club.id) }} Pendientes
+              </span>
+              } @else {
+              <span class="px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary font-stat-label text-[10px] font-bold shrink-0">
+                Al día
+              </span>
+              }
+            </div>
+
+            <div class="flex items-center justify-between text-[12px] text-text-secondary pt-2 border-t border-border-subtle/30">
+              <span>{{ getAthletesCountForClub(club.id) }} Atletas</span>
+              <span class="text-tertiary font-body-bold">Arancel al día</span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- MODULE C: TRIBUNAL DE PENAS & DISCIPLINARY MANAGEMENT (Visible when activeTab() === 'tribunal') -->
+      @if (activeTab() === 'tribunal') {
+      <div class="w-full bg-court-card rounded-xl p-5 shadow-md border border-border-subtle/50 flex flex-col gap-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-1">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-accent-crimson-deep/20 text-accent-crimson-deep flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px]">gavel</span>
+            </div>
+            <div>
+              <h2 class="font-title-sm text-title-sm text-text-primary font-bold">
+                Tribunal de Penas & Disciplina Federativa
+              </h2>
+              <p class="font-body-base text-[12px] text-text-secondary">
+                Expedientes activos, tarjetas y resoluciones con impacto en el Torneo Apertura 2026
+              </p>
+            </div>
+          </div>
+          <button
+            (click)="abrirCargaFalloTribunal()"
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-court-card-hover hover:bg-court-card-active text-text-primary font-body-bold text-[12px] transition-colors cursor-pointer border border-border-subtle"
+            type="button">
+            <span class="material-symbols-outlined text-[16px] text-accent-crimson-deep">add_alert</span>
+            + Cargar Nuevo Fallo del Tribunal
+          </button>
+        </div>
+
+        <!-- Disciplinary Table -->
+        <div class="w-full overflow-x-auto rounded-lg border border-border-subtle/50">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-court-surface font-stat-label text-stat-label text-text-muted uppercase tracking-wider border-b border-border-subtle/50">
+                <th class="py-3 px-3">Sancionado / Institución</th>
+                <th class="py-3 px-3">Fallo Dictado</th>
+                <th class="py-3 px-3">Cumplimiento</th>
+                <th class="py-3 px-3">Vigencia</th>
+                <th class="py-3 px-3 text-right">Expediente</th>
+              </tr>
+            </thead>
+            <tbody class="text-[13px] font-body-base divide-y divide-border-subtle/30">
+              @for (sancion of sanciones(); track sancion.id) {
+              <tr class="bg-court-card hover:bg-court-card-hover transition-colors">
+                <td class="py-3 px-3">
+                  <div class="flex flex-col">
+                    <span class="font-body-bold text-text-primary">{{ sancion.sancionado }}</span>
+                    <span class="text-text-muted text-[11px]">{{ sancion.institucion }} • {{ sancion.categoria }}</span>
+                  </div>
+                </td>
+                <td
+                  class="py-3 px-3 font-body-bold"
+                  [class.text-accent-crimson-deep]="sancion.estado === 'grave'"
+                  [class.text-accent-amber]="sancion.estado === 'provisorio'"
+                  [class.text-primary]="sancion.estado === 'advertencia'">
+                  {{ sancion.fallo }}
+                </td>
+                <td class="py-3 px-3">
+                  <div class="flex items-center gap-2">
+                    <span class="font-body-bold text-text-primary [font-variant-numeric:tabular-nums]">
+                      {{ sancion.cumplidas }} / {{ sancion.totales }}
+                    </span>
+                    <div class="w-16 bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+                      <div
+                        class="h-full rounded-full"
+                        [class.bg-accent-amber]="sancion.cumplidas > 0 && sancion.cumplidas < sancion.totales"
+                        [class.bg-accent-crimson-deep]="sancion.cumplidas === 0"
+                        [class.bg-tertiary]="sancion.cumplidas === sancion.totales"
+                        [style.width.%]="(sancion.cumplidas / sancion.totales) * 100"></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-text-secondary text-[12px]">
+                  {{ sancion.vigencia }}
+                </td>
+                <td class="py-3 px-3 text-right">
+                  <button
+                    class="px-2.5 py-1 rounded bg-court-surface hover:bg-court-card-active text-text-primary font-body-bold text-[11px] transition-colors border border-border-subtle cursor-pointer"
+                    type="button">
+                    {{ sancion.expediente }}
+                  </button>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      }
+
+      <!-- MODULE D: ACTAS DIGITALES & PARTIDOS (Visible when activeTab() === 'actas') -->
+      @if (activeTab() === 'actas') {
+      <div class="w-full bg-court-card rounded-xl p-5 shadow-md border border-border-subtle/50 flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[20px]">scoreboard</span>
+            <h2 class="font-title-sm text-title-sm text-text-primary font-bold">
+              Monitoreo de Actas Digitales & Planillas Oficiales
+            </h2>
+          </div>
+          <span class="font-stat-label text-stat-label text-text-secondary uppercase">
+            Fecha 4 Torneo Apertura
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          @for (acta of actasPendientes(); track acta.id) {
+          <div class="p-4 rounded-xl bg-court-surface border border-border-subtle/60 flex flex-col justify-between gap-3">
+            <div class="flex items-start justify-between">
+              <span class="font-stat-label text-[10px] uppercase px-2 py-0.5 rounded bg-primary-container/20 text-primary font-bold">
+                {{ acta.fechaTorneo }}
+              </span>
+              <span class="material-symbols-outlined text-text-muted text-[18px]">verified_user</span>
+            </div>
+            <div>
+              <h4 class="font-body-bold text-[14px] text-text-primary">{{ acta.partido }}</h4>
+              <p class="font-body-base text-[12px] text-text-secondary mt-1">{{ acta.sede }}</p>
+              <p class="font-stat-label text-[10px] text-text-muted mt-0.5">{{ acta.mesa }}</p>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-border-subtle/30">
+              <span class="font-stat-label text-[10px] text-accent-amber font-bold">{{ acta.estado }}</span>
+              <button
+                (click)="mostrarMensaje('Planilla de partido abierta en visor arbitral.')"
+                class="px-2.5 py-1 rounded bg-court-card hover:bg-court-card-active text-text-primary text-[11px] font-body-bold cursor-pointer border border-border-subtle">
+                Auditar Acta
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+</div>
+
+<!-- ==========================================================================
+     High-Fidelity Modal: Verificación Documental & Legajo de Atleta FJH
+     ========================================================================== -->
+@if (isModalOpen() && selectedPlayer(); as player) {
+<div
+  id="athlete-modal"
+  (click)="closeAthleteModal()"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-court-base/80 backdrop-blur-md transition-all">
+  
+  <div
+    (click)="$event.stopPropagation()"
+    class="relative w-full max-w-3xl bg-court-card rounded-2xl shadow-[0_4px_30px_rgba(2,6,23,0.9)] overflow-hidden flex flex-col max-h-[92vh] border border-border-subtle">
+    
+    <!-- Modal Header -->
+    <div class="p-4 sm:p-5 bg-court-surface border-b border-border-subtle/50 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-primary-container/20 text-primary flex items-center justify-center shadow-sm">
+          <span class="material-symbols-outlined text-[24px]">assignment_ind</span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2">
+            <h3 class="font-title-sm text-title-sm text-text-primary font-bold">
+              Verificación Documental & Legajo de Atleta
+            </h3>
+            <span class="font-stat-label text-[10px] uppercase px-2 py-0.5 rounded bg-accent-crimson-deep/20 text-accent-crimson-deep font-extrabold">
+              Auditoría en Curso
+            </span>
+          </div>
+          <p class="font-body-base text-[12px] text-text-secondary">
+            Federación Jujeña de Handball • Sistema Oficial CAH
+          </p>
+        </div>
+      </div>
+
+      <button
+        (click)="closeAthleteModal()"
+        class="w-9 h-9 rounded-lg bg-court-card-hover hover:bg-court-card-active text-text-secondary hover:text-text-primary flex items-center justify-center transition-colors cursor-pointer border border-border-subtle"
+        title="Cerrar Modal"
+        type="button">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <!-- Modal Scrollable Content -->
+    <div class="p-4 sm:p-6 flex flex-col gap-4 overflow-y-auto custom-scrollbar">
+      <!-- Athlete Profile Hero Card -->
+      <div class="p-4 sm:p-5 rounded-xl bg-court-surface border border-border-subtle/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-2xl bg-court-card-active text-primary font-scoreboard-score text-[24px] flex items-center justify-center shadow-md shrink-0 border border-primary/20">
+            {{ player.nombreCompleto.substring(0, 2).toUpperCase() }}
+          </div>
+          <div class="flex flex-col">
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="font-headline-md text-headline-md text-text-primary font-extrabold">
+                {{ player.nombreCompleto }}
+              </h2>
+              <span
+                class="px-2 py-0.5 rounded font-stat-label text-[10px] font-bold uppercase tracking-wider"
+                [class.bg-tertiary-container-20]="player.estado === 'Aprobado' || player.estado === 'Habilitado'"
+                [class.text-tertiary]="player.estado === 'Aprobado' || player.estado === 'Habilitado'"
+                [class.bg-accent-crimson-deep-20]="player.estado === 'Rechazado' || player.estado === 'Pendiente'"
+                [class.text-accent-crimson-deep]="player.estado === 'Rechazado' || player.estado === 'Pendiente'"
+                [class.bg-accent-amber-20]="player.estado === 'Observado'"
+                [class.text-accent-amber]="player.estado === 'Observado'">
+                {{ player.estado }}
+              </span>
+            </div>
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-text-secondary font-body-base text-[12px] mt-1">
+              <span><strong class="text-text-primary">DNI:</strong> {{ player.dni }}</span>
+              <span>•</span>
+              <span><strong class="text-text-primary">Categoría:</strong> {{ player.categoria || 'Primera Masc.' }}</span>
+              <span>•</span>
+              <span class="inline-flex items-center gap-1.5">
+                @if (hasValidLogo(activeClub())) {
+                <img
+                  [src]="getClubLogoUrl(activeClub()?.logoUrl)"
+                  [alt]="activeClub()?.nombre"
+                  (error)="onClubLogoError(activeClub()?.id)"
+                  class="w-4 h-4 object-contain rounded" />
+                } @else {
+                <span class="px-1.5 py-0.5 rounded bg-court-card-active border border-primary/30 text-primary font-stat-label text-[9px] font-bold">
+                  {{ getClubInitials(activeClub()) }}
+                </span>
+                }
+                <strong class="text-text-primary">Club:</strong> {{ activeClub()?.nombre || player.club?.nombre || 'CIAF Jujuy' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sm:text-right flex sm:flex-col items-center sm:items-end gap-2 sm:gap-1">
+          <span class="font-stat-label text-[10px] text-text-muted uppercase">ID Federativo FJH</span>
+          <span class="font-body-bold text-[13px] text-primary [font-variant-numeric:tabular-nums]">
+            #FJH-2026-{{ player.dni.slice(-4) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Critical Status Banner -->
+      <div class="p-3.5 rounded-xl bg-accent-crimson-deep/15 border border-accent-crimson-deep/30 flex items-start gap-3 shadow-sm">
+        <span class="material-symbols-outlined text-accent-crimson-deep text-[24px] shrink-0 mt-0.5">error</span>
+        <div class="flex flex-col flex-1">
+          <span class="font-body-bold text-[13px] text-accent-crimson-deep">
+            Apto Médico & Ergometría Oficial Requerido
+          </span>
+          <p class="font-body-base text-[12px] text-text-secondary leading-snug mt-0.5">
+            El certificado de aptitud físico-deportiva debe contar con firma médica autorizada, electro/ergometría según protocolo CAH para el Torneo Apertura 2026 de la FJH.
+          </p>
+        </div>
+      </div>
+
+      <!-- Legajo Digital Presentado -->
+      <div class="flex flex-col gap-2">
+        <span class="font-stat-label text-stat-label text-text-muted uppercase tracking-wider">
+          Legajo Digital Presentado
+        </span>
+        <div
+          class="grid gap-2.5 pt-1"
+          [class.grid-cols-1]="!isMinor(player)"
+          [class.md:grid-cols-2]="!isMinor(player)"
+          [class.grid-cols-1]="isMinor(player)"
+          [class.md:grid-cols-3]="isMinor(player)">
+
+          <!-- Doc 1: Ficha de Fichaje -->
+          <div
+            (click)="openDocumentViewer('Ficha de Fichaje 2026', player.fichaJugadorUrl)"
+            class="p-3 rounded-xl bg-court-surface hover:bg-court-card-hover border border-border-subtle/50 flex flex-col justify-between gap-3 transition-colors group cursor-pointer"
+            [class.opacity-50]="!player.fichaJugadorUrl"
+            [class.border-tertiary/30]="player.fichaJugadorUrl">
+            <div class="flex items-start gap-2.5">
+              <span class="material-symbols-outlined text-tertiary text-[24px] shrink-0">picture_as_pdf</span>
+              <div class="flex flex-col min-w-0">
+                <span class="font-body-bold text-[12px] text-text-primary leading-tight truncate">
+                  {{ player.fichaJugadorUrl ? (player.fichaJugadorUrl.split('/').pop() || 'Ficha_Fichaje_2026') : 'Sin documento' }}
+                </span>
+                <span class="font-stat-label text-[10px] text-tertiary mt-1">
+                  Firmada por Delegado
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-1">
+              @if (player.fichaJugadorUrl) {
+              <span class="text-[10px] text-text-muted">Ver en visor interno</span>
+              <span class="inline-flex items-center gap-1 text-primary group-hover:text-primary-fixed text-[11px] font-body-bold transition-colors">
+                <span class="material-symbols-outlined text-[14px]">visibility</span> Previsualizar
+              </span>
+              } @else {
+              <span class="text-[10px] text-accent-amber">Documento pendiente</span>
+              <span class="material-symbols-outlined text-accent-amber text-[16px]">pending</span>
+              }
+            </div>
+          </div>
+
+          <!-- Doc 2: Certificado Médico / Ergometría -->
+          <div
+            (click)="openDocumentViewer('Certificado Médico / Ergometría', player.fichaMedicaUrl)"
+            class="p-3 rounded-xl bg-court-surface hover:bg-court-card-hover flex flex-col justify-between gap-3 transition-colors group cursor-pointer"
+            [class.opacity-50]="!player.fichaMedicaUrl"
+            [class.border]="true"
+            [class.border-accent-crimson-deep/30]="true">
+            <div class="flex items-start gap-2.5">
+              <span class="material-symbols-outlined text-accent-crimson-deep text-[24px] shrink-0">medical_services</span>
+              <div class="flex flex-col min-w-0">
+                <span class="font-body-bold text-[12px] text-text-primary leading-tight truncate">
+                  {{ player.fichaMedicaUrl ? (player.fichaMedicaUrl.split('/').pop() || 'Certificado_Medico') : 'Sin documento' }}
+                </span>
+                <span class="font-stat-label text-[10px] text-accent-crimson-deep font-bold mt-1">
+                  Revisión Clínico-Cardiológica
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-1">
+              @if (player.fichaMedicaUrl) {
+              <span class="text-[10px] text-text-muted">Ver en visor interno</span>
+              <span class="inline-flex items-center gap-1 text-accent-crimson-deep group-hover:text-rose-400 text-[11px] font-body-bold transition-colors">
+                <span class="material-symbols-outlined text-[14px]">visibility</span> Ver Detalle
+              </span>
+              } @else {
+              <span class="text-[10px] text-accent-amber">Documento pendiente</span>
+              <span class="material-symbols-outlined text-accent-amber text-[16px]">pending</span>
+              }
+            </div>
+          </div>
+
+          <!-- Doc 3: Consentimiento Tutor — SOLO menores de edad -->
+          @if (isMinor(player)) {
+          <div
+            (click)="openDocumentViewer('Autorización de Tutores/Padres', player.autorizacionUrl)"
+            class="p-3 rounded-xl bg-court-surface hover:bg-court-card-hover border border-border-subtle/50 flex flex-col justify-between gap-3 transition-colors group cursor-pointer"
+            [class.opacity-50]="!player.autorizacionUrl"
+            [class.border-tertiary/30]="player.autorizacionUrl">
+            <div class="flex items-start gap-2.5">
+              <span class="material-symbols-outlined text-tertiary text-[24px] shrink-0">family_restroom</span>
+              <div class="flex flex-col min-w-0">
+                <span class="font-body-bold text-[12px] text-text-primary leading-tight truncate">
+                  {{ player.autorizacionUrl ? (player.autorizacionUrl.split('/').pop() || 'Autorizacion_Padres') : 'Sin documento' }}
+                </span>
+                <span class="font-stat-label text-[10px] text-tertiary mt-1">
+                  Autorización Tutor/Padre — Requerida (Menor)
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-1">
+              @if (player.autorizacionUrl) {
+              <span class="text-[10px] text-text-muted">Ver en visor interno</span>
+              <span class="inline-flex items-center gap-1 text-primary group-hover:text-primary-fixed text-[11px] font-body-bold transition-colors">
+                <span class="material-symbols-outlined text-[14px]">visibility</span> Previsualizar
+              </span>
+              } @else {
+              <span class="text-[10px] text-accent-amber">Requerida — Pendiente</span>
+              <span class="material-symbols-outlined text-accent-amber text-[16px]">pending</span>
+              }
+            </div>
+          </div>
+          }
+
+        </div>
+
+        <!-- Visor Integrado de Documentos (Inline) -->
+        @if (docViewer(); as doc) {
+        <div class="mt-2 rounded-xl border border-primary/30 bg-court-base overflow-hidden shadow-[0_0_20px_rgba(56,189,248,0.12)]">
+          <!-- Viewer Header Bar -->
+          <div class="flex items-center justify-between px-4 py-3 bg-court-surface border-b border-border-subtle/50">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="material-symbols-outlined text-primary text-[18px] shrink-0">
+                {{ doc.tipo === 'pdf' ? 'picture_as_pdf' : 'image' }}
+              </span>
+              <span class="font-body-bold text-[12px] text-text-primary truncate">{{ doc.titulo }}</span>
+              <span class="font-stat-label text-[10px] text-text-muted truncate hidden sm:inline">{{ doc.nombreArchivo }}</span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button
+                (click)="descargarDocumentoActual()"
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-court-card hover:bg-court-card-active text-primary text-[11px] font-body-bold cursor-pointer border border-border-subtle transition-colors"
+                title="Descargar documento"
+                type="button">
+                <span class="material-symbols-outlined text-[14px]">download</span>
+                Descargar
+              </button>
+              <button
+                (click)="closeDocumentViewer()"
+                class="w-7 h-7 rounded-lg bg-court-card hover:bg-court-card-active text-text-secondary hover:text-text-primary flex items-center justify-center cursor-pointer border border-border-subtle transition-colors"
+                title="Cerrar visor"
+                type="button">
+                <span class="material-symbols-outlined text-[16px]">close</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Viewer Content Area -->
+          <div class="relative w-full bg-court-base" style="min-height: 340px; max-height: 440px;">
+            @if (doc.tipo === 'pdf') {
+            <!-- PDF Viewer via iframe -->
+            <iframe
+              [src]="doc.url"
+              class="w-full h-full border-0"
+              style="min-height: 340px; max-height: 440px;"
+              title="Visor PDF Federativo"
+              sandbox="allow-same-origin allow-scripts"
+              loading="lazy">
+            </iframe>
+            } @else if (doc.tipo === 'image') {
+            <!-- Image Viewer -->
+            <div class="flex items-center justify-center w-full" style="min-height: 340px; max-height: 440px; overflow: auto;">
+              <img
+                [src]="doc.url"
+                [alt]="doc.titulo"
+                class="max-w-full max-h-[430px] object-contain rounded"
+                loading="lazy" />
+            </div>
+            } @else {
+            <!-- Unknown / Fallback -->
+            <div class="flex flex-col items-center justify-center gap-3 text-text-secondary" style="min-height: 340px;">
+              <span class="material-symbols-outlined text-[40px] text-text-muted">draft</span>
+              <p class="font-body-medium text-[13px]">Formato no compatible con el visor integrado.</p>
+              <a
+                [href]="doc.url"
+                target="_blank"
+                class="px-4 py-2 rounded-lg bg-primary-container text-on-primary-container text-[12px] font-body-bold inline-flex items-center gap-1.5 cursor-pointer transition-opacity hover:opacity-90">
+                <span class="material-symbols-outlined text-[16px]">open_in_new</span> Abrir en nueva pestaña
+              </a>
+            </div>
+            }
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Dictamen & Resolution Section -->
+      <div class="flex flex-col gap-3 bg-court-surface p-4 rounded-xl border border-border-subtle/50">
+        <span class="font-stat-label text-stat-label text-text-muted uppercase tracking-wider">
+          Dictamen de Auditoría Federativa
+        </span>
+
+        <!-- Styled Checkbox for Provisory Authorization -->
+        <label class="flex items-start gap-2.5 p-2.5 rounded-lg bg-court-card border border-border-subtle/50 cursor-pointer hover:bg-court-card-hover transition-colors">
+          <input
+            type="checkbox"
+            [(ngModel)]="provisionalEnabled"
+            class="mt-0.5 cursor-pointer" />
+          <div class="flex flex-col text-[11px]">
+            <span class="font-body-bold text-text-primary text-[12px]">
+              Habilitación Provisoria Extraordinaria (48hs)
+            </span>
+            <span class="text-text-muted">
+              Permite la inclusión en planilla única de la Fecha 5 bajo caución solidaria y firma del delegado institucional.
+            </span>
+          </div>
+        </label>
+
+        <div class="flex flex-col gap-1.5">
+          <span class="font-stat-label text-[10px] text-text-secondary">
+            Observación formal para el Delegado Institucional:
+          </span>
+          <textarea
+            [(ngModel)]="observationText"
+            class="w-full bg-court-card rounded-lg p-2.5 text-text-primary text-[13px] outline-none placeholder:text-text-muted border border-border-subtle/60 focus:border-primary/50 focus:bg-court-card-active transition-all resize-none"
+            placeholder="Indicar motivo exacto de rechazo, fecha límite de presentación o estudio complementario..."
+            rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Actions Footer -->
+    <div class="p-4 sm:p-5 bg-court-surface border-t border-border-subtle/50 flex flex-wrap items-center justify-between gap-3">
+      <button
+        (click)="closeAthleteModal()"
+        class="px-4 py-2.5 rounded-lg bg-court-card hover:bg-court-card-hover text-text-secondary hover:text-text-primary font-body-bold text-[12px] transition-colors inline-flex items-center gap-1.5 cursor-pointer border border-border-subtle"
+        type="button">
+        <span class="material-symbols-outlined text-[16px]">close</span>
+        Cerrar Modal
+      </button>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          (click)="requerirSubsanacionModal()"
+          class="px-4 py-2.5 rounded-lg bg-accent-amber hover:bg-amber-400 text-court-base font-body-bold text-[12px] uppercase tracking-wider shadow-sm transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+          type="button">
+          <span class="material-symbols-outlined text-[16px]">notification_important</span>
+          Requerir Subsanación
+        </button>
+
+        <button
+          (click)="inhabilitarFichajeModal()"
+          class="px-4 py-2.5 rounded-lg bg-accent-crimson-deep hover:bg-rose-600 text-text-primary font-body-bold text-[12px] uppercase tracking-wider shadow-sm transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+          type="button">
+          <span class="material-symbols-outlined text-[16px]">block</span>
+          Inhabilitar Fichaje
+        </button>
+
+        <button
+          (click)="aprobarFichajeModal()"
+          class="px-4 py-2.5 rounded-lg bg-gradient-to-r from-primary-container to-tertiary hover:opacity-90 text-court-base font-body-bold text-[12px] uppercase tracking-wider shadow-[0_0_12px_rgba(56,189,248,0.3)] transition-all inline-flex items-center gap-1.5 cursor-pointer"
+          type="button">
+          <span class="material-symbols-outlined text-[16px]">check_circle</span>
+          Aprobar Fichaje
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}

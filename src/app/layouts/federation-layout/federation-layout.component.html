@@ -1,0 +1,184 @@
+<div class="min-h-screen flex bg-court-base text-on-surface font-body-base antialiased">
+  <!-- Backdrop móvil -->
+  @if (sidebarOpen()) {
+  <div
+    (click)="closeMobileSidebar()"
+    class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity"></div>
+  }
+
+  <!-- SIDEBAR (Barra Lateral Institucional FJH) -->
+  <aside
+    class="fixed top-0 bottom-0 left-0 z-50 w-72 bg-court-surface border-r border-border-subtle/60 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0"
+    [class.-translate-x-full]="!sidebarOpen()"
+    [class.translate-x-0]="sidebarOpen()">
+    
+    <!-- Top Brand & Institutional Crest -->
+    <div>
+      <div class="h-20 px-6 flex items-center justify-between border-b border-border-subtle/50 bg-court-card/40">
+        <a routerLink="/" class="flex items-center gap-3 group">
+          <img
+            src="/img/logo.png"
+            alt="FJH Logo"
+            class="h-10 w-auto object-contain drop-shadow-[0_0_12px_rgba(56,189,248,0.3)] transform transition-transform group-hover:scale-105" />
+          <div class="flex flex-col">
+            <span class="font-title-sm text-[13px] text-text-primary font-extrabold tracking-tight leading-tight">
+              FEDERACIÓN JUJEÑA
+            </span>
+            <span class="font-stat-label text-[9px] text-primary uppercase tracking-widest">
+              HANDBALL • CAH OFICIAL
+            </span>
+          </div>
+        </a>
+
+        <!-- Botón de cierre móvil -->
+        <button
+          (click)="closeMobileSidebar()"
+          class="lg:hidden p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-court-card transition-colors"
+          type="button">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <!-- Live Connection Pill -->
+      <div class="px-5 py-3 border-b border-border-subtle/40 bg-court-base/40 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
+          </span>
+          <span class="font-stat-label text-[10px] text-text-secondary uppercase tracking-wider">
+            Nodo Central Jujuy
+          </span>
+        </div>
+        <span class="font-stat-label text-[9px] px-1.5 py-0.5 rounded bg-primary-container/20 text-primary font-bold">
+          2026
+        </span>
+      </div>
+
+      <!-- Navigation Menus Container -->
+      <nav class="p-4 flex flex-col gap-5 overflow-y-auto max-h-[calc(100vh-220px)] custom-scrollbar">
+        @for (group of navGroups(); track group.label) {
+        <div class="flex flex-col gap-1">
+          <span class="px-3 text-[10px] font-stat-label text-text-muted uppercase tracking-widest">
+            {{ group.label }}
+          </span>
+
+          <div class="flex flex-col gap-0.5 mt-1">
+            @for (item of group.items; track item.label) {
+            <a
+              [routerLink]="item.route"
+              (click)="closeMobileSidebar()"
+              routerLinkActive="bg-primary-container/15 text-primary border-l-2 border-primary shadow-[0_0_15px_rgba(56,189,248,0.15)] font-body-bold"
+              [routerLinkActiveOptions]="{ exact: false }"
+              class="flex items-center justify-between px-3 py-2.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-court-card font-body-medium text-[13px] transition-all group">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-[20px] text-text-muted group-hover:text-primary transition-colors">
+                  {{ item.icon }}
+                </span>
+                <span class="truncate">{{ item.label }}</span>
+              </div>
+
+              @if (item.badge) {
+              <span
+                class="px-2 py-0.5 rounded-full text-[10px] font-stat-label font-bold uppercase tracking-wider shrink-0"
+                [class.bg-accent-amber]="item.badgeTone === 'warning'"
+                [class.text-court-base]="item.badgeTone === 'warning'"
+                [class.bg-accent-crimson-deep]="item.badgeTone === 'live'"
+                [class.text-text-primary]="item.badgeTone === 'live'"
+                [class.bg-primary-container-20]="item.badgeTone === 'info' || !item.badgeTone"
+                [class.text-primary]="item.badgeTone === 'info' || !item.badgeTone">
+                {{ item.badge }}
+              </span>
+              }
+            </a>
+            }
+          </div>
+        </div>
+        }
+      </nav>
+    </div>
+
+    <!-- Bottom User Session Card & Logout -->
+    <div class="p-4 border-t border-border-subtle/50 bg-court-card/60">
+      <div class="flex items-center justify-between gap-3 p-2 rounded-xl bg-court-surface border border-white/5">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-primary-container to-primary flex items-center justify-center text-on-primary font-body-bold text-[14px] shrink-0 shadow-sm">
+            {{ userName().charAt(0).toUpperCase() }}
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="font-body-bold text-[12px] text-text-primary truncate">
+              {{ userName() }}
+            </span>
+            <span class="font-stat-label text-[10px] text-primary truncate">
+              {{ roleDisplay() }}
+            </span>
+          </div>
+        </div>
+
+        <button
+          (click)="logout()"
+          type="button"
+          title="Cerrar Sesión"
+          class="p-2 rounded-lg text-text-muted hover:text-accent-crimson-deep hover:bg-court-card transition-colors shrink-0 cursor-pointer"
+          aria-label="Cerrar sesión">
+          <span class="material-symbols-outlined text-[18px]">logout</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WORKSPACE WRAPPER (Shifted right on desktop by 72 / 288px) -->
+  <div class="flex-1 flex flex-col min-h-screen lg:pl-72 w-full">
+    <!-- Top Telemetry Header Bar -->
+    <header class="sticky top-0 z-30 h-16 w-full bg-court-surface/95 backdrop-blur-md border-b border-border-subtle/60 px-4 sm:px-6 flex items-center justify-between shadow-sm">
+      <div class="flex items-center gap-3">
+        <!-- Botón toggle de sidebar en móvil -->
+        <button
+          (click)="toggleSidebar()"
+          type="button"
+          class="lg:hidden p-2 rounded-lg bg-court-card text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
+          aria-label="Abrir menú">
+          <span class="material-symbols-outlined text-[22px]">menu</span>
+        </button>
+
+        <!-- Titular / Módulo actual -->
+        <div class="flex items-center gap-2 text-text-secondary font-body-medium text-[13px]">
+          <span class="hidden sm:inline font-stat-label text-text-muted uppercase">PANEL EJECUTIVO</span>
+          <span class="hidden sm:inline text-text-muted">•</span>
+          <span class="text-text-primary font-body-bold text-[14px]">Auditoría & Padrón Federativo</span>
+        </div>
+      </div>
+
+      <!-- Quick Executive Status Tools -->
+      <div class="flex items-center gap-3">
+        <a
+          routerLink="/"
+          class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-court-card hover:bg-court-card-hover text-text-secondary hover:text-text-primary text-[12px] font-body-bold transition-colors">
+          <span class="material-symbols-outlined text-[16px]">public</span>
+          <span>Sitio Público</span>
+        </a>
+
+        <!-- Campana de Notificaciones -->
+        <div class="relative flex items-center justify-center p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-court-card transition-colors cursor-pointer">
+          <span class="material-symbols-outlined text-[20px]">notifications</span>
+          <span class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent-crimson-deep font-stat-label text-[9px] font-bold text-text-primary shadow-[0_0_8px_rgba(244,63,94,0.6)]">
+            2
+          </span>
+        </div>
+
+        <!-- Perfil Chip -->
+        <div class="flex items-center gap-2 pl-2 border-l border-border-subtle/50">
+          <span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+          <span class="hidden sm:inline font-stat-label text-stat-label text-text-secondary uppercase">
+            {{ userRole() || 'STAFF' }}
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT OUTLET -->
+    <main class="flex-1 w-full overflow-x-hidden bg-court-base">
+      <router-outlet />
+    </main>
+  </div>
+</div>
