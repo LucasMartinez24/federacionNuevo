@@ -1,0 +1,832 @@
+<main class="flex-1 flex flex-col min-w-0 bg-slate-950 min-h-screen text-slate-100 antialiased">
+  
+  <!-- Ambient Court Glow Backdrops -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[340px] bg-sky-600/10 blur-[130px] rounded-full"></div>
+    <div class="absolute top-[40%] -left-32 w-[400px] h-[400px] bg-emerald-500/5 blur-[120px] rounded-full"></div>
+  </div>
+
+  <!-- Toast Notification -->
+  @if (feedbackMensaje) {
+  <div
+    class="fixed top-5 right-5 z-50 px-5 py-3.5 rounded-2xl shadow-2xl border flex items-center gap-3 animate-in fade-in backdrop-blur-md transition-all"
+    [class.bg-slate-900]="true"
+    [class.border-emerald-500]="feedbackTipo === 'success'"
+    [class.text-emerald-400]="feedbackTipo === 'success'"
+    [class.border-red-500]="feedbackTipo === 'error'"
+    [class.text-red-400]="feedbackTipo === 'error'">
+    <span class="material-symbols-outlined text-[22px]">
+      {{ feedbackTipo === 'success' ? 'check_circle' : 'error' }}
+    </span>
+    <span class="text-sm font-bold text-slate-100">{{ feedbackMensaje }}</span>
+  </div>
+  }
+
+  <!-- Sticky Header Bar -->
+  <header class="sticky top-0 z-40 bg-slate-900/85 backdrop-blur-md border-b border-slate-800 px-4 md:px-8 h-16 flex items-center justify-between shrink-0 shadow-lg">
+    <div class="flex items-center gap-2 md:gap-4 min-w-0">
+      <h2 class="text-sm md:text-lg font-black text-slate-50 uppercase tracking-tight truncate flex items-center gap-2">
+        <span>{{ isEditMode ? 'Editar Expediente de Jugador' : 'Nueva Inscripción de Atleta' }}</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-sky-400 border border-slate-700/60 hidden sm:inline-block">
+          {{ isEditMode ? 'DNI ' + (jugadorData.dni || 'S/D') : 'TEMPORADA 2026' }}
+        </span>
+      </h2>
+      <span class="text-[10px] md:text-xs font-bold px-2.5 py-1 bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-lg whitespace-nowrap flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse"></span>
+        {{ progress }}% <span class="hidden sm:inline">completado</span>
+      </span>
+    </div>
+
+    <div class="flex items-center gap-2.5">
+      <a
+        routerLink="/admin/jugadores"
+        class="px-3.5 py-2 text-xs md:text-sm font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-all flex items-center gap-1.5 border border-slate-700 cursor-pointer">
+        <span class="material-symbols-outlined text-sm md:text-base">arrow_back</span>
+        <span class="hidden sm:inline">Volver</span>
+      </a>
+
+      <button
+        type="button"
+        (click)="onFinalize()"
+        [disabled]="saving"
+        class="px-4 py-2 text-xs md:text-sm font-black text-slate-950 bg-gradient-to-r from-sky-400 to-sky-500 hover:brightness-110 rounded-xl shadow-[0_0_15px_rgba(56,189,248,0.35)] flex items-center gap-2 cursor-pointer transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+        @if (saving) {
+        <span class="w-4 h-4 border-2 border-slate-950/40 border-t-slate-950 rounded-full animate-spin"></span>
+        <span>Guardando...</span>
+        } @else {
+        <span>{{ windowWidth < 640 ? 'Finalizar' : (isEditMode ? 'Guardar Cambios' : 'Finalizar Registro') }}</span>
+        <span class="material-symbols-outlined text-sm md:text-base">verified</span>
+        }
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <div class="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-950 custom-scrollbar relative z-10">
+    <div class="max-w-7xl mx-auto">
+
+      <!-- Error Alert Message Banner -->
+      @if (errorMessage) {
+      <div class="mb-6 p-4 bg-red-500/10 border-2 border-red-500/40 rounded-2xl text-red-400 text-sm flex items-center gap-3 animate-in fade-in shadow-lg">
+        <span class="material-symbols-outlined text-2xl text-red-500 shrink-0">error</span>
+        <div class="flex flex-col">
+          <span class="font-bold text-red-300">Revisar los datos obligatorios requeridos:</span>
+          <span class="text-xs text-red-200 mt-0.5">{{ errorMessage }}</span>
+        </div>
+      </div>
+      }
+
+      <form class="grid grid-cols-12 gap-6 pb-12" (ngSubmit)="onFinalize()">
+
+        <!-- ========================================== -->
+        <!-- LEFT COLUMN (8 COLS): Identidad & Cancha   -->
+        <!-- ========================================== -->
+        <div class="col-span-12 lg:col-span-8 space-y-6">
+
+          <!-- SECTION 1: Datos Personales -->
+          <section class="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl backdrop-blur-sm">
+            <div class="flex items-center justify-between mb-6 border-l-4 border-sky-400 pl-3">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-sky-400 text-xl">badge</span>
+                <h3 class="font-bold text-slate-100 uppercase text-sm tracking-widest">1. Datos Personales</h3>
+              </div>
+              <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-emerald-500/20">
+                Homologación CAH
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <!-- DNI / Documento -->
+              <label class="flex flex-col">
+                <div class="flex items-center justify-between mb-2 ml-1">
+                  <span class="text-[10px] font-black text-slate-400 uppercase">
+                    DNI / Documento <span class="text-red-400">*</span>
+                  </span>
+                  @if (isCampoInvalido('dni')) {
+                  <span class="text-[10px] font-bold text-red-400">OBLIGATORIO</span>
+                  }
+                </div>
+                <input
+                  class="form-input-custom"
+                  [class.border-red-500]="isCampoInvalido('dni')"
+                  [class.bg-red-500-10]="isCampoInvalido('dni')"
+                  placeholder="Sin puntos ni espacios"
+                  type="text"
+                  name="dni"
+                  [(ngModel)]="jugadorData.dni"
+                  (keypress)="soloNumeros($event)"
+                  (input)="onDniInput($event)" />
+                @if (isCampoInvalido('dni')) {
+                <span class="text-[11px] font-bold text-red-400 mt-1 ml-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">error</span>
+                  Ingrese entre 7 y 10 dígitos numéricos.
+                </span>
+                }
+              </label>
+
+              <!-- Apellidos -->
+              <label class="flex flex-col">
+                <div class="flex items-center justify-between mb-2 ml-1">
+                  <span class="text-[10px] font-black text-slate-400 uppercase">
+                    Apellidos <span class="text-red-400">*</span>
+                  </span>
+                  @if (isCampoInvalido('apellidos')) {
+                  <span class="text-[10px] font-bold text-red-400">OBLIGATORIO</span>
+                  }
+                </div>
+                <input
+                  class="form-input-custom"
+                  [class.border-red-500]="isCampoInvalido('apellidos')"
+                  [class.bg-red-500-10]="isCampoInvalido('apellidos')"
+                  placeholder="Ej: Pérez"
+                  type="text"
+                  name="apellidos"
+                  [(ngModel)]="jugadorData.apellidos" />
+                @if (isCampoInvalido('apellidos')) {
+                <span class="text-[11px] font-bold text-red-400 mt-1 ml-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">error</span>
+                  Apellido obligatorio (mínimo 2 letras).
+                </span>
+                }
+              </label>
+
+              <!-- Nombres -->
+              <label class="flex flex-col">
+                <div class="flex items-center justify-between mb-2 ml-1">
+                  <span class="text-[10px] font-black text-slate-400 uppercase">
+                    Nombres <span class="text-red-400">*</span>
+                  </span>
+                  @if (isCampoInvalido('nombres')) {
+                  <span class="text-[10px] font-bold text-red-400">OBLIGATORIO</span>
+                  }
+                </div>
+                <input
+                  class="form-input-custom"
+                  [class.border-red-500]="isCampoInvalido('nombres')"
+                  [class.bg-red-500-10]="isCampoInvalido('nombres')"
+                  placeholder="Ej: Juan Ignacio"
+                  type="text"
+                  name="nombres"
+                  [(ngModel)]="jugadorData.nombres" />
+                @if (isCampoInvalido('nombres')) {
+                <span class="text-[11px] font-bold text-red-400 mt-1 ml-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">error</span>
+                  Nombre obligatorio (mínimo 2 letras).
+                </span>
+                }
+              </label>
+
+              <!-- Fecha de Nacimiento -->
+              <label class="flex flex-col">
+                <div class="flex items-center justify-between mb-2 ml-1">
+                  <span class="text-[10px] font-black text-slate-400 uppercase">
+                    Fecha de Nacimiento <span class="text-red-400">*</span>
+                  </span>
+                  @if (isCampoInvalido('birthDate')) {
+                  <span class="text-[10px] font-bold text-red-400">OBLIGATORIO</span>
+                  }
+                </div>
+                <input
+                  class="form-input-custom scheme-dark cursor-pointer"
+                  [class.border-red-500]="isCampoInvalido('birthDate')"
+                  [class.bg-red-500-10]="isCampoInvalido('birthDate')"
+                  type="date"
+                  name="birthDate"
+                  [(ngModel)]="birthDate"
+                  (ngModelChange)="onDateChange($event)" />
+                @if (isCampoInvalido('birthDate')) {
+                <span class="text-[11px] font-bold text-red-400 mt-1 ml-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">error</span>
+                  Fecha de nacimiento obligatoria.
+                </span>
+                }
+                @if (edadCalculada !== null) {
+                <div class="flex items-center gap-1.5 mt-1.5 ml-1">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-black bg-sky-500/20 text-sky-400 border border-sky-500/30">
+                    {{ edadCalculada }} AÑOS
+                  </span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase"
+                    [class.bg-amber-500-20]="isMinor || esMayorDe35"
+                    [class.text-amber-400]="isMinor || esMayorDe35"
+                    [class.bg-slate-800]="!isMinor && !esMayorDe35"
+                    [class.text-slate-400]="!isMinor && !esMayorDe35">
+                    {{ isMinor ? 'MENOR DE EDAD (<18)' : (esMayorDe35 ? 'VETERANO (+35)' : 'MAYOR DE EDAD') }}
+                  </span>
+                </div>
+                }
+              </label>
+
+              <!-- Género -->
+              <label class="flex flex-col">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">
+                  Género <span class="text-red-400">*</span>
+                </span>
+                <select class="form-input-custom cursor-pointer" name="genero" [(ngModel)]="jugadorData.genero">
+                  <option value="Masculino">Masculino</option>
+                  <option value="Femenino">Femenino</option>
+                </select>
+              </label>
+
+              <!-- Nacionalidad -->
+              <label class="flex flex-col">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Nacionalidad</span>
+                <select class="form-input-custom cursor-pointer" name="nacionalidad" [(ngModel)]="jugadorData.nacionalidad">
+                  <option value="Argentina">Argentina</option>
+                  <option value="Boliviana">Boliviana</option>
+                  <option value="Brasileña">Brasileña</option>
+                  <option value="Chilena">Chilena</option>
+                  <option value="Otra">Otra</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <!-- SECTION 2: Información Federativa -->
+          <section class="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl backdrop-blur-sm">
+            <div class="flex items-center justify-between mb-6 border-l-4 border-sky-400 pl-3">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-sky-400 text-xl">sports_handball</span>
+                <h3 class="font-bold text-slate-100 uppercase text-sm tracking-widest">2. Información Federativa</h3>
+              </div>
+              <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-800 text-sky-400 border border-slate-700/60">
+                PLANILLA OFICIAL
+              </span>
+            </div>
+
+            <!-- Selector de Club para el Admin -->
+            <div class="mb-5 p-4 rounded-2xl bg-slate-950/60 border border-slate-800 flex flex-col gap-3">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-slate-800 text-sky-400 border border-slate-700 font-bold flex items-center justify-center shrink-0">
+                    {{ getClubInitials(selectedClub) }}
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                      Institución Deportiva Asignada <span class="text-red-400">*</span>
+                    </span>
+                    <span class="text-sm font-bold text-slate-100">
+                      {{ clubNombre }}
+                    </span>
+                    @if (selectedClub) {
+                    <span class="text-[11px] text-slate-400">
+                      Siglas: <strong class="text-sky-400">{{ selectedClub.siglas }}</strong> •
+                      <span [class.text-amber-400]="selectedClub.esInvitado" [class.text-emerald-400]="!selectedClub.esInvitado">
+                        {{ selectedClub.esInvitado ? 'Equipo Invitado / Torneo Amateur' : 'Club Afiliado Pleno FJH' }}
+                      </span>
+                    </span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Botón rápido para alternar Régimen +35 (Solo habilitado si el jugador tiene >= 35 años) -->
+                @if (esMayorDe35) {
+                <button
+                  type="button"
+                  (click)="toggleSelectorEspecial()"
+                  class="px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase transition-all flex items-center gap-1.5 border cursor-pointer shrink-0 shadow-md"
+                  [class.bg-amber-500]="mostrarSelectorEspecial"
+                  [class.text-slate-950]="mostrarSelectorEspecial"
+                  [class.border-amber-400]="mostrarSelectorEspecial"
+                  [class.bg-slate-800]="!mostrarSelectorEspecial"
+                  [class.text-amber-400]="!mostrarSelectorEspecial"
+                  [class.border-amber-500-30]="!mostrarSelectorEspecial">
+                  <span class="material-symbols-outlined text-[16px]">
+                    {{ mostrarSelectorEspecial ? 'check_circle' : 'stars' }}
+                  </span>
+                  <span>{{ mostrarSelectorEspecial ? 'Habilitado en +35' : 'Habilitar en +35' }}</span>
+                </button>
+                } @else {
+                <div
+                  class="px-3 py-1.5 rounded-xl text-[11px] font-bold uppercase flex items-center gap-1.5 border bg-slate-900/60 text-slate-500 border-slate-800/80 cursor-not-allowed select-none shrink-0"
+                  title="El régimen +35 está reservado exclusivamente para atletas con 35 años cumplidos o más">
+                  <span class="material-symbols-outlined text-[15px] text-slate-600">lock</span>
+                  <span>+35 (Requiere &ge; 35 años)</span>
+                </div>
+                }
+              </div>
+
+              <!-- Selector interactivo de Clubes -->
+              <div class="flex flex-col gap-1.5 pt-2 border-t border-slate-800/80">
+                <label class="text-[10px] font-black text-slate-400 uppercase">
+                  Cambiar / Seleccionar Club:
+                </label>
+                <select
+                  class="form-input-custom cursor-pointer"
+                  [class.border-red-500]="isCampoInvalido('clubId')"
+                  name="clubId"
+                  [ngModel]="jugadorData.clubId"
+                  (ngModelChange)="onClubChange($event)">
+                  <option value="" disabled>-- Seleccione un club de la lista --</option>
+                  
+                  <optgroup label="🏆 Clubes Afiliados Plenos FJH">
+                    @for (club of clubesAfiliados; track club.id) {
+                    <option [value]="club.id">{{ club.nombre }} ({{ club.siglas }})</option>
+                    }
+                  </optgroup>
+
+                  <optgroup label="🏅 Equipos Invitados / Torneo Amateur (+35 y Promocional)">
+                    @for (club of clubesInvitados; track club.id) {
+                    <option [value]="club.id">{{ club.nombre }} ({{ club.siglas }}) — Invitado Amateur</option>
+                    }
+                  </optgroup>
+                </select>
+                @if (isCampoInvalido('clubId')) {
+                <span class="text-[11px] font-bold text-red-400 mt-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">error</span>
+                  Debe seleccionar una institución deportiva o equipo invitado.
+                </span>
+                }
+              </div>
+            </div>
+
+            <!-- Grilla de Categoría Base, Régimen Veteranos, Equipo y Estado -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+              <!-- Categoría Base (Calculada automáticamente) -->
+              <label class="flex flex-col">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Categoría Base</span>
+                <input
+                  class="form-input-custom bg-slate-800 text-emerald-400 font-bold cursor-not-allowed"
+                  [value]="selectedCategory"
+                  readonly />
+              </label>
+
+              <!-- Régimen Competencia (Veteranos) solo si tiene >= 35 años -->
+              @if (mostrarSelectorEspecial && esMayorDe35) {
+              <label class="flex flex-col col-span-1 md:col-span-2 animate-in zoom-in-95">
+                <span class="text-[10px] font-black text-amber-500 uppercase mb-2 ml-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-xs">stars</span> Régimen Competencia (Veteranos)
+                </span>
+                <select
+                  class="form-input-custom border-amber-500/40 bg-amber-500/10 text-amber-200 cursor-pointer font-bold"
+                  name="categoriaEspecial"
+                  [(ngModel)]="jugadorData.categoriaEspecial">
+                  @for (opt of opcionesCategoriaEspecial; track opt) {
+                  <option [value]="opt">{{ opt }}</option>
+                  }
+                </select>
+              </label>
+              }
+
+              <!-- Equipo / Filial (A, B, C) -->
+              <label class="flex flex-col" [class.md:col-span-2]="!mostrarSelectorEspecial || !esMayorDe35">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Equipo / Filial</span>
+                <select class="form-input-custom cursor-pointer" name="equipo" [(ngModel)]="jugadorData.equipo">
+                  <option value="A">Equipo A</option>
+                  <option value="B">Equipo B</option>
+                  <option value="C">Equipo C</option>
+                </select>
+              </label>
+
+              <!-- Estado Ficha -->
+              <label class="flex flex-col">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Estado Ficha</span>
+                <input
+                  class="form-input-custom bg-slate-800 text-slate-400 uppercase text-[10px] font-bold cursor-not-allowed"
+                  [value]="jugadorData.estado"
+                  readonly />
+              </label>
+            </div>
+          </section>
+
+          <!-- SECTION 3: Documentación Obligatoria -->
+          <section class="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl backdrop-blur-sm">
+            <div class="flex items-center justify-between mb-4 border-l-4 border-sky-400 pl-3">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-sky-400 text-xl">cloud_upload</span>
+                <h3 class="font-bold text-slate-100 uppercase text-sm tracking-widest">3. Documentación Obligatoria</h3>
+              </div>
+              <span class="text-[10px] uppercase font-bold text-slate-400">PDF, JPG o PNG (Máx 10MB)</span>
+            </div>
+
+            <!-- Checkbox para documentación física diferida -->
+            <div class="mb-5 p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="docDiferidaCheck"
+                [(ngModel)]="documentacionDiferida"
+                name="documentacionDiferida"
+                class="w-4 h-4 rounded border-slate-700 bg-slate-900 text-sky-500 focus:ring-sky-500 cursor-pointer" />
+              <label for="docDiferidaCheck" class="text-xs text-slate-300 font-medium cursor-pointer select-none">
+                Registrar atleta con documentación física pendiente de digitalizar (permite guardar y adjuntar archivos más adelante).
+              </label>
+            </div>
+
+            <!-- 3 Drop Zones idénticas al proyecto original -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Drop Zone 1: Certificado Médico -->
+              <div
+                class="drop-zone-custom relative border-2 border-dashed rounded-2xl p-4 flex flex-col items-center text-center transition-all"
+                [class.border-emerald-500]="fileNames.fichaMedica || existingUrls.fichaMedica"
+                [class.bg-emerald-500-10]="fileNames.fichaMedica || existingUrls.fichaMedica"
+                [class.border-slate-700]="!fileNames.fichaMedica && !existingUrls.fichaMedica">
+                <span
+                  class="material-symbols-outlined text-3xl mb-2"
+                  [class.text-emerald-500]="fileNames.fichaMedica || existingUrls.fichaMedica"
+                  [class.text-slate-500]="!fileNames.fichaMedica && !existingUrls.fichaMedica">
+                  {{ (fileNames.fichaMedica || existingUrls.fichaMedica) ? 'verified' : 'medical_services' }}
+                </span>
+                <p
+                  class="text-[10px] font-black uppercase tracking-wider mb-1"
+                  [class.text-emerald-500]="fileNames.fichaMedica || existingUrls.fichaMedica">
+                  Certificado Médico
+                </p>
+                <p class="text-[9px] text-slate-400 truncate w-full px-2">
+                  {{ fileNames.fichaMedica || (existingUrls.fichaMedica ? 'Archivo guardado' : 'Opcional / Apto') }}
+                </p>
+                <input
+                  class="absolute inset-0 opacity-0 cursor-pointer"
+                  type="file"
+                  (change)="onFileChange($event, 'fichaMedica')"
+                  accept=".pdf,.jpg,.jpeg,.png" />
+
+                @if (existingUrls.fichaMedica) {
+                <button
+                  type="button"
+                  (click)="verDocumento(existingUrls.fichaMedica)"
+                  class="mt-2 text-[10px] font-bold text-sky-400 hover:underline z-10 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[13px]">visibility</span> Ver actual
+                </button>
+                }
+              </div>
+
+              <!-- Drop Zone 2: Ficha FJH -->
+              <div
+                class="drop-zone-custom relative border-2 border-dashed rounded-2xl p-4 flex flex-col items-center text-center transition-all"
+                [class.border-emerald-500]="fileNames.fichaJugador || existingUrls.fichaJugador"
+                [class.bg-emerald-500-10]="fileNames.fichaJugador || existingUrls.fichaJugador"
+                [class.border-red-500]="isCampoInvalido('fichaJugador')"
+                [class.bg-red-500-10]="isCampoInvalido('fichaJugador')"
+                [class.border-slate-700]="!fileNames.fichaJugador && !existingUrls.fichaJugador && !isCampoInvalido('fichaJugador')">
+                <span
+                  class="material-symbols-outlined text-3xl mb-2"
+                  [class.text-emerald-500]="fileNames.fichaJugador || existingUrls.fichaJugador"
+                  [class.text-red-400]="isCampoInvalido('fichaJugador')"
+                  [class.text-slate-500]="!fileNames.fichaJugador && !existingUrls.fichaJugador && !isCampoInvalido('fichaJugador')">
+                  {{ (fileNames.fichaJugador || existingUrls.fichaJugador) ? 'verified' : 'assignment_ind' }}
+                </span>
+                <p
+                  class="text-[10px] font-black uppercase tracking-wider mb-1"
+                  [class.text-emerald-500]="fileNames.fichaJugador || existingUrls.fichaJugador"
+                  [class.text-red-400]="isCampoInvalido('fichaJugador')">
+                  Ficha FJH <span class="text-red-400">*</span>
+                </p>
+                <p class="text-[9px] truncate w-full px-2"
+                  [class.text-red-400]="isCampoInvalido('fichaJugador')"
+                  [class.text-slate-400]="!isCampoInvalido('fichaJugador')">
+                  {{ fileNames.fichaJugador || (existingUrls.fichaJugador ? 'Archivo guardado' : (documentacionDiferida ? 'Documento pendiente' : 'Obligatorio')) }}
+                </p>
+                <input
+                  class="absolute inset-0 opacity-0 cursor-pointer"
+                  type="file"
+                  (change)="onFileChange($event, 'fichaJugador')"
+                  accept=".pdf,.jpg,.jpeg,.png" />
+
+                @if (existingUrls.fichaJugador) {
+                <button
+                  type="button"
+                  (click)="verDocumento(existingUrls.fichaJugador)"
+                  class="mt-2 text-[10px] font-bold text-sky-400 hover:underline z-10 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[13px]">visibility</span> Ver actual
+                </button>
+                }
+              </div>
+
+              <!-- Drop Zone 3: Autorización Padres (Solo si es menor) -->
+              @if (isMinor) {
+              <div
+                class="drop-zone-custom relative border-2 border-dashed rounded-2xl p-4 flex flex-col items-center text-center transition-all animate-in zoom-in-95"
+                [class.border-emerald-500]="fileNames.autorizacionPadres || existingUrls.autorizacionPadres"
+                [class.bg-emerald-500-10]="fileNames.autorizacionPadres || existingUrls.autorizacionPadres"
+                [class.border-red-500]="isCampoInvalido('autorizacionPadres')"
+                [class.border-amber-500-30]="!fileNames.autorizacionPadres && !existingUrls.autorizacionPadres && !isCampoInvalido('autorizacionPadres')">
+                <span
+                  class="material-symbols-outlined text-3xl mb-2"
+                  [class.text-emerald-500]="fileNames.autorizacionPadres || existingUrls.autorizacionPadres"
+                  [class.text-red-400]="isCampoInvalido('autorizacionPadres')"
+                  [class.text-amber-500]="!fileNames.autorizacionPadres && !existingUrls.autorizacionPadres && !isCampoInvalido('autorizacionPadres')">
+                  {{ (fileNames.autorizacionPadres || existingUrls.autorizacionPadres) ? 'verified' : 'family_history' }}
+                </span>
+                <p
+                  class="text-[10px] font-black uppercase tracking-wider mb-1"
+                  [class.text-emerald-500]="fileNames.autorizacionPadres || existingUrls.autorizacionPadres"
+                  [class.text-red-400]="isCampoInvalido('autorizacionPadres')">
+                  Aut. Padres <span class="text-red-400">*</span>
+                </p>
+                <p class="text-[9px] truncate w-full px-2"
+                  [class.text-red-400]="isCampoInvalido('autorizacionPadres')"
+                  [class.text-slate-400]="!isCampoInvalido('autorizacionPadres')">
+                  {{ fileNames.autorizacionPadres || (existingUrls.autorizacionPadres ? 'Archivo guardado' : (documentacionDiferida ? 'Documento pendiente' : 'Requerido menores')) }}
+                </p>
+                <input
+                  class="absolute inset-0 opacity-0 cursor-pointer"
+                  type="file"
+                  (change)="onFileChange($event, 'autorizacionPadres')"
+                  accept=".pdf,.jpg,.jpeg,.png" />
+
+                @if (existingUrls.autorizacionPadres) {
+                <button
+                  type="button"
+                  (click)="verDocumento(existingUrls.autorizacionPadres)"
+                  class="mt-2 text-[10px] font-bold text-sky-400 hover:underline z-10 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[13px]">visibility</span> Ver actual
+                </button>
+                }
+              </div>
+              } @else {
+              <!-- Si es mayor de edad -->
+              <div class="flex items-center justify-center p-4 border border-slate-800 rounded-2xl bg-slate-900/30">
+                <p class="text-[10px] text-slate-500 italic text-center uppercase font-bold">
+                  Mayor de edad (No requiere autorización)
+                </p>
+              </div>
+              }
+            </div>
+          </section>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- RIGHT COLUMN (4 COLS): Contacto & Ficha    -->
+        <!-- ========================================== -->
+        <div class="col-span-12 lg:col-span-4 space-y-6">
+
+          <!-- SECTION 4: Contacto -->
+          <section class="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl backdrop-blur-sm">
+            <div class="flex items-center gap-2 mb-6 border-l-4 border-sky-400 pl-3">
+              <span class="material-symbols-outlined text-sky-400 text-xl">contact_phone</span>
+              <h3 class="font-bold text-slate-100 uppercase text-sm tracking-widest">4. Contacto</h3>
+            </div>
+
+            <div class="space-y-4">
+              <!-- Email -->
+              <label class="flex flex-col">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2">Email</span>
+                <input
+                  class="form-input-custom"
+                  placeholder="correo@ejemplo.com"
+                  type="email"
+                  name="email"
+                  [(ngModel)]="jugadorData.email" />
+              </label>
+
+              <!-- WhatsApp -->
+              <label class="flex flex-col">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2">WhatsApp</span>
+                <div class="flex gap-2">
+                  <div class="w-12 bg-slate-800 border border-slate-700 rounded-xl flex items-center justify-center text-[10px] font-black text-slate-400">
+                    +54
+                  </div>
+                  <input
+                    class="form-input-custom flex-1"
+                    placeholder="388 1234567"
+                    type="tel"
+                    name="whatsapp"
+                    [(ngModel)]="jugadorData.whatsapp" />
+                </div>
+              </label>
+
+              <!-- Teléfono del Tutor (Solo si es menor) -->
+              @if (isMinor) {
+              <div class="p-4 bg-sky-500/5 rounded-2xl border border-sky-500/15 animate-in zoom-in-95">
+                <span class="text-[10px] font-black text-sky-400 uppercase mb-2 block tracking-widest">
+                  Teléfono del Tutor Responsable (24/7)
+                </span>
+                <div class="flex gap-2">
+                  <div class="w-12 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-[10px] font-bold text-slate-400">
+                    +54
+                  </div>
+                  <input
+                    class="form-input-custom flex-1 bg-slate-950"
+                    placeholder="388 7654321"
+                    type="tel"
+                    name="tutorPhone"
+                    [(ngModel)]="jugadorData.tutorPhone" />
+                </div>
+              </div>
+              }
+            </div>
+          </section>
+
+          <!-- SECTION 5: Ficha Física -->
+          <section class="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl backdrop-blur-sm">
+            <div class="flex items-center gap-2 mb-6 border-l-4 border-sky-400 pl-3">
+              <span class="material-symbols-outlined text-sky-400 text-xl">monitoring</span>
+              <h3 class="font-bold text-slate-100 uppercase text-sm tracking-widest">5. Ficha Física</h3>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <!-- Peso -->
+              <label class="flex flex-col">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2">Peso (kg)</span>
+                <input
+                  class="form-input-custom"
+                  [class.border-red-500]="isCampoInvalido('peso')"
+                  placeholder="70.5"
+                  type="number"
+                  name="peso"
+                  [(ngModel)]="jugadorData.peso" />
+              </label>
+
+              <!-- Altura -->
+              <label class="flex flex-col">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2">Altura (cm)</span>
+                <input
+                  class="form-input-custom"
+                  [class.border-red-500]="isCampoInvalido('altura')"
+                  placeholder="175"
+                  type="number"
+                  name="altura"
+                  [(ngModel)]="jugadorData.altura"
+                  (input)="onAlturaInput($event)" />
+              </label>
+            </div>
+
+            <!-- IMC Dinámico -->
+            @if (imcCalculado) {
+            <div class="mb-4 p-3 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs">
+              <span class="text-slate-400 font-bold uppercase">IMC Calculado:</span>
+              <div class="flex items-center gap-2">
+                <span class="font-black text-emerald-400">{{ imcCalculado }}</span>
+                <span class="text-[10px] font-bold text-slate-300">({{ imcEstado }})</span>
+              </div>
+            </div>
+            }
+
+            <!-- Lateralidad -->
+            <div class="space-y-3">
+              <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">
+                Lateralidad / Brazo Hábil
+              </span>
+              <div class="bg-slate-950 p-1 rounded-2xl flex border border-slate-800 shadow-inner">
+                @for (hand of ['Derecha', 'Izquierda', 'Ambidiestra']; track hand) {
+                <button
+                  type="button"
+                  (click)="onHandChange(hand)"
+                  [class]="selectedHand === hand ? 'bg-sky-500 text-slate-950 shadow-lg font-black' : 'text-slate-400 hover:text-slate-200'"
+                  class="flex-1 py-2.5 text-[10px] uppercase rounded-xl transition-all cursor-pointer">
+                  {{ hand === 'Ambidiestra' ? 'Ambi' : hand }}
+                </button>
+                }
+              </div>
+            </div>
+          </section>
+
+          <!-- Banner Régimen Veterano (+35) (Solo si tiene >= 35 años) -->
+          @if (mostrarSelectorEspecial && esMayorDe35) {
+          <div class="p-5 bg-amber-500/10 rounded-3xl text-amber-200 border border-amber-500/25 shadow-xl animate-in slide-in-from-right">
+            <div class="flex items-start gap-3">
+              <span class="material-symbols-outlined text-amber-500 text-2xl">workspace_premium</span>
+              <div>
+                <p class="text-xs font-black uppercase mb-1">Régimen Veterano (+35)</p>
+                <p class="text-[11px] leading-relaxed opacity-90">
+                  Como atleta habilitado en +35, puedes optar por disputar exclusivamente el Torneo de Veteranos o simultáneamente Primera División con carnet federativo.
+                </p>
+              </div>
+            </div>
+          </div>
+          }
+
+          <!-- SECTION 6: Movimiento Federativo (Solo en modo edición) -->
+          @if (isEditMode && isAdmin) {
+          <section class="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl backdrop-blur-sm">
+            <div class="flex items-center gap-2 mb-6 border-l-4 border-amber-500 pl-3">
+              <span class="material-symbols-outlined text-amber-400 text-xl">swap_horiz</span>
+              <h3 class="font-bold text-slate-100 uppercase text-sm tracking-widest">6. Movimiento Federativo</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <!-- Tipo de Operación -->
+              <label class="flex flex-col">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Tipo de Operación</span>
+                <select class="form-input-custom cursor-pointer" name="modoMovimiento" [(ngModel)]="modoMovimiento">
+                  <option value="PRESTAMO">Préstamo</option>
+                  <option value="PASE">Pase definitivo</option>
+                </select>
+              </label>
+
+              <!-- Club Destino -->
+              <label class="flex flex-col">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Club Destino</span>
+                <select class="form-input-custom cursor-pointer" name="clubDestinoId" [(ngModel)]="clubDestinoId">
+                  <option value="">Seleccionar club</option>
+                  @for (club of clubesDestinoDisponibles; track club.id) {
+                  <option [value]="club.id">{{ club.nombre }} ({{ club.siglas }})</option>
+                  }
+                </select>
+              </label>
+
+              <!-- Meses de préstamo -->
+              @if (modoMovimiento === 'PRESTAMO') {
+              <label class="flex flex-col md:col-span-2">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Meses de Préstamo</span>
+                <input class="form-input-custom" type="number" min="1" name="mesesPrestamo" [(ngModel)]="mesesPrestamo" />
+              </label>
+              }
+
+              <!-- Observaciones -->
+              <label class="flex flex-col md:col-span-2">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Observaciones</span>
+                <textarea
+                  class="form-input-custom min-h-24 resize-none py-2"
+                  name="observacionesMovimiento"
+                  [(ngModel)]="observacionesMovimiento"
+                  placeholder="Detalles del movimiento, condiciones o resolución interna FJH"></textarea>
+              </label>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 mt-5">
+              <button
+                type="button"
+                (click)="registrarMovimiento()"
+                class="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-500 text-slate-950 font-black text-sm hover:bg-amber-400 transition-all active:scale-95 cursor-pointer shadow-md">
+                {{ etiquetaMovimiento }}
+              </button>
+              @if (movimientoActivo) {
+              <button
+                type="button"
+                (click)="devolverPrestamo()"
+                class="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 text-slate-200 font-bold text-sm hover:bg-slate-700 transition-all cursor-pointer border border-slate-700">
+                Devolver préstamo activo
+              </button>
+              }
+            </div>
+
+            @if (movimientoActivo) {
+            <div class="mt-5 p-4 rounded-2xl border border-amber-500/25 bg-amber-500/10">
+              <p class="text-[10px] uppercase tracking-widest text-amber-400 font-black mb-2 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[15px]">schedule</span> Préstamo activo
+              </p>
+              <p class="text-sm font-bold text-slate-200">
+                {{ movimientoActivo.clubOrigen?.nombre }} ➔ {{ movimientoActivo.clubDestino?.nombre }}
+              </p>
+              <p class="text-[11px] text-slate-400 mt-1">
+                Vence el {{ movimientoActivo.fechaFin | date:'dd/MM/yyyy' }}
+              </p>
+            </div>
+            }
+          </section>
+
+          <!-- SECTION 7: Historial de Movimientos -->
+          <section class="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl backdrop-blur-sm">
+            <div class="flex items-center gap-2 mb-6 border-l-4 border-slate-600 pl-3">
+              <span class="material-symbols-outlined text-slate-400 text-xl">history</span>
+              <h3 class="font-bold text-slate-100 uppercase text-sm tracking-widest">7. Historial de Fichajes</h3>
+            </div>
+
+            @if (cargandoMovimientos) {
+            <div class="text-sm text-slate-500">Cargando historial...</div>
+            }
+
+            @if (!cargandoMovimientos && movimientosJugador.length === 0) {
+            <div class="text-xs text-slate-400 border border-dashed border-slate-800 rounded-2xl p-4 text-center">
+              Sin movimientos ni préstamos previos. Fichaje directo en su club.
+            </div>
+            }
+
+            @if (!cargandoMovimientos && movimientosJugador.length > 0) {
+            <div class="space-y-3">
+              @for (mov of movimientosJugador; track mov.id) {
+              <div class="p-4 rounded-2xl border border-slate-800 bg-slate-950/60">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <p class="text-sm font-bold text-white">
+                      {{ mov.tipo === 'PASE' ? 'Pase Definitivo' : 'Préstamo Interclub' }}
+                    </p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">
+                      {{ mov.clubOrigen?.nombre }} ➔ {{ mov.clubDestino?.nombre }}
+                    </p>
+                  </div>
+                  <span
+                    class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border self-start sm:self-auto"
+                    [class.bg-amber-500-10]="mov.estado === 'Activo'"
+                    [class.text-amber-400]="mov.estado === 'Activo'"
+                    [class.border-amber-500-30]="mov.estado === 'Activo'"
+                    [class.bg-emerald-500-10]="mov.estado !== 'Activo'"
+                    [class.text-emerald-400]="mov.estado !== 'Activo'"
+                    [class.border-emerald-500-30]="mov.estado !== 'Activo'">
+                    {{ mov.estado }}
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-2">
+                  Inicio: {{ mov.fechaInicio | date:'dd/MM/yyyy' }}
+                  @if (mov.fechaFin) {
+                  <span> · Fin: {{ mov.fechaFin | date:'dd/MM/yyyy' }}</span>
+                  }
+                </p>
+                @if (mov.observaciones) {
+                <p class="text-[11px] text-slate-400 mt-1 italic">
+                  "{{ mov.observaciones }}"
+                </p>
+                }
+              </div>
+              }
+            </div>
+            }
+          </section>
+          }
+
+        </div>
+      </form>
+    </div>
+  </div>
+</main>

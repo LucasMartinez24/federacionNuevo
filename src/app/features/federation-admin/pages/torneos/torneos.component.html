@@ -1,0 +1,678 @@
+<div class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-8">
+  <!-- Ambient Glows de Fondo -->
+  <div class="absolute -top-24 left-1/3 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+  <div class="absolute top-48 right-12 w-80 h-80 bg-secondary/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+  <!-- Banner Flotante de Feedback / Notificación -->
+  @if (actionFeedback(); as fb) {
+  <div
+    class="fixed top-24 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md border animate-in slide-in-from-top-4 duration-300"
+    [ngClass]="fb.type === 'success' ? 'bg-emerald-950/90 border-emerald-500/50 text-emerald-200' : 'bg-rose-950/90 border-rose-500/50 text-rose-200'">
+    <span class="material-symbols-outlined text-[22px]">
+      {{ fb.type === 'success' ? 'check_circle' : 'error' }}
+    </span>
+    <span class="text-sm font-medium">{{ fb.message }}</span>
+    <button (click)="actionFeedback.set(null)" class="p-1 hover:bg-white/10 rounded-lg transition-colors ml-2">
+      <span class="material-symbols-outlined text-[16px]">close</span>
+    </button>
+  </div>
+  }
+
+  <!-- 1. HEADER OFICIAL FEDERATIVO -->
+  <header class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+    <div class="flex flex-col gap-2 max-w-3xl">
+      <div class="flex flex-wrap items-center gap-2">
+        <span
+          class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary/15 border border-primary/30 text-primary font-stat-label text-stat-label uppercase tracking-widest">
+          <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+          Panel Federativo Oficial
+        </span>
+        <span class="font-stat-label text-stat-label text-text-muted tracking-wider uppercase">FJH • Temporada
+          2026</span>
+      </div>
+
+      <h1 class="font-display-hero text-3xl md:text-5xl text-text-primary tracking-tight font-extrabold">
+        Torneos &amp; Competencias
+      </h1>
+
+      <p class="font-body-base text-body-base text-text-secondary leading-relaxed">
+        Gestiona las competencias oficiales de la provincia de Jujuy, organiza grupos, fechas, horarios y canchas, y
+        administra los estados federativos y fixtures oficiales del handball federado.
+      </p>
+    </div>
+
+    <!-- Quick Action -->
+    <div class="flex items-center gap-3 shrink-0">
+      <a routerLink="/admin/torneos/crear"
+        class="inline-flex items-center gap-2 bg-primary hover:bg-primary-container text-on-primary font-body-bold text-body-bold px-5 py-2.5 rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer">
+        <span class="material-symbols-outlined text-[20px]">add_circle</span>
+        <span>Crear Nuevo Torneo</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Filtros, Búsqueda y Segmented Controls (Primer filtro: Torneos Activos) -->
+  <section
+    class="flex flex-col gap-4 bg-court-card/70 backdrop-blur-md p-4 lg:p-6 rounded-2xl border border-border-glass shadow-xl">
+    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+
+      <!-- Segmented Tabs de Estado: PRIMER FILTRO ES TORNEOS ACTIVOS -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
+        <!-- 1. ACTIVOS (Primer Filtro Oficial) -->
+        <button type="button" (click)="setStatusTab('activos')"
+          [class]="activeStatusTab() === 'activos'
+            ? 'px-3.5 py-1.5 rounded-xl font-body-bold text-sm bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-2 shrink-0 transition-all shadow-sm'
+            : 'px-3.5 py-1.5 rounded-xl font-body-medium text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 border border-transparent shrink-0 flex items-center gap-2 transition-all'">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Activos</span>
+          <span class="text-xs px-2 py-0.5 rounded-full"
+            [ngClass]="activeStatusTab() === 'activos' ? 'bg-emerald-500/30 text-emerald-200' : 'bg-surface-bright text-text-muted'">
+            {{ countActivos() }}
+          </span>
+        </button>
+
+        <!-- 2. TODOS OFICIALES -->
+        <button type="button" (click)="setStatusTab('todos')"
+          [class]="activeStatusTab() === 'todos'
+            ? 'px-3.5 py-1.5 rounded-xl font-body-bold text-sm bg-primary/20 text-primary border border-primary/40 flex items-center gap-1.5 shrink-0 transition-all shadow-sm'
+            : 'px-3.5 py-1.5 rounded-xl font-body-medium text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 border border-transparent shrink-0 flex items-center gap-1.5 transition-all'">
+          <span>Todos Oficiales</span>
+          <span class="text-xs px-2 py-0.5 rounded-full"
+            [ngClass]="activeStatusTab() === 'todos' ? 'bg-primary/30 text-primary' : 'bg-surface-bright text-text-muted'">
+            {{ countTodos() }}
+          </span>
+        </button>
+
+        <!-- 3. PRÓXIMOS -->
+        <button type="button" (click)="setStatusTab('proximos')"
+          [class]="activeStatusTab() === 'proximos'
+            ? 'px-3.5 py-1.5 rounded-xl font-body-bold text-sm bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 shrink-0 transition-all shadow-sm'
+            : 'px-3.5 py-1.5 rounded-xl font-body-medium text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 border border-transparent shrink-0 flex items-center gap-1.5 transition-all'">
+          <span>Próximos</span>
+          <span class="text-xs px-2 py-0.5 rounded-full"
+            [ngClass]="activeStatusTab() === 'proximos' ? 'bg-amber-500/30 text-amber-200' : 'bg-surface-bright text-text-muted'">
+            {{ countProximos() }}
+          </span>
+        </button>
+
+        <!-- 4. FINALIZADOS -->
+        <button type="button" (click)="setStatusTab('finalizados')"
+          [class]="activeStatusTab() === 'finalizados'
+            ? 'px-3.5 py-1.5 rounded-xl font-body-bold text-sm bg-slate-700/50 text-slate-200 border border-slate-600/50 flex items-center gap-1.5 shrink-0 transition-all shadow-sm'
+            : 'px-3.5 py-1.5 rounded-xl font-body-medium text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 border border-transparent shrink-0 flex items-center gap-1.5 transition-all'">
+          <span>Finalizados</span>
+          <span class="text-xs px-2 py-0.5 rounded-full"
+            [ngClass]="activeStatusTab() === 'finalizados' ? 'bg-slate-600/50 text-white' : 'bg-surface-bright text-text-muted'">
+            {{ countFinalizados() }}
+          </span>
+        </button>
+
+        <!-- 5. ARCHIVO HISTÓRICO -->
+        <button type="button" (click)="setStatusTab('historico')"
+          [class]="activeStatusTab() === 'historico'
+            ? 'px-3.5 py-1.5 rounded-xl font-body-bold text-sm bg-slate-800 text-text-muted border border-white/20 flex items-center gap-1.5 shrink-0 transition-all'
+            : 'px-3.5 py-1.5 rounded-xl font-body-medium text-sm text-text-muted hover:text-text-primary hover:bg-white/5 border border-transparent shrink-0 flex items-center gap-1.5 transition-all'">
+          <span>Archivo</span>
+        </button>
+      </div>
+
+      <!-- Buscador por Texto -->
+      <div class="relative w-full lg:w-72">
+        <input type="text" placeholder="Buscar torneo, rama o formato..." [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+          class="w-full bg-court-surface border border-border-subtle rounded-xl pl-9 pr-4 py-2 text-xs text-text-primary placeholder:text-text-muted focus:border-primary focus:outline-none transition-colors" />
+        <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted text-[18px]">
+          search
+        </span>
+        @if (searchTerm()) {
+        <button (click)="searchTerm.set('')"
+          class="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary">
+          <span class="material-symbols-outlined text-[16px]">close</span>
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Filtros Secundarios: Temporada, Rama, Categoría -->
+    <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/5">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-text-muted text-xs font-bold uppercase tracking-wider mr-1">Filtrar por:</span>
+
+        <!-- Temporada -->
+        <div class="relative">
+          <select [ngModel]="selectedSeason()" (ngModelChange)="selectedSeason.set($event)"
+            class="appearance-none bg-court-surface border border-border-subtle text-text-primary text-xs rounded-xl pl-3 pr-7 py-1.5 focus:border-primary focus:outline-none cursor-pointer">
+            <option value="todas">Todas las Temporadas</option>
+            <option value="2026">Temporada 2026</option>
+            <option value="2025">Temporada 2025</option>
+            <option value="2024">Temporada 2024</option>
+          </select>
+          <span
+            class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-text-muted text-[16px] pointer-events-none">expand_more</span>
+        </div>
+
+        <!-- Rama -->
+        <div class="relative">
+          <select [ngModel]="selectedRama()" (ngModelChange)="selectedRama.set($event)"
+            class="appearance-none bg-court-surface border border-border-subtle text-text-primary text-xs rounded-xl pl-3 pr-7 py-1.5 focus:border-primary focus:outline-none cursor-pointer">
+            <option value="todas">Todas las Ramas</option>
+            <option value="Masculino">Rama Masculina</option>
+            <option value="Femenino">Rama Femenina</option>
+            <option value="Mixto">Rama Mixta</option>
+          </select>
+          <span
+            class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-text-muted text-[16px] pointer-events-none">expand_more</span>
+        </div>
+
+        <!-- Categoría -->
+        <div class="relative">
+          <select [ngModel]="selectedCategoria()" (ngModelChange)="selectedCategoria.set($event)"
+            class="appearance-none bg-court-surface border border-border-subtle text-text-primary text-xs rounded-xl pl-3 pr-7 py-1.5 focus:border-primary focus:outline-none cursor-pointer">
+            <option value="todas">Todas las Categorías</option>
+            <option value="Primera División">Primera División</option>
+            <option value="Mayores +35">Mayores +35 (Amateur)</option>
+            <option value="Juveniles">Juveniles</option>
+            <option value="Cadetes">Cadetes</option>
+            <option value="Menores">Menores</option>
+          </select>
+          <span
+            class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-text-muted text-[16px] pointer-events-none">expand_more</span>
+        </div>
+      </div>
+
+      <div class="text-text-muted font-label-caps text-label-caps uppercase tracking-wider text-xs">
+        Mostrando <span class="text-text-primary font-bold">{{ torneosFiltrados().length }} de {{ torneos().length
+          }}</span> competiciones
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. GRID DE TORNEOS -->
+  @if (loading()) {
+  <!-- Skeleton Loading -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-pulse">
+    @for (i of [1, 2, 3]; track i) {
+    <div class="h-96 bg-court-card/50 rounded-2xl border border-white/5"></div>
+    }
+  </div>
+  } @else if (torneosFiltrados().length === 0) {
+  <!-- Empty State -->
+  <div
+    class="p-12 text-center bg-court-card/40 rounded-2xl border border-dashed border-white/10 flex flex-col items-center justify-center gap-3">
+    <div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-text-muted mb-2">
+      <span class="material-symbols-outlined text-[32px]">sports_handball</span>
+    </div>
+    <h3 class="text-lg font-bold text-text-primary">No se encontraron torneos en este estado</h3>
+    <p class="text-sm text-text-secondary max-w-md">
+      Prueba alternando el filtro a "Todos Oficiales" o creando un nuevo certamen federativo.
+    </p>
+    <button (click)="setStatusTab('todos')"
+      class="mt-2 px-4 py-2 bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 rounded-xl text-xs font-bold transition-all">
+      Ver Todos los Torneos de la Federación
+    </button>
+  </div>
+  } @else {
+  <!-- Grid con las Tarjetas Oficiales -->
+  <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    @for (t of torneosFiltrados(); track t.id) {
+    @let visual = getEstadoVisual(t.estado);
+
+    <article
+      class="group relative flex flex-col bg-court-card rounded-2xl border border-border-glass shadow-xl hover:border-primary/40 transition-all duration-300 overflow-hidden">
+
+      <!-- Visual Top Graphic Banner con textura de Cancha de Handball -->
+      <div class="relative h-44 w-full overflow-hidden bg-gradient-to-tr" [ngClass]="visual.gradient">
+        <!-- Court markings texture -->
+        <svg class="absolute inset-0 w-full h-full opacity-15 stroke-white" fill="none" viewBox="0 0 400 200">
+          <path d="M 0,100 L 400,100" stroke-dasharray="4 4" stroke-width="1.5"></path>
+          <circle cx="200" cy="100" r="45" stroke-width="1.5"></circle>
+          <path d="M 0,30 C 90,30 90,170 0,170" stroke-width="2"></path>
+          <path d="M 400,30 C 310,30 310,170 400,170" stroke-width="2"></path>
+        </svg>
+        <div class="absolute inset-0 bg-gradient-to-t from-court-card via-transparent to-transparent"></div>
+
+        <!-- Top Badges & Triggers -->
+        <div class="relative z-10 p-4 flex items-center justify-between">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <!-- Estado Badge -->
+            <span
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border font-label-caps text-label-caps"
+              [ngClass]="visual.claseBadge">
+              @if (visual.ping) {
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              } @else {
+              <span class="material-symbols-outlined text-[13px]">{{ visual.icono }}</span>
+              }
+              {{ visual.label }}
+            </span>
+          </div>
+
+          <!-- Top-Right Actions: Editar, Cambiar Estado, Eliminar -->
+          <div
+            class="flex items-center gap-1 bg-surface-container-lowest/80 backdrop-blur-md rounded-lg p-1 border border-white/10">
+            <!-- Botón de Edición del Torneo (Formulario Oficial) -->
+            <a [routerLink]="['/admin/torneos/editar', t.id]"
+              class="p-1.5 text-text-secondary hover:text-primary hover:bg-white/5 rounded-md transition-colors"
+              title="Editar Configuración del Torneo">
+              <span class="material-symbols-outlined text-[18px]">edit</span>
+            </a>
+
+            <!-- Botón de Cambio de Estado Oficial -->
+            <button (click)="openStatusModal(t)"
+              class="p-1.5 text-text-secondary hover:text-primary hover:bg-white/5 rounded-md transition-colors"
+              title="Cambiar Estado Oficial" type="button">
+              <span class="material-symbols-outlined text-[18px]">published_with_changes</span>
+            </button>
+
+            <!-- Botón de Eliminar Torneo -->
+            <button (click)="openDeleteModal(t)"
+              class="p-1.5 text-text-secondary hover:text-secondary hover:bg-white/5 rounded-md transition-colors"
+              title="Eliminar Torneo" type="button">
+              <span class="material-symbols-outlined text-[18px]">delete</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Bottom of Graphic -->
+        <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between z-10">
+          <div class="pr-3">
+            <span
+              class="font-stat-label text-stat-label text-primary font-bold uppercase tracking-widest block truncate">
+              {{ t.categoria }} • Rama {{ t.rama || 'General' }}
+            </span>
+            <h3 class="font-headline-md text-xl font-bold text-text-primary leading-tight drop-shadow-sm truncate"
+              [title]="t.nombre">
+              {{ t.nombre }}
+            </h3>
+          </div>
+          <div
+            class="w-11 h-11 rounded-xl bg-court-surface/80 border border-white/10 flex items-center justify-center text-primary shadow-inner shrink-0">
+            <span class="material-symbols-outlined text-[24px]">
+              {{ t.categoria.includes('+35') ? 'military_tech' : 'emoji_events' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Technical Body -->
+      <div class="p-4 flex flex-col gap-4 flex-1 justify-between">
+        <div class="grid grid-cols-2 gap-2 bg-court-surface/80 p-3 rounded-xl border border-white/5">
+          <div class="flex flex-col">
+            <span class="font-stat-label text-stat-label text-text-muted uppercase">Equipos en Tabla</span>
+            <span class="font-title-sm text-sm text-text-primary font-bold">
+              {{ t.equiposCount || (t.tablaPosiciones?.length || 0) }} Clubes Afiliados
+            </span>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-stat-label text-stat-label text-text-muted uppercase">Fecha de Lanzamiento</span>
+            <span class="font-title-sm text-sm text-primary font-bold">
+              {{ formatearFecha(t.fechaInicio) }}
+            </span>
+          </div>
+          <div class="flex flex-col col-span-2 pt-1 border-t border-white/5">
+            <span class="font-stat-label text-stat-label text-text-muted uppercase">Formato &amp; Modalidad</span>
+            <span class="font-body-base text-xs text-text-secondary truncate">
+              @if (t.formato === 'liga' || t.formato === 'league') {
+              Liga Todos vs Todos ({{ t.idaVuelta ? 'Ida y Vuelta' : 'Solo Ida' }}) • Semis &amp; Final
+              } @else if (t.formato === 'grupos_eliminatorias') {
+              Grupos ({{ t.cantidadGrupos || 2 }} Zonas) • Semis &amp; Final ({{ t.idaVuelta ? 'Ida y Vuelta' : 'Único'
+              }})
+              } @else {
+              Playoffs Eliminación Directa
+              }
+            </span>
+          </div>
+        </div>
+
+        <!-- Progress Bar de la Competencia -->
+        <div class="flex flex-col gap-1.5">
+          <div class="flex items-center justify-between font-stat-label text-stat-label text-text-muted">
+            <span>Progreso Oficial</span>
+            <span class="text-primary font-bold">{{ t.progreso || 0 }}% Completado</span>
+          </div>
+          <div class="w-full h-1.5 bg-court-surface rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full transition-all duration-500"
+              [style.width.%]="t.progreso || 0"></div>
+          </div>
+        </div>
+
+        <!-- Card Actions: GESTIONAR (Grupos, Fechas, Horarios, Canchas) y FIXTURE -->
+        <div class="flex items-center gap-2 pt-1">
+          <a [routerLink]="['/admin/torneos/gestionar', t.id]"
+            class="flex-1 py-2.5 px-3 rounded-xl bg-surface-container-high hover:bg-surface-bright text-text-primary font-body-bold text-xs border border-white/10 flex items-center justify-center gap-2 transition-all text-center shadow-sm"
+            title="Organizar grupos, fechas, horarios y canchas">
+            <span class="material-symbols-outlined text-[18px] text-primary">tune</span>
+            <span>Gestionar</span>
+          </a>
+
+          <a routerLink="/fixture" [queryParams]="{ torneoId: t.id }"
+            class="flex-1 py-2.5 px-3 rounded-xl bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 font-body-bold text-xs flex items-center justify-center gap-2 transition-all text-center shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+            <span>Fixture</span>
+          </a>
+        </div>
+
+      </div>
+    </article>
+    }
+
+    <!-- CARD CTA DASHED: Crear Nuevo Torneo -->
+    <a routerLink="/admin/torneos/crear"
+      class="border-2 border-dashed border-primary/30 hover:border-primary bg-primary/5 hover:bg-primary/10 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[360px] text-center cursor-pointer transition-all group duration-300">
+      <div
+        class="w-16 h-16 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-on-primary transition-all duration-300 shadow-[0_0_20px_rgba(56,189,248,0.25)] mb-4">
+        <span class="material-symbols-outlined text-[32px]">add</span>
+      </div>
+      <h4 class="font-headline-md text-xl text-text-primary font-bold mb-1">
+        Crear Nuevo Torneo
+      </h4>
+      <p class="font-body-base text-xs text-text-secondary max-w-xs mb-4 leading-relaxed">
+        Configura formato de llaves, sedes de juego habilitadas, ramas y equipos de la temporada oficial.
+      </p>
+      <span class="inline-flex items-center gap-1.5 text-primary font-body-bold text-xs group-hover:underline">
+        <span class="material-symbols-outlined text-[16px]">tune</span>
+        Asistente de Creación FJH
+      </span>
+    </a>
+  </section>
+  }
+
+  <!-- BANNER INFORMATIVO FEDERATIVO IHF/CAH -->
+  <section
+    class="bg-gradient-to-r from-court-card via-surface-container to-court-card p-6 rounded-2xl border border-border-glass flex flex-col md:flex-row items-center justify-between gap-4 mt-2">
+    <div class="flex items-center gap-4">
+      <div
+        class="w-12 h-12 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary shrink-0">
+        <span class="material-symbols-outlined text-[24px]">gavel</span>
+      </div>
+      <div class="flex flex-col">
+        <span class="font-title-sm text-sm text-text-primary font-bold">Normativas &amp; Reglamento Oficial FJH /
+          CAH</span>
+        <span class="font-body-base text-xs text-text-secondary">Todos los torneos federativos aplican el reglamento
+          oficial IHF 2024 con cronometraje electrónico y planilla digital federativa obligatoria.</span>
+      </div>
+    </div>
+    <a href="https://handballargentina.org" target="_blank" rel="noopener noreferrer"
+      class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-primary border border-primary/30 font-body-bold text-xs shrink-0 transition-colors inline-flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-[16px]">description</span>
+      <span>Reglamento IHF / CAH</span>
+    </a>
+  </section>
+</div>
+
+<!-- ==================== MODALES INTERACTIVOS ==================== -->
+
+<!-- MODAL 1: Cambiar Estado del Torneo (ADMIN) -->
+@if (showStatusModal() && torneoForStatus(); as t) {
+<div class="fixed inset-0 z-50 bg-[#080e18]/80 backdrop-blur-md flex items-center justify-center p-4">
+  <div
+    class="bg-court-card border border-primary/30 rounded-2xl w-full max-w-lg shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+
+    <!-- Modal Header -->
+    <div class="p-5 border-b border-white/[0.08] flex items-start justify-between gap-3 bg-surface-container-high/60">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary shrink-0">
+          <span class="material-symbols-outlined text-[22px]">published_with_changes</span>
+        </div>
+        <div>
+          <h3 class="font-headline-md text-lg text-text-primary font-bold">Actualizar Estado Oficial</h3>
+          <p class="font-stat-label text-stat-label text-primary uppercase tracking-wider">
+            {{ t.nombre }} • {{ t.categoria }}
+          </p>
+        </div>
+      </div>
+      <button (click)="closeStatusModal()"
+        class="text-text-muted hover:text-text-primary p-1 rounded-lg transition-colors">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <!-- Modal Body con Selección de Estado -->
+    <div class="p-5 flex flex-col gap-3">
+      <label class="text-xs font-bold text-text-secondary uppercase tracking-wider">Selecciona el nuevo estado
+        federativo:</label>
+
+      <div class="grid grid-cols-1 gap-2">
+        <!-- Opción 1: Activo / En Disputa -->
+        <div (click)="selectedNewStatus.set('In Progress')"
+          class="p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all"
+          [class]="selectedNewStatus() === 'In Progress' ? 'bg-emerald-950/40 border-emerald-500/60 shadow-lg shadow-emerald-900/20' : 'bg-court-surface border-white/5 hover:border-white/20'">
+          <div class="flex items-center gap-3">
+            <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+            <div class="flex flex-col">
+              <span class="font-body-bold text-xs text-text-primary">Activo / En Disputa</span>
+              <span class="text-[11px] text-text-secondary">Fixture activo, resultados en vivo y planillas
+                abiertas.</span>
+            </div>
+          </div>
+          @if (selectedNewStatus() === 'In Progress') {
+          <span class="material-symbols-outlined text-emerald-400 text-[20px]">check_circle</span>
+          }
+        </div>
+
+        <!-- Opción 2: Próximo / Inscripciones -->
+        <div (click)="selectedNewStatus.set('Upcoming')"
+          class="p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all"
+          [class]="selectedNewStatus() === 'Upcoming' ? 'bg-amber-950/40 border-amber-500/60 shadow-lg shadow-amber-900/20' : 'bg-court-surface border-white/5 hover:border-white/20'">
+          <div class="flex items-center gap-3">
+            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+            <div class="flex flex-col">
+              <span class="font-body-bold text-xs text-text-primary">Próximo / En Preparación</span>
+              <span class="text-[11px] text-text-secondary">Padrón de clubes y confección de fixture previo.</span>
+            </div>
+          </div>
+          @if (selectedNewStatus() === 'Upcoming') {
+          <span class="material-symbols-outlined text-amber-400 text-[20px]">check_circle</span>
+          }
+        </div>
+
+        <!-- Opción 3: Pausa / Receso -->
+        <div (click)="selectedNewStatus.set('PAUSA')"
+          class="p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all"
+          [class]="selectedNewStatus() === 'PAUSA' ? 'bg-rose-950/40 border-rose-500/60 shadow-lg shadow-rose-900/20' : 'bg-court-surface border-white/5 hover:border-white/20'">
+          <div class="flex items-center gap-3">
+            <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+            <div class="flex flex-col">
+              <span class="font-body-bold text-xs text-text-primary">En Pausa / Receso Invernal</span>
+              <span class="text-[11px] text-text-secondary">Fechas postergadas o receso programado.</span>
+            </div>
+          </div>
+          @if (selectedNewStatus() === 'PAUSA') {
+          <span class="material-symbols-outlined text-rose-400 text-[20px]">check_circle</span>
+          }
+        </div>
+
+        <!-- Opción 4: Finalizado -->
+        <div (click)="selectedNewStatus.set('Finalizado')"
+          class="p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all"
+          [class]="selectedNewStatus() === 'Finalizado' ? 'bg-slate-800/80 border-slate-500/60 shadow-lg' : 'bg-court-surface border-white/5 hover:border-white/20'">
+          <div class="flex items-center gap-3">
+            <span class="w-3 h-3 rounded-full bg-slate-400"></span>
+            <div class="flex flex-col">
+              <span class="font-body-bold text-xs text-text-primary">Finalizado / Concluido</span>
+              <span class="text-[11px] text-text-secondary">Campeón provincial coronado y cómputos anuales
+                cerrados.</span>
+            </div>
+          </div>
+          @if (selectedNewStatus() === 'Finalizado') {
+          <span class="material-symbols-outlined text-slate-300 text-[20px]">check_circle</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="p-4 border-t border-white/[0.08] flex items-center justify-end gap-2 bg-surface-container-high/40">
+      <button type="button" (click)="closeStatusModal()"
+        class="px-4 py-2 rounded-xl text-text-secondary hover:text-text-primary font-body-bold text-xs hover:bg-white/5 transition-colors">
+        Cancelar
+      </button>
+      <button type="button" (click)="saveStatusModal()"
+        class="px-5 py-2 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-body-bold text-xs shadow-lg shadow-primary/20 transition-all flex items-center gap-1.5 cursor-pointer">
+        <span class="material-symbols-outlined text-[18px]">save</span>
+        <span>Confirmar Estado</span>
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- MODAL 2: Confirmar Eliminación (ADMIN) -->
+@if (showDeleteModal() && torneoForDelete(); as t) {
+<div class="fixed inset-0 z-50 bg-[#080e18]/85 backdrop-blur-md flex items-center justify-center p-4">
+  <div
+    class="bg-court-card border border-secondary/40 rounded-2xl w-full max-w-md shadow-[0_10px_40px_rgba(244,63,94,0.3)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div class="p-5 border-b border-white/[0.08] flex items-center gap-3 bg-secondary-container/20">
+      <div
+        class="w-10 h-10 rounded-xl bg-secondary/20 border border-secondary/40 flex items-center justify-center text-secondary shrink-0">
+        <span class="material-symbols-outlined text-[24px]">warning</span>
+      </div>
+      <div>
+        <h3 class="font-headline-md text-base text-text-primary font-bold">¿Eliminar Competición Oficial?</h3>
+        <p class="font-stat-label text-stat-label text-secondary uppercase tracking-wider">Acción Irreversible</p>
+      </div>
+    </div>
+
+    <div class="p-5 flex flex-col gap-3">
+      <p class="text-xs text-text-secondary leading-relaxed">
+        Estás por eliminar definitivamente el torneo <strong class="text-text-primary font-bold">{{ t.nombre
+          }}</strong>.
+      </p>
+      <div class="p-3 bg-secondary/10 border border-secondary/20 rounded-xl text-xs text-rose-200">
+        <ul class="list-disc list-inside space-y-1">
+          <li>Se cancelarán todos los partidos y fixtures asociados.</li>
+          <li>Se purgarán las tablas de posiciones y estadísticas.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="p-4 border-t border-white/[0.08] flex items-center justify-end gap-2 bg-surface-container-high/40">
+      <button type="button" (click)="closeDeleteModal()"
+        class="px-4 py-2 rounded-xl text-text-secondary hover:text-text-primary font-body-bold text-xs hover:bg-white/5 transition-colors">
+        Cancelar
+      </button>
+      <button type="button" (click)="confirmDelete()" [disabled]="isDeleting()"
+        class="px-5 py-2 rounded-xl bg-secondary hover:bg-rose-600 text-white font-body-bold text-xs shadow-lg shadow-secondary/30 transition-all flex items-center gap-1.5 cursor-pointer">
+        @if (isDeleting()) {
+        <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+        <span>Eliminando...</span>
+        } @else {
+        <span class="material-symbols-outlined text-[18px]">delete</span>
+        <span>Sí, Eliminar Torneo</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- MODAL 3: Creación Rápida de Torneo -->
+@if (showCreateModal()) {
+<div class="fixed inset-0 z-50 bg-[#080e18]/80 backdrop-blur-md flex items-center justify-center p-4">
+  <div
+    class="bg-court-card border border-primary/30 rounded-2xl w-full max-w-lg shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <!-- Modal Header -->
+    <div class="p-5 border-b border-white/[0.08] flex items-start justify-between gap-3 bg-surface-container-high/60">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary shrink-0">
+          <span class="material-symbols-outlined text-[22px]">add_circle</span>
+        </div>
+        <div>
+          <h3 class="font-headline-md text-lg text-text-primary font-bold">Lanzar Nuevo Torneo</h3>
+          <p class="font-stat-label text-stat-label text-primary uppercase tracking-wider">Temporada 2026 FJH</p>
+        </div>
+      </div>
+      <button (click)="closeCreateModal()"
+        class="text-text-muted hover:text-text-primary p-1 rounded-lg transition-colors">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-5 flex flex-col gap-3">
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-text-secondary uppercase tracking-wider">Nombre Oficial del Torneo
+          *</label>
+        <input type="text" placeholder="Ej: Torneo Clausura 2026 Primera División" [ngModel]="createForm().nombre"
+          (ngModelChange)="createForm.set({ ...createForm(), nombre: $event })"
+          class="bg-court-surface border border-border-subtle rounded-xl px-3 py-2 text-sm text-text-primary focus:border-primary focus:outline-none" />
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-text-secondary uppercase tracking-wider">Categoría *</label>
+          <select [ngModel]="createForm().categoria"
+            (ngModelChange)="createForm.set({ ...createForm(), categoria: $event })"
+            class="bg-court-surface border border-border-subtle rounded-xl px-3 py-2 text-sm text-text-primary focus:border-primary focus:outline-none">
+            <option value="Primera División">Primera División</option>
+            <option value="Mayores +35">Mayores +35 (Amateur)</option>
+            <option value="Juveniles">Juveniles</option>
+            <option value="Cadetes">Cadetes</option>
+            <option value="Menores">Menores</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-text-secondary uppercase tracking-wider">Rama *</label>
+          <select [ngModel]="createForm().rama" (ngModelChange)="createForm.set({ ...createForm(), rama: $event })"
+            class="bg-court-surface border border-border-subtle rounded-xl px-3 py-2 text-sm text-text-primary focus:border-primary focus:outline-none">
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+            <option value="Mixto">Mixto / Formativo</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Formato y Fecha de Inicio -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-text-secondary uppercase tracking-wider">Sistema de Competencia</label>
+          <select [ngModel]="createForm().formato"
+            (ngModelChange)="createForm.set({ ...createForm(), formato: $event })"
+            class="bg-court-surface border border-border-subtle rounded-xl px-3 py-2 text-sm text-text-primary focus:border-primary focus:outline-none">
+            <option value="liga">Liga Oficial FJH (Todos vs Todos + Semis &amp; Final)</option>
+            <option value="grupos_eliminatorias">Fase de Grupos + Llave Eliminatoria</option>
+            <option value="eliminatoria_directa">Playoffs / Eliminación Directa</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-text-secondary uppercase tracking-wider">Fecha de Lanzamiento</label>
+          <input type="date" [ngModel]="createForm().fechaInicio"
+            (ngModelChange)="createForm.set({ ...createForm(), fechaInicio: $event })"
+            class="bg-court-surface border border-border-subtle rounded-xl px-3 py-2 text-sm text-text-primary focus:border-primary focus:outline-none" />
+        </div>
+      </div>
+
+      <!-- Checkbox Ida y Vuelta -->
+      <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-xl bg-court-surface border border-white/5">
+        <input type="checkbox" [ngModel]="createForm().idaVuelta"
+          (ngModelChange)="createForm.set({ ...createForm(), idaVuelta: $event })"
+          class="rounded text-primary focus:ring-primary bg-slate-900 border-white/20" />
+        <span class="text-xs text-text-secondary">Disputar partidos en formato <strong>Ida y Vuelta</strong>
+          oficial</span>
+      </label>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="p-4 border-t border-white/[0.08] flex items-center justify-end gap-2 bg-surface-container-high/40">
+      <button type="button" (click)="closeCreateModal()"
+        class="px-4 py-2 rounded-xl text-text-secondary hover:text-text-primary font-body-bold text-xs hover:bg-white/5 transition-colors">
+        Cancelar
+      </button>
+      <button type="button" (click)="saveNewTorneo()" [disabled]="isCreating()"
+        class="px-5 py-2 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-body-bold text-xs shadow-lg shadow-primary/20 transition-all flex items-center gap-1.5 cursor-pointer">
+        @if (isCreating()) {
+        <span class="inline-block w-4 h-4 border-2 border-slate-900 border-t-white rounded-full animate-spin"></span>
+        <span>Creando Torneo...</span>
+        } @else {
+        <span class="material-symbols-outlined text-[18px]">check</span>
+        <span>Publicar Competición</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>
+}

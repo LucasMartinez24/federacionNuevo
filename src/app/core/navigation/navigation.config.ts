@@ -39,7 +39,7 @@ export const authenticatedNavigation: readonly NavigationGroup[] = [
     items: [
       {
         label: 'Torneos & Fixture',
-        route: '/torneos',
+        route: '/admin/torneos',
         icon: 'emoji_events',
         roles: competitionUsers,
         badge: '2026',
@@ -65,16 +65,8 @@ export const authenticatedNavigation: readonly NavigationGroup[] = [
     label: 'Gestión Institucional',
     items: [
       {
-        label: 'Directorio & Auditoría',
-        route: '/clubes',
-        icon: 'apartment',
-        roles: federationStaff,
-        badge: '8 clubes',
-        badgeTone: 'accent',
-      },
-      {
         label: 'Mis Jugadores / Fichas',
-        route: '/jugadores',
+        route: '/admin/jugadores',
         icon: 'groups',
         roles: clubUsers,
         badge: '64 Atletas',
@@ -82,7 +74,7 @@ export const authenticatedNavigation: readonly NavigationGroup[] = [
       },
       {
         label: 'Padrón de Jugadores',
-        route: '/jugadores',
+        route: '/admin/jugadores',
         icon: 'badge',
         roles: federationStaff,
         badge: '64 Atletas',

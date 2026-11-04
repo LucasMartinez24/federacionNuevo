@@ -1,0 +1,657 @@
+<div class="relative w-full min-h-screen bg-court-base text-on-surface antialiased pb-16 flex flex-col">
+  <!-- Feedback Floating Banner -->
+  @if (actionFeedback(); as fb) {
+    <div
+      class="fixed top-24 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md border animate-in slide-in-from-top-4 duration-300"
+      [ngClass]="fb.type === 'success' ? 'bg-emerald-950/90 border-emerald-500/50 text-emerald-200' : 'bg-rose-950/90 border-rose-500/50 text-rose-200'"
+    >
+      <span class="material-symbols-outlined text-[20px]">
+        {{ fb.type === 'success' ? 'check_circle' : 'error' }}
+      </span>
+      <span class="text-sm font-medium">{{ fb.message }}</span>
+      <button (click)="actionFeedback.set(null)" class="p-1 hover:bg-white/10 rounded-lg transition-colors ml-2">
+        <span class="material-symbols-outlined text-[16px]">close</span>
+      </button>
+    </div>
+  }
+
+  <!-- 1. TOP BREADCRUMB & TELEMETRY HEADER -->
+  <div class="w-full bg-court-surface px-4 lg:px-8 py-3 shadow-md border-b border-white/5">
+    <div class="max-w-[1320px] mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 flex-wrap text-sm">
+        <a
+          routerLink="/admin/torneos"
+          class="inline-flex items-center gap-1.5 text-text-secondary hover:text-primary transition-colors font-body-bold text-xs"
+        >
+          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          <span>Volver a Torneos &amp; Competencias</span>
+        </a>
+        <span class="text-text-muted">/</span>
+        <span class="text-primary font-body-bold text-xs truncate">
+          {{ torneo()?.nombre || 'Cargando Torneo...' }} • {{ torneo()?.categoria }} ({{ torneo()?.rama }})
+        </span>
+      </div>
+
+      <!-- Telemetry Sync Status -->
+      <div class="flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full text-[11px] font-stat-label">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
+        </span>
+        <span class="text-tertiary uppercase tracking-wider font-bold">Sincronizado en tiempo real (Cloud CAH-Sync)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. STICKY OPERATIONAL COMMAND BAR -->
+  <section class="w-full bg-court-base/95 backdrop-blur-md sticky top-0 z-40 px-4 lg:px-8 py-4 shadow-xl border-b border-border-glass">
+    <div class="max-w-[1320px] mx-auto flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
+      <!-- Title & Badges -->
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center gap-2 flex-wrap">
+          <h1 class="font-display-hero text-2xl lg:text-3xl text-text-primary uppercase tracking-tight font-extrabold">
+            Generador de Fixture &amp; Programador
+          </h1>
+          <span class="px-2.5 py-0.5 bg-primary/10 border border-primary/20 text-primary font-label-caps text-[11px] rounded uppercase font-bold">
+            Sistema Berger IHF
+          </span>
+          @if (torneo()?.idaVuelta) {
+            <span class="px-2 py-0.5 bg-tertiary/10 border border-tertiary/20 text-tertiary font-label-caps text-[11px] rounded uppercase font-bold">
+              Ida y Vuelta
+            </span>
+          }
+        </div>
+        <div class="flex items-center gap-2 text-text-secondary font-label-caps text-[11px]">
+          <span class="text-accent-ihf-blue font-bold">FJH</span>
+          <span>•</span>
+          <span>TEMPORADA {{ torneo()?.temporada || '2026' }}</span>
+          <span>•</span>
+          <span class="text-text-primary uppercase">{{ torneo()?.categoria }} ({{ torneo()?.rama }})</span>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Center Strip -->
+      <div class="flex items-center gap-2 flex-wrap p-1.5 bg-surface-container-lowest rounded-xl border border-white/5">
+        <div class="flex items-center gap-1.5 px-3 py-1.5 bg-court-card rounded-lg text-text-primary text-xs">
+          <span class="material-symbols-outlined text-[16px] text-tertiary">check_circle</span>
+          <span class="font-body-bold text-white [font-variant-numeric:tabular-nums]">{{ countEquiposListos() }}</span>
+          <span class="text-text-secondary">Equipos</span>
+        </div>
+        <div class="flex items-center gap-1.5 px-3 py-1.5 bg-court-card rounded-lg text-text-primary text-xs">
+          <span class="material-symbols-outlined text-[16px] text-primary">calendar_month</span>
+          <span class="font-body-bold text-white [font-variant-numeric:tabular-nums]">{{ countJornadas() }}</span>
+          <span class="text-text-secondary">Jornadas</span>
+        </div>
+        <div class="flex items-center gap-1.5 px-3 py-1.5 bg-court-card rounded-lg text-text-primary text-xs">
+          <span class="material-symbols-outlined text-[16px] text-cyan-400">sports_handball</span>
+          <span class="font-body-bold text-white [font-variant-numeric:tabular-nums]">{{ countPartidosTotales() }}</span>
+          <span class="text-text-secondary">Partidos</span>
+        </div>
+        <div class="flex items-center gap-1.5 px-3 py-1.5 bg-accent-amber/15 rounded-lg text-accent-amber text-xs">
+          <span class="material-symbols-outlined text-[16px]">schedule</span>
+          <span class="font-body-bold [font-variant-numeric:tabular-nums]">{{ countSinHorario() }}</span>
+          <span class="font-body-medium">Pendientes</span>
+        </div>
+      </div>
+
+      <!-- Action Controls Group -->
+      <div class="flex items-center gap-2 flex-wrap w-full xl:w-auto justify-end">
+        <button
+          type="button"
+          (click)="generarRoundRobin(true)"
+          [disabled]="isGenerating()"
+          class="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-xl flex items-center gap-2 font-body-bold text-xs transition-all shadow-sm cursor-pointer disabled:opacity-50"
+        >
+          <span class="material-symbols-outlined text-[18px]" [class.animate-spin]="isGenerating()">auto_fix</span>
+          <span>Generar Round Robin</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="publicarFixture()"
+          [disabled]="isPublishing()"
+          class="px-5 py-2.5 bg-primary text-court-base hover:bg-accent-cyan-deep hover:text-white rounded-xl flex items-center gap-2 font-body-bold text-xs transition-all shadow-lg shadow-primary/30 cursor-pointer disabled:opacity-50"
+        >
+          @if (isPublishing()) {
+            <span class="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></span>
+            <span>Publicando en Servidor...</span>
+          } @else {
+            <span class="material-symbols-outlined text-[18px]">cloud_upload</span>
+            <span>Publicar Fixture Oficial</span>
+          }
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. MAIN WORKSPACE CONTENT -->
+  <div class="max-w-[1320px] w-full mx-auto px-4 lg:px-8 py-6 flex flex-col gap-6 flex-1">
+    
+    <!-- TEAM POOL SELECTOR HORIZONTAL DOCK -->
+    <div class="bg-court-card rounded-2xl p-4 lg:p-5 shadow-xl border border-border-glass flex flex-col gap-4">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-court-card-active flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-[20px]">shield</span>
+          </div>
+          <div>
+            <h2 class="text-sm font-headline-md text-white font-bold uppercase tracking-tight">
+              Equipos Seleccionados para el Sorteo
+            </h2>
+            <p class="text-[11px] font-stat-label text-text-muted">
+              {{ countEquiposListos() }} CLUBES HABILITADOS • PADRÓN OFICIAL CAH-FJH
+            </p>
+          </div>
+        </div>
+
+        <!-- Add Club Selector & Search Input -->
+        <div class="relative flex items-center gap-1.5">
+          <div class="flex items-center gap-1 bg-court-surface rounded-xl px-2.5 py-1 border border-white/10">
+            <input
+              type="text"
+              placeholder="+ Añadir Club al Padrón..."
+              [ngModel]="searchClubText()"
+              (ngModelChange)="searchClubText.set($event)"
+              (focus)="showAddClubDropdown.set(true)"
+              class="bg-transparent text-text-primary text-xs placeholder:text-text-muted outline-none px-2 py-1 w-48 sm:w-64 font-body-medium"
+            />
+            @if (searchClubText()) {
+              <button (click)="searchClubText.set('')" class="text-text-muted hover:text-white p-0.5">
+                <span class="material-symbols-outlined text-[14px]">close</span>
+              </button>
+            }
+          </div>
+
+          <!-- Dropdown con Clubes no seleccionados -->
+          @if (showAddClubDropdown() && clubesNoSeleccionados().length > 0) {
+            <div class="absolute right-0 top-full mt-2 w-72 bg-court-surface rounded-xl border border-primary/30 shadow-2xl z-50 p-2 max-h-60 overflow-y-auto">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-text-muted px-2 py-1 block">
+                Selecciona para añadir:
+              </span>
+              @for (c of clubesNoSeleccionados(); track c.id) {
+                <button
+                  type="button"
+                  (click)="agregarClub(c)"
+                  class="w-full text-left px-3 py-2 rounded-lg hover:bg-court-card-hover text-xs flex items-center justify-between text-white transition-colors"
+                >
+                  <div class="flex items-center gap-2 truncate">
+                    <span class="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-[10px]">
+                      {{ c.siglas || c.nombre.charAt(0) }}
+                    </span>
+                    <span class="truncate">{{ c.nombre }}</span>
+                  </div>
+                  <span class="material-symbols-outlined text-primary text-[16px]">add</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Horizontal Team Chips Matrix -->
+      @if (clubesSeleccionados().length === 0) {
+        <div class="p-6 text-center rounded-xl bg-court-surface border border-dashed border-white/10 text-xs text-text-muted">
+          No hay clubes seleccionados en el padrón de este torneo. Busca y añade equipos arriba.
+        </div>
+      } @else {
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+          @for (club of clubesSeleccionados(); track club.id; let idx = $index) {
+            <div class="relative bg-surface-container-low hover:bg-court-card-hover p-2.5 rounded-xl flex items-center gap-2 border border-white/5 transition-all group shadow-sm">
+              @if (club.logoUrl) {
+                <img [src]="getClubLogoUrl(club.logoUrl)" [alt]="club.nombre" class="w-8 h-8 rounded-full object-cover shrink-0 border border-white/10">
+              } @else {
+                <div class="w-8 h-8 rounded-full bg-court-surface border border-white/10 flex items-center justify-center text-text-muted shrink-0">
+                  <span class="material-symbols-outlined text-[16px]">sports_handball</span>
+                </div>
+              }
+              <div class="flex flex-col min-w-0 flex-1">
+                <span class="text-text-primary font-body-bold text-xs truncate" [title]="club.nombre">{{ club.nombre }}</span>
+                <span class="text-[10px] font-stat-label text-primary [font-variant-numeric:tabular-nums]">
+                  #{{ idx + 1 }} {{ idx === 0 ? 'CABEZA' : 'SEED' }}
+                </span>
+              </div>
+              <button
+                type="button"
+                (click)="removerClub(club.id)"
+                class="text-text-muted hover:text-rose-400 p-0.5 rounded transition-colors"
+                title="Quitar del sorteo"
+              >
+                <span class="material-symbols-outlined text-[15px]">close</span>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ACCORDION CONTROLS BAR -->
+    <div class="flex items-center justify-between px-1">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-text-secondary">
+          Jornadas del Calendario Oficial ({{ countJornadas() }} Fechas)
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          (click)="expandirTodas(true)"
+          class="text-xs text-primary hover:underline font-bold uppercase cursor-pointer"
+        >
+          Expandir Todas
+        </button>
+        <span class="text-text-muted text-xs">•</span>
+        <button
+          type="button"
+          (click)="expandirTodas(false)"
+          class="text-xs text-text-muted hover:text-white uppercase cursor-pointer"
+        >
+          Colapsar
+        </button>
+        <span class="text-text-muted text-xs">•</span>
+        <button
+          type="button"
+          (click)="agregarNuevaJornada()"
+          class="inline-flex items-center gap-1 text-xs text-primary bg-primary/10 hover:bg-primary/20 px-2.5 py-1 rounded-lg font-bold uppercase transition-colors cursor-pointer"
+        >
+          <span class="material-symbols-outlined text-[15px]">add</span>
+          <span>+ Nueva Fecha</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MATCHDAY CONTAINERS (JORNADAS) -->
+    @if (jornadas().length === 0) {
+      <div class="p-12 text-center bg-court-card rounded-2xl border border-dashed border-white/10 flex flex-col items-center justify-center gap-3">
+        <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-text-muted mb-2">
+          <span class="material-symbols-outlined text-[32px]">calendar_month</span>
+        </div>
+        <h3 class="text-base font-bold text-white">No hay jornadas generadas para esta competencia</h3>
+        <p class="text-xs text-text-secondary max-w-md">
+          Haz clic en <strong>"Generar Round Robin"</strong> para crear automáticamente todas las fechas o agrega partidos manualmente.
+        </p>
+        <button
+          type="button"
+          (click)="generarRoundRobin(true)"
+          class="mt-2 px-5 py-2.5 bg-primary text-court-base font-body-bold text-xs rounded-xl shadow-lg shadow-primary/20 hover:bg-accent-cyan-deep hover:text-white transition-all flex items-center gap-2 cursor-pointer"
+        >
+          <span class="material-symbols-outlined text-[18px]">auto_fix</span>
+          <span>Generar Fixture Round Robin</span>
+        </button>
+      </div>
+    } @else {
+      @for (jornada of jornadas(); track jornada.numero; let jIdx = $index) {
+        <div class="bg-court-card rounded-2xl p-4 lg:p-6 shadow-xl border border-border-glass flex flex-col gap-4 transition-all">
+          
+          <!-- Matchday Header with Quick Batch Config -->
+          <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-surface-container-lowest p-4 rounded-xl border border-white/5">
+            <!-- Left: Matchday Number & Title -->
+            <div class="flex items-center gap-3">
+              <div
+                (click)="toggleJornada(jornada)"
+                class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-court-base font-scoreboard-score text-lg [font-variant-numeric:tabular-nums] font-black cursor-pointer shadow-md"
+              >
+                {{ jornada.numero }}
+              </div>
+              <div class="flex flex-col cursor-pointer" (click)="toggleJornada(jornada)">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-sm md:text-base font-headline-md text-white font-bold tracking-tight">
+                    {{ jornada.nombre }}
+                  </h3>
+                  <span class="px-2 py-0.5 bg-court-card text-tertiary font-label-caps text-[11px] rounded font-bold">
+                    {{ jornada.partidos.length }} Partidos
+                  </span>
+                </div>
+                <span class="text-[11px] font-stat-label text-text-muted uppercase">
+                  SEDE CENTRAL • {{ jornada.sedeDefault || 'Polideportivo Cuyaya' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Right: Batch Defaults Bar & Actions -->
+            <div class="flex flex-wrap items-center gap-2 bg-court-card p-1.5 rounded-xl border border-white/5 w-full lg:w-auto">
+              <!-- Batch Date -->
+              <div class="flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-container-lowest rounded-lg text-text-secondary text-xs">
+                <span class="material-symbols-outlined text-[16px] text-primary">schedule</span>
+                <input
+                  type="date"
+                  [ngModel]="jornada.fechaDefault"
+                  (ngModelChange)="aplicarFechaATodos(jornada, $event)"
+                  class="bg-transparent text-white font-body-bold text-xs outline-none cursor-pointer [color-scheme:dark]"
+                />
+              </div>
+
+              <!-- Batch Venue -->
+              <div class="flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-container-lowest rounded-lg text-text-secondary text-xs">
+                <span class="material-symbols-outlined text-[16px] text-accent-cyan-deep">location_on</span>
+                <select
+                  [ngModel]="jornada.sedeDefault"
+                  (ngModelChange)="aplicarSedeATodos(jornada, $event)"
+                  class="bg-transparent text-white font-body-medium text-xs outline-none cursor-pointer"
+                >
+                  @for (sede of sedesList(); track sede) {
+                    <option [value]="sede" class="bg-court-surface text-white">{{ sede }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- Batch 75 min offset button -->
+              <button
+                type="button"
+                (click)="aplicarOffsetJornada(jornada, '15:00', 75)"
+                class="flex items-center gap-1.5 px-3 py-1.5 bg-primary-container/20 hover:bg-primary-container text-primary hover:text-court-base rounded-lg text-[11px] font-stat-label uppercase transition-all font-bold cursor-pointer"
+                title="Calcular automáticamente horarios escalonados a intervalos de 75 min"
+              >
+                <span class="material-symbols-outlined text-[15px]">timer</span>
+                <span>+75 min offset (15:00)</span>
+              </button>
+
+              <!-- Invert Localia All in Matchday -->
+              <button
+                type="button"
+                (click)="invertirLocaliasJornada(jornada)"
+                class="p-1.5 rounded-lg bg-surface-container-lowest hover:bg-court-card-hover text-text-secondary hover:text-white transition-colors"
+                title="Invertir todas las localías de esta fecha"
+              >
+                <span class="material-symbols-outlined text-[18px]">swap_vert</span>
+              </button>
+
+              <!-- Delete Matchday -->
+              <button
+                type="button"
+                (click)="eliminarJornada(jIdx)"
+                class="p-1.5 rounded-lg bg-surface-container-lowest hover:bg-rose-500/20 text-text-muted hover:text-rose-400 transition-colors"
+                title="Borrar esta fecha completa"
+              >
+                <span class="material-symbols-outlined text-[18px]">delete</span>
+              </button>
+
+              <!-- Toggle Accordion Icon -->
+              <button
+                type="button"
+                (click)="toggleJornada(jornada)"
+                class="p-1.5 rounded-lg bg-surface-container-lowest hover:bg-court-card-hover text-text-secondary hover:text-white transition-colors"
+              >
+                <span class="material-symbols-outlined text-[18px]">
+                  {{ jornada.isExpanded ? 'expand_less' : 'expand_more' }}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Match Strips Grid (Expanded) -->
+          @if (jornada.isExpanded) {
+            <div class="flex flex-col gap-2.5 pt-1">
+              @if (jornada.partidos.length === 0) {
+                <div class="p-6 text-center bg-surface-container-lowest rounded-xl border border-dashed border-white/5 text-xs text-text-muted">
+                  No hay partidos asignados a esta jornada. Puedes agregar uno manualmente abajo.
+                </div>
+              } @else {
+                @for (partido of jornada.partidos; track $index; let pIdx = $index) {
+                  <!-- MATCH STRIP CONTAINER -->
+                  <div class="bg-surface-container-low hover:bg-surface-container rounded-xl border border-white/5 transition-all shadow-sm flex flex-col">
+                    <div class="p-3 flex flex-col md:flex-row items-center justify-between gap-3">
+                      <!-- Drag / Match Number -->
+                      <div class="flex items-center gap-2 w-full md:w-auto">
+                        <span class="material-symbols-outlined text-text-muted text-[18px]">drag_indicator</span>
+                        <span class="font-stat-label text-xs text-text-muted [font-variant-numeric:tabular-nums]">
+                          #{{ (pIdx + 1) < 10 ? '0' + (pIdx + 1) : (pIdx + 1) }}
+                        </span>
+                      </div>
+
+                      <!-- Teams Confrontation Node -->
+                      <div class="flex items-center justify-center gap-3 flex-1 w-full md:w-auto">
+                        <!-- Local Team -->
+                        <div class="flex items-center gap-2 justify-end w-44 text-right">
+                          <span class="text-white font-body-bold text-xs truncate" [title]="partido.local?.nombre">
+                            {{ partido.local?.nombre || 'Equipo Local' }}
+                          </span>
+                          @if (partido.local?.logoUrl) {
+                            <img [src]="getClubLogoUrl(partido.local!.logoUrl)" [alt]="partido.local?.nombre" class="w-7 h-7 rounded-full object-cover shrink-0 border border-white/10 shadow-sm">
+                          } @else {
+                            <div class="w-7 h-7 rounded-full bg-court-surface border border-white/10 flex items-center justify-center text-text-muted shrink-0 shadow-sm">
+                              <span class="material-symbols-outlined text-[13px]">sports_handball</span>
+                            </div>
+                          }
+                        </div>
+
+                        <!-- Invert Localia Toggle -->
+                        <button
+                          type="button"
+                          (click)="invertirLocalia(partido)"
+                          class="p-1 rounded-full bg-court-card hover:bg-primary hover:text-court-base text-text-muted transition-colors flex items-center justify-center cursor-pointer shadow-sm"
+                          title="Invertir localía de los equipos"
+                        >
+                          <span class="material-symbols-outlined text-[16px]">swap_vert</span>
+                        </button>
+
+                        <!-- Visitor Team -->
+                        <div class="flex items-center gap-2 justify-start w-44 text-left">
+                          @if (partido.visitante?.logoUrl) {
+                            <img [src]="getClubLogoUrl(partido.visitante!.logoUrl)" [alt]="partido.visitante?.nombre" class="w-7 h-7 rounded-full object-cover shrink-0 border border-white/10 shadow-sm">
+                          } @else {
+                            <div class="w-7 h-7 rounded-full bg-court-surface border border-white/10 flex items-center justify-center text-text-muted shrink-0 shadow-sm">
+                              <span class="material-symbols-outlined text-[13px]">sports_handball</span>
+                            </div>
+                          }
+                          <span class="text-white font-body-bold text-xs truncate" [title]="partido.visitante?.nombre">
+                            {{ partido.visitante?.nombre || 'Equipo Visitante' }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <!-- Inline Match Scheduling Controls -->
+                      <div class="flex items-center gap-2 flex-wrap justify-end w-full md:w-auto">
+                        <!-- Time Input -->
+                        <input
+                          type="text"
+                          [ngModel]="partido.hora"
+                          (ngModelChange)="partido.hora = $event"
+                          placeholder="15:00 hs"
+                          class="w-24 text-center bg-court-surface font-body-bold text-xs text-primary px-2.5 py-1.5 rounded-lg [font-variant-numeric:tabular-nums] outline-none border border-white/5 focus:border-primary"
+                        />
+
+                        <!-- Court Select -->
+                        <select
+                          [ngModel]="partido.lugar"
+                          (ngModelChange)="partido.lugar = $event"
+                          class="bg-court-surface text-text-secondary text-xs font-body-medium px-2.5 py-1.5 rounded-lg outline-none cursor-pointer border border-white/5 focus:border-primary max-w-[180px] truncate"
+                        >
+                          @for (sede of sedesList(); track sede) {
+                            <option [value]="sede" class="bg-court-surface text-white">{{ sede }}</option>
+                          }
+                          <option value="A confirmar / Sede neutral" class="bg-court-surface text-amber-400">A confirmar / Neutral</option>
+                        </select>
+
+                        <!-- Ready / Pending Badge -->
+                        @if (partido.hora && !partido.hora.includes('--') && partido.lugar && !partido.lugar.includes('definir')) {
+                          <div class="flex items-center gap-1 px-2.5 py-1 bg-tertiary/10 text-tertiary rounded-lg font-stat-label text-[10px] uppercase font-bold">
+                            <span class="material-symbols-outlined text-[14px]">check</span>
+                            <span>Listo</span>
+                          </div>
+                        } @else {
+                          <div class="flex items-center gap-1 px-2.5 py-1 bg-accent-amber/20 text-accent-amber rounded-lg font-stat-label text-[10px] uppercase font-bold">
+                            <span class="material-symbols-outlined text-[14px]">schedule</span>
+                            <span>Sin Horario</span>
+                          </div>
+                        }
+
+                        <!-- Designations Toggle Button -->
+                        <button
+                          type="button"
+                          (click)="toggleDesignaciones(partido)"
+                          class="p-1.5 rounded-lg transition-colors flex items-center gap-1 text-xs"
+                          [class]="partido.arbitro1 || partido.arbitro2 || partido.cronometrista
+                            ? 'bg-primary/20 text-primary border border-primary/40'
+                            : 'bg-surface-container-lowest text-text-muted hover:text-white'"
+                          title="Designar árbitros y mesa oficial"
+                        >
+                          <span class="material-symbols-outlined text-[17px]">sports</span>
+                          @if (partido.arbitro1) {
+                            <span class="text-[10px] font-bold hidden sm:inline">Designado</span>
+                          }
+                        </button>
+
+                        <!-- Delete Match -->
+                        <button
+                          type="button"
+                          (click)="eliminarPartido(jornada, pIdx)"
+                          class="p-1.5 text-text-muted hover:text-rose-400 rounded-lg transition-colors"
+                          title="Eliminar partido de esta fecha"
+                        >
+                          <span class="material-symbols-outlined text-[18px]">delete</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- EXPANDABLE DESIGNATIONS DRAWER -->
+                    @if (partido.showDesignaciones) {
+                      <div class="px-4 py-3 bg-court-surface/90 border-t border-white/5 flex flex-col gap-3 rounded-b-xl animate-in slide-in-from-top-2 duration-200">
+                        <div class="flex items-center justify-between">
+                          <span class="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">gavel</span>
+                            Designaciones Oficiales FJH • Colegio de Árbitros
+                          </span>
+                          <span class="text-[11px] text-text-muted">
+                            Reglamento Oficial CAH/IHF 2026
+                          </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <!-- Árbitro 1 -->
+                          <div class="flex flex-col gap-1">
+                            <label class="text-[11px] font-bold text-text-secondary">Árbitro Principal 1</label>
+                            <input
+                              type="text"
+                              [ngModel]="partido.arbitro1"
+                              (ngModelChange)="partido.arbitro1 = $event"
+                              placeholder="Ej: Colque, F."
+                              class="bg-surface-container border border-white/10 rounded-lg px-2.5 py-1 text-xs text-white placeholder:text-text-muted focus:border-primary outline-none"
+                            />
+                            <!-- Sugerencias rápidas -->
+                            <div class="flex flex-wrap gap-1 pt-0.5">
+                              @for (s of arbitrosSugeridos.slice(0, 3); track s) {
+                                <button
+                                  type="button"
+                                  (click)="setArbitroRapido(partido, 'arbitro1', s)"
+                                  class="text-[9px] px-1.5 py-0.5 rounded bg-white/5 hover:bg-primary/20 hover:text-primary text-text-muted transition-colors truncate max-w-[120px]"
+                                >
+                                  {{ s.split(' ')[0] }} {{ s.split(' ')[1] }}
+                                </button>
+                              }
+                            </div>
+                          </div>
+
+                          <!-- Árbitro 2 -->
+                          <div class="flex flex-col gap-1">
+                            <label class="text-[11px] font-bold text-text-secondary">Árbitro Principal 2 (Dupla)</label>
+                            <input
+                              type="text"
+                              [ngModel]="partido.arbitro2"
+                              (ngModelChange)="partido.arbitro2 = $event"
+                              placeholder="Ej: Tapia, M."
+                              class="bg-surface-container border border-white/10 rounded-lg px-2.5 py-1 text-xs text-white placeholder:text-text-muted focus:border-primary outline-none"
+                            />
+                            <div class="flex flex-wrap gap-1 pt-0.5">
+                              @for (s of arbitrosSugeridos.slice(1, 4); track s) {
+                                <button
+                                  type="button"
+                                  (click)="setArbitroRapido(partido, 'arbitro2', s)"
+                                  class="text-[9px] px-1.5 py-0.5 rounded bg-white/5 hover:bg-primary/20 hover:text-primary text-text-muted transition-colors truncate max-w-[120px]"
+                                >
+                                  {{ s.split(' ')[0] }} {{ s.split(' ')[1] }}
+                                </button>
+                              }
+                            </div>
+                          </div>
+
+                          <!-- Cronometrista / Oficial Mesa -->
+                          <div class="flex flex-col gap-1">
+                            <label class="text-[11px] font-bold text-text-secondary">Anotador / Cronometrista</label>
+                            <input
+                              type="text"
+                              [ngModel]="partido.cronometrista"
+                              (ngModelChange)="partido.cronometrista = $event"
+                              placeholder="Ej: Álvarez, G."
+                              class="bg-surface-container border border-white/10 rounded-lg px-2.5 py-1 text-xs text-white placeholder:text-text-muted focus:border-primary outline-none"
+                            />
+                            <div class="flex flex-wrap gap-1 pt-0.5">
+                              @for (s of arbitrosSugeridos.slice(3, 6); track s) {
+                                <button
+                                  type="button"
+                                  (click)="setArbitroRapido(partido, 'cronometrista', s)"
+                                  class="text-[9px] px-1.5 py-0.5 rounded bg-white/5 hover:bg-primary/20 hover:text-primary text-text-muted transition-colors truncate max-w-[120px]"
+                                >
+                                  {{ s.split(' ')[0] }} {{ s.split(' ')[1] }}
+                                </button>
+                              }
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Observaciones del Partido -->
+                        <div class="flex items-center gap-2 pt-1 border-t border-white/5">
+                          <span class="material-symbols-outlined text-[16px] text-text-muted">notes</span>
+                          <input
+                            type="text"
+                            [ngModel]="partido.observaciones"
+                            (ngModelChange)="partido.observaciones = $event"
+                            placeholder="Observaciones de mesa: Uso de tablero digital, transmisión vía streaming, balón oficial N°3..."
+                            class="bg-transparent text-xs text-text-secondary placeholder:text-text-muted w-full outline-none focus:text-white"
+                          />
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              }
+
+              <!-- Quick Add Match Slot Inline Trigger -->
+              <div class="flex items-center justify-between pt-2">
+                <button
+                  type="button"
+                  (click)="agregarPartidoManual(jornada)"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-court-card-active hover:bg-primary hover:text-court-base text-primary rounded-xl font-body-bold text-xs transition-all cursor-pointer shadow-sm"
+                >
+                  <span class="material-symbols-outlined text-[16px]">add</span>
+                  <span>+ Agregar Partido Manual a Fecha {{ jornada.numero }}</span>
+                </button>
+                <span class="text-[11px] font-stat-label text-text-muted">
+                  REGLA IHF: MÍNIMO 120 MIN ENTRE PARTIDOS DEL MISMO CLUB
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- ALGORITHM ASSISTANT & VALIDATION HELPER BOX -->
+    <div class="bg-surface-container-low rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-md border border-white/5">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+          <span class="material-symbols-outlined text-[24px]">tune</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-title-sm text-sm text-text-primary font-bold">
+            Algoritmo Round Robin Berger (FJH CAH-Compliant)
+          </span>
+          <p class="font-body-base text-xs text-text-secondary max-w-2xl mt-0.5 leading-relaxed">
+            Genera automáticamente el fixture completo todos contra todos asegurando la alternancia perfecta de localías y ordenando los partidos con intervalos de descanso oficiales.
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0 w-full md:w-auto justify-end">
+        <a
+          href="https://handballargentina.org"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="px-4 py-2 bg-court-card hover:bg-court-card-hover text-text-primary rounded-xl font-body-bold text-xs transition-colors flex items-center gap-1.5 border border-white/5"
+        >
+          <span class="material-symbols-outlined text-[16px]">sports_handball</span>
+          <span>Reglamento FJH / CAH</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>

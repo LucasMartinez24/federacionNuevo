@@ -1,0 +1,79 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #0b1320;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Input personalizado con padding y bordes ergonómicos */
+.form-input-custom {
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #1e293b;
+  background-color: #0b1320;
+  font-size: 0.875rem;
+  color: #f8fafc;
+  height: 2.75rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.form-input-custom::placeholder {
+  color: #64748b;
+}
+
+.form-input-custom:focus {
+  border-color: #38bdf8;
+  background-color: #141f32;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
+select.form-input-custom option {
+  background-color: #0b1320;
+  color: #f8fafc;
+}
+
+/* Zona de Carga de Documentos (Drop Zone) */
+.drop-zone-custom {
+  position: relative;
+  cursor: pointer;
+  border: 2px dashed #1e293b;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  background-color: rgba(11, 19, 32, 0.6);
+}
+
+.drop-zone-custom:hover {
+  border-color: #38bdf8;
+  background-color: rgba(56, 189, 248, 0.05);
+}
+
+.drop-zone-custom input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}

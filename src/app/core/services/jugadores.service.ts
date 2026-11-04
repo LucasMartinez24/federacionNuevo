@@ -61,6 +61,22 @@ export class JugadoresService {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`);
   }
 
+  getMovimientos(jugadorId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${jugadorId}/movimientos`);
+  }
+
+  registrarPrestamo(jugadorId: string, payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${jugadorId}/prestamo`, payload);
+  }
+
+  registrarPase(jugadorId: string, payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${jugadorId}/pase`, payload);
+  }
+
+  devolverPrestamo(jugadorId: string, payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${jugadorId}/devolver-prestamo`, payload);
+  }
+
   getFileUrl(relativePath?: string | null): string {
     if (!relativePath) return '';
     if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {

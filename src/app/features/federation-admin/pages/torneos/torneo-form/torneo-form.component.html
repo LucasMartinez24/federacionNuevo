@@ -1,0 +1,882 @@
+<div class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-8">
+  <!-- Ambient Glows de Fondo -->
+  <div class="absolute -top-24 left-1/3 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+  <div class="absolute top-48 right-12 w-80 h-80 bg-secondary/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+  <!-- Banner Flotante de Feedback / Notificación -->
+  @if (actionFeedback(); as fb) {
+  <div
+    class="fixed top-24 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md border animate-in slide-in-from-top-4 duration-300"
+    [ngClass]="fb.type === 'success' ? 'bg-emerald-950/90 border-emerald-500/50 text-emerald-200' : 'bg-rose-950/90 border-rose-500/50 text-rose-200'">
+    <span class="material-symbols-outlined text-[22px]">
+      {{ fb.type === 'success' ? 'check_circle' : 'error' }}
+    </span>
+    <span class="text-sm font-medium">{{ fb.message }}</span>
+    <button (click)="actionFeedback.set(null)" class="p-1 hover:bg-white/10 rounded-lg transition-colors ml-2">
+      <span class="material-symbols-outlined text-[16px]">close</span>
+    </button>
+  </div>
+  }
+
+  <!-- Top Breadcrumb & Status Navigation -->
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-2">
+      <a routerLink="/admin/torneos"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-text-secondary hover:text-white transition-colors text-xs font-body-medium cursor-pointer">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+        <span>Volver a Torneos</span>
+      </a>
+      <span class="text-text-muted text-xs">/</span>
+      <span class="text-text-muted text-xs">Torneos &amp; Competencias</span>
+      <span class="text-text-muted text-xs">/</span>
+      <span class="text-primary font-body-bold text-xs">
+        {{ isEditMode() ? 'Editar Competición' : 'Nueva Competición' }}
+      </span>
+    </div>
+
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-amber/15 text-accent-amber">
+      <span class="w-2 h-2 rounded-full bg-accent-amber animate-pulse"></span>
+      <span class="font-stat-label text-stat-label uppercase tracking-widest">
+        {{ isEditMode() ? 'Modo Edición Oficial' : 'Borrador sin guardar' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div class="flex items-start gap-4">
+      <div
+        class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-court-card to-accent-cyan-deep flex items-center justify-center shrink-0 shadow-lg shadow-primary-container/20 border border-white/10">
+        <span class="material-symbols-outlined text-white text-[32px]">
+          {{ isEditMode() ? 'edit_note' : 'trophy' }}
+        </span>
+      </div>
+      <div class="flex flex-col">
+        <span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">
+          Federación Jujeña de Handball • Temporada {{ temporada() }}
+        </span>
+        <h1 class="font-display-hero text-2xl md:text-4xl font-extrabold text-white tracking-tight uppercase">
+          {{ isEditMode() ? 'Editar Configuración del Torneo' : 'Configuración de Torneo' }}
+        </h1>
+        <p class="font-body-base text-xs md:text-sm text-text-secondary max-w-2xl mt-1 leading-relaxed">
+          Define parámetros oficiales, formato de competencia, llaves clasificatorias y sistema de desempate federativo
+          según normativa CAH/IHF.
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-surface-container-high text-text-secondary text-xs font-body-medium shrink-0 border border-white/5">
+      <span class="material-symbols-outlined text-primary text-[18px]">sync</span>
+      <span>Autoguardado local activo</span>
+    </div>
+  </div>
+
+  <!-- Main Configuration Form -->
+  <form (ngSubmit)="guardar(false)" class="flex flex-col gap-8">
+
+    <!-- SECTION 1: INFORMACIÓN GENERAL -->
+    <section
+      class="bg-surface-container/70 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-xl flex flex-col gap-6 border border-border-glass">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-[22px]">edit_note</span>
+          </div>
+          <h2 class="font-headline-md text-lg md:text-xl text-white font-bold">1. Información General</h2>
+        </div>
+        <span class="font-stat-label text-stat-label text-text-muted uppercase">Paso 1 de 3</span>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <!-- Nombre Oficial -->
+        <div class="flex flex-col gap-1.5">
+          <label class="font-title-sm text-xs font-bold uppercase tracking-wider text-on-surface">Nombre Oficial del
+            Torneo *</label>
+          <div class="relative">
+            <input type="text" [ngModel]="nombre()" (ngModelChange)="nombre.set($event)" name="nombre"
+              placeholder="Ej. Torneo Apertura 2026 - Copa San Salvador"
+              class="w-full bg-court-base/70 border border-border-subtle rounded-xl px-4 py-3 text-white font-body-bold text-sm placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary-container" />
+            @if (nombre().trim().length >= 4) {
+            <span
+              class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-tertiary text-[20px]">check_circle</span>
+            }
+          </div>
+        </div>
+
+        <!-- 3-Column Dropdowns / Controls Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Categoría Federativa -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-body-medium text-xs text-text-secondary">Categoría Federativa *</label>
+            <div class="relative">
+              <select [ngModel]="categoria()" (ngModelChange)="categoria.set($event)" name="categoria"
+                class="w-full appearance-none bg-court-base/70 border border-border-subtle rounded-xl px-4 py-3 text-white font-body-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary-container">
+                <option value="Primera División">Primera División (Mayores)</option>
+                <option value="+35">+35 Master / Amateur</option>
+                <option value="Juveniles">Juveniles (Sub-18)</option>
+                <option value="Cadetes">Cadetes (Sub-16)</option>
+                <option value="Menores">Menores (Sub-14)</option>
+                <option value="Promocional / Desarrollo">Promocional / Desarrollo</option>
+              </select>
+              <span
+                class="absolute right-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-text-muted pointer-events-none text-[20px]">expand_more</span>
+            </div>
+          </div>
+
+          <!-- Rama / Género -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-body-medium text-xs text-text-secondary">Rama / Género *</label>
+            <div class="grid grid-cols-3 gap-1 bg-court-base/70 p-1 rounded-xl border border-border-subtle">
+              <button type="button" (click)="setRama('Masculino')"
+                [class]="rama() === 'Masculino'
+                  ? 'py-2 rounded-lg font-body-bold text-xs text-center bg-primary-container/30 text-primary border border-primary/40 shadow-sm transition-all'
+                  : 'py-2 rounded-lg font-body-medium text-xs text-center text-text-muted hover:text-white transition-all'">
+                Masc.
+              </button>
+              <button type="button" (click)="setRama('Femenino')"
+                [class]="rama() === 'Femenino'
+                  ? 'py-2 rounded-lg font-body-bold text-xs text-center bg-secondary-container/30 text-secondary border border-secondary/40 shadow-sm transition-all'
+                  : 'py-2 rounded-lg font-body-medium text-xs text-center text-text-muted hover:text-white transition-all'">
+                Fem.
+              </button>
+              <button type="button" (click)="setRama('Mixto')"
+                [class]="rama() === 'Mixto'
+                  ? 'py-2 rounded-lg font-body-bold text-xs text-center bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 shadow-sm transition-all'
+                  : 'py-2 rounded-lg font-body-medium text-xs text-center text-text-muted hover:text-white transition-all'">
+                Mixto
+              </button>
+            </div>
+          </div>
+
+          <!-- Temporada Oficial -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-body-medium text-xs text-text-secondary">Temporada Oficial *</label>
+            <div class="relative">
+              <select [ngModel]="temporada()" (ngModelChange)="temporada.set($event)" name="temporada"
+                class="w-full appearance-none bg-court-base/70 border border-border-subtle rounded-xl px-4 py-3 text-white font-body-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary-container">
+                <option value="2026">Temporada Oficial 2026</option>
+                <option value="2025">Temporada Oficial 2025</option>
+                <option value="2024">Temporada Oficial 2024</option>
+              </select>
+              <span
+                class="absolute right-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-text-muted pointer-events-none text-[20px]">calendar_month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dates and Venues Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+          <!-- Fecha de Inicio -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-body-medium text-xs text-text-secondary">Fecha de Inicio Programada *</label>
+            <div class="relative">
+              <input type="date" [ngModel]="fechaInicio()" (ngModelChange)="fechaInicio.set($event)" name="fechaInicio"
+                class="w-full bg-court-base/70 border border-border-subtle rounded-xl px-4 py-3 text-white font-body-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary-container [color-scheme:dark]" />
+            </div>
+          </div>
+
+          <!-- Sedes Habilitadas Multi-Chip -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-body-medium text-xs text-text-secondary">Sedes Habilitadas para esta Competición</label>
+            <div
+              class="flex flex-wrap items-center gap-2 p-2 bg-court-base/70 border border-border-subtle rounded-xl min-h-[48px]">
+              @for (sede of sedes(); track sede; let idx = $index) {
+              <span
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface-container-high border border-white/5 text-white text-xs font-body-medium">
+                <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                {{ sede }}
+                <button type="button" (click)="eliminarSede(idx)"
+                  class="text-text-muted hover:text-rose-400 transition-colors ml-0.5">
+                  <span class="material-symbols-outlined text-[14px]">close</span>
+                </button>
+              </span>
+              }
+
+              @if (showAddSedeInput()) {
+              <div class="flex items-center gap-1">
+                <input type="text" [ngModel]="nuevaSedeInput()" (ngModelChange)="nuevaSedeInput.set($event)"
+                  (keyup.enter)="agregarSede()" name="nuevaSede" placeholder="Nombre de la cancha o sede"
+                  class="bg-surface-container text-xs px-2.5 py-1 rounded-lg text-white border border-primary/40 focus:outline-none"
+                  autofocus />
+                <button type="button" (click)="agregarSede()"
+                  class="p-1 bg-primary text-slate-900 rounded-lg hover:bg-primary-container">
+                  <span class="material-symbols-outlined text-[16px]">check</span>
+                </button>
+                <button type="button" (click)="showAddSedeInput.set(false)"
+                  class="p-1 text-text-muted hover:text-white">
+                  <span class="material-symbols-outlined text-[16px]">close</span>
+                </button>
+              </div>
+              } @else {
+              <button type="button" (click)="showAddSedeInput.set(true)"
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-bright/50 text-primary hover:text-white text-stat-label font-stat-label uppercase transition-colors">
+                <span class="material-symbols-outlined text-[16px]">add</span>
+                Agregar Sede
+              </button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: FORMATO & ESTRUCTURA DE COMPETICIÓN -->
+    <section
+      class="bg-surface-container/70 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-xl flex flex-col gap-6 border border-border-glass">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-accent-ihf-blue/15 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-[22px]">account_tree</span>
+          </div>
+          <div>
+            <h2 class="font-headline-md text-lg md:text-xl text-white font-bold">2. Formato de Juego &amp; Llaves
+              Eliminatorias</h2>
+            <p class="font-body-base text-xs text-text-secondary">Estructura del calendario y reglas de progresión a la
+              fase final</p>
+          </div>
+        </div>
+        <span class="font-stat-label text-stat-label text-text-muted uppercase">Paso 2 de 3</span>
+      </div>
+
+      <!-- 3 Format Selector Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Card A: Liga (Todos vs Todos) -->
+        <div (click)="setFormato('liga')"
+          class="group relative p-5 rounded-2xl transition-all cursor-pointer flex flex-col justify-between gap-4 border"
+          [class]="formato() === 'liga'
+            ? 'bg-court-card border-primary/50 shadow-2xl shadow-primary/10'
+            : 'bg-court-base/60 hover:bg-court-card border-white/10 hover:border-white/20'">
+          @if (formato() === 'liga') {
+          <div
+            class="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-primary-container text-on-primary font-stat-label text-stat-label uppercase tracking-widest font-extrabold shadow-md">
+            Seleccionado
+          </div>
+          }
+
+          <div class="flex items-start justify-between">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center transition-colors"
+              [class]="formato() === 'liga' ? 'bg-primary/20 text-primary' : 'bg-surface-container-high text-text-secondary group-hover:text-primary'">
+              <span class="material-symbols-outlined text-[28px]">leaderboard</span>
+            </div>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center transition-all"
+              [class]="formato() === 'liga' ? 'bg-primary-container text-on-primary shadow-sm' : 'bg-surface-bright'">
+              @if (formato() === 'liga') {
+              <span class="material-symbols-outlined text-[16px] font-bold">check</span>
+              }
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-title-sm text-sm text-white font-bold flex items-center gap-2">
+              Liga Oficial FJH
+            </h3>
+            <p class="font-body-base text-xs text-text-secondary mt-1 leading-relaxed">
+              Fase regular todos contra todos en tabla única (solo ida o ida y vuelta). Los mejores 4 clasifican a la definición oficial: Semifinales, 3° puesto y Gran Final provincial.
+            </p>
+          </div>
+
+          <div
+            class="flex items-center gap-1.5 text-primary text-stat-label font-stat-label uppercase tracking-wider font-bold">
+            <span>{{ idaVuelta() ? 'Ida y Vuelta (2 Ruedas)' : 'Solo Ida (1 Rueda)' }}</span>
+            <span>•</span>
+            <span>Semis &amp; Gran Final</span>
+          </div>
+        </div>
+
+        <!-- Card B: Grupos + Eliminatorias (Zonas + Playoffs) -->
+        <div (click)="setFormato('grupos_eliminatorias')"
+          class="relative p-5 rounded-2xl transition-all cursor-pointer flex flex-col justify-between gap-4 border"
+          [class]="formato() === 'grupos_eliminatorias'
+            ? 'bg-court-card border-primary/50 shadow-2xl shadow-primary/10'
+            : 'bg-court-base/60 hover:bg-court-card border-white/10 hover:border-white/20'">
+          @if (formato() === 'grupos_eliminatorias') {
+          <div
+            class="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-primary-container text-on-primary font-stat-label text-stat-label uppercase tracking-widest font-extrabold shadow-md">
+            Seleccionado
+          </div>
+          }
+
+          <div class="flex items-start justify-between">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center transition-colors"
+              [class]="formato() === 'grupos_eliminatorias' ? 'bg-primary/20 text-primary' : 'bg-surface-container-high text-text-secondary group-hover:text-primary'">
+              <span class="material-symbols-outlined text-[28px]">groups</span>
+            </div>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center transition-all"
+              [class]="formato() === 'grupos_eliminatorias' ? 'bg-primary-container text-on-primary shadow-sm' : 'bg-surface-bright'">
+              @if (formato() === 'grupos_eliminatorias') {
+              <span class="material-symbols-outlined text-[16px] font-bold">check</span>
+              }
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-title-sm text-sm text-white font-bold flex items-center gap-2">
+              Grupos + Eliminatorias
+            </h3>
+            <p class="font-body-base text-xs text-text-secondary mt-1 leading-relaxed">
+              Fase de zonas clasificatorias seguida de cruces de playoffs directos hasta la consagración provincial.
+            </p>
+          </div>
+
+          <div
+            class="flex items-center gap-1.5 text-primary text-stat-label font-stat-label uppercase tracking-wider font-bold">
+            <span>{{ cantidadGrupos() }} Zonas</span>
+            <span>•</span>
+            <span>Cuadro Playoffs Activo</span>
+          </div>
+        </div>
+
+        <!-- Card C: Eliminación Directa -->
+        <div (click)="setFormato('eliminatoria_directa')"
+          class="group relative p-5 rounded-2xl transition-all cursor-pointer flex flex-col justify-between gap-4 border"
+          [class]="formato() === 'eliminatoria_directa'
+            ? 'bg-court-card border-primary/50 shadow-2xl shadow-primary/10'
+            : 'bg-court-base/60 hover:bg-court-card border-white/10 hover:border-white/20'">
+          @if (formato() === 'eliminatoria_directa') {
+          <div
+            class="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-primary-container text-on-primary font-stat-label text-stat-label uppercase tracking-widest font-extrabold shadow-md">
+            Seleccionado
+          </div>
+          }
+
+          <div class="flex items-start justify-between">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center transition-colors"
+              [class]="formato() === 'eliminatoria_directa' ? 'bg-primary/20 text-primary' : 'bg-surface-container-high text-text-secondary group-hover:text-primary'">
+              <span class="material-symbols-outlined text-[28px]">military_tech</span>
+            </div>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center transition-all"
+              [class]="formato() === 'eliminatoria_directa' ? 'bg-primary-container text-on-primary shadow-sm' : 'bg-surface-bright'">
+              @if (formato() === 'eliminatoria_directa') {
+              <span class="material-symbols-outlined text-[16px] font-bold">check</span>
+              }
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-title-sm text-sm text-white font-bold">Eliminación Directa</h3>
+            <p class="font-body-base text-xs text-text-secondary mt-1 leading-relaxed">
+              Cuadro eliminatorio puro de Copa desde octavos o cuartos de final con llave única a partido definitorio.
+            </p>
+          </div>
+
+          <div
+            class="flex items-center gap-1.5 text-text-muted text-stat-label font-stat-label uppercase tracking-wider">
+            <span>Muerte Súbita</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONFIGURACIÓN DE FASE REGULAR, CRUCES & FASE FINAL (PLAYOFFS) -->
+      <div
+        class="bg-court-base/90 rounded-2xl p-6 md:p-8 flex flex-col gap-6 shadow-inner relative overflow-hidden border border-border-subtle">
+        <div class="absolute -right-16 -top-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Playoff Panel Header -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-white/5">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-[24px]">account_tree</span>
+            <div class="flex flex-col">
+              <span class="font-title-sm text-sm text-white font-bold">
+                Configuración de Cruces &amp; Fase Final (Playoffs FJH)
+              </span>
+              <span class="font-body-base text-xs text-text-secondary">
+                {{ formato() === 'liga' ? 'Fase regular todos contra todos y cuadro oficial de Semifinales y Gran Final' : 'Estructura dinámica de diagramación de llaves para la definición del título' }}
+              </span>
+            </div>
+          </div>
+          <span
+            class="px-3 py-1 rounded-full bg-primary/10 text-primary font-stat-label text-stat-label uppercase tracking-wider font-extrabold">
+            Estructura Oficial FJH
+          </span>
+        </div>
+
+        <!-- CONTROL EXCLUSIVO LIGA: Rueda Simple (Solo Ida) vs Rueda Doble (Ida y Vuelta) -->
+        @if (formato() === 'liga') {
+        <div class="flex flex-col gap-3 p-4 rounded-xl bg-surface-container/80 border border-primary/20">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">sync_alt</span>
+              <span class="font-body-bold text-xs text-white">Modalidad de la Fase Regular (Todos contra todos)</span>
+            </div>
+            <span class="font-stat-label text-stat-label px-2.5 py-0.5 rounded-full bg-primary/20 text-primary uppercase font-bold">
+              Reglamento FJH
+            </span>
+          </div>
+          <p class="font-body-base text-xs text-text-secondary">
+            Selecciona si la competencia regular se disputa a una sola rueda (partido único) o dos ruedas con partidos de ida y vuelta:
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <button type="button" (click)="setIdaVuelta(false)"
+              [class]="!idaVuelta()
+                ? 'p-3.5 rounded-xl bg-primary-container text-on-primary font-body-bold text-xs shadow-md transition-all flex items-center justify-between border border-primary'
+                : 'p-3.5 rounded-xl bg-surface-container-lowest text-text-secondary hover:text-white font-body-medium text-xs transition-all flex items-center justify-between border border-white/5'">
+              <div class="flex flex-col text-left">
+                <span class="font-bold text-sm">Solo Ida (Rueda Simple)</span>
+                <span class="text-[11px] opacity-80 font-normal">1 partido único entre cada equipo participante</span>
+              </div>
+              @if (!idaVuelta()) {
+              <span class="material-symbols-outlined text-[20px]">check_circle</span>
+              }
+            </button>
+
+            <button type="button" (click)="setIdaVuelta(true)"
+              [class]="idaVuelta()
+                ? 'p-3.5 rounded-xl bg-primary-container text-on-primary font-body-bold text-xs shadow-md transition-all flex items-center justify-between border border-primary'
+                : 'p-3.5 rounded-xl bg-surface-container-lowest text-text-secondary hover:text-white font-body-medium text-xs transition-all flex items-center justify-between border border-white/5'">
+              <div class="flex flex-col text-left">
+                <span class="font-bold text-sm">Ida y Vuelta (Rueda Doble)</span>
+                <span class="text-[11px] opacity-80 font-normal">2 partidos (local y visitante) • Formato tradicional</span>
+              </div>
+              @if (idaVuelta()) {
+              <span class="material-symbols-outlined text-[20px]">check_circle</span>
+              }
+            </button>
+          </div>
+        </div>
+        }
+
+        <!-- Selector de Instancia Inicial de Playoffs -->
+        <div class="flex flex-col gap-2">
+          <label class="font-body-bold text-xs text-on-surface flex items-center justify-between">
+            <span class="flex items-center gap-1.5">
+              <span>Instancia Inicial del Cuadro Clasificatorio</span>
+              <span class="material-symbols-outlined text-text-muted text-[16px]">info</span>
+            </span>
+            @if (formato() === 'liga') {
+            <span class="text-[11px] text-primary font-stat-label">Top 4 clasifican directo a Semifinales</span>
+            }
+          </label>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <button type="button" (click)="setFaseInicial('final')"
+              [class]="faseInicial() === 'final'
+                  ? 'py-3 px-4 rounded-xl bg-primary-container text-on-primary font-body-bold text-xs text-center shadow-lg shadow-primary-container/20 transition-all flex items-center justify-center gap-1.5'
+                  : 'py-3 px-4 rounded-xl bg-surface-container text-text-secondary hover:text-white font-body-medium text-xs text-center transition-all'">
+              @if (faseInicial() === 'final') {
+              <span class="material-symbols-outlined text-[16px]">check</span>
+              }
+              <span>Final (2 equipos)</span>
+            </button>
+
+            <button type="button" (click)="setFaseInicial('semifinales')"
+              [class]="faseInicial() === 'semifinales'
+                  ? 'py-3 px-4 rounded-xl bg-primary-container text-on-primary font-body-bold text-xs text-center shadow-lg shadow-primary-container/20 transition-all flex items-center justify-center gap-1.5'
+                  : 'py-3 px-4 rounded-xl bg-surface-container text-text-secondary hover:text-white font-body-medium text-xs text-center transition-all'">
+              @if (faseInicial() === 'semifinales') {
+              <span class="material-symbols-outlined text-[16px]">check</span>
+              }
+              <span>Semifinales (4 eq. - FJH)</span>
+            </button>
+
+            <button type="button" (click)="setFaseInicial('cuartos')"
+              [class]="faseInicial() === 'cuartos'
+                  ? 'py-3 px-4 rounded-xl bg-primary-container text-on-primary font-body-bold text-xs text-center shadow-lg shadow-primary-container/20 transition-all flex items-center justify-center gap-1.5'
+                  : 'py-3 px-4 rounded-xl bg-surface-container text-text-secondary hover:text-white font-body-medium text-xs text-center transition-all'">
+              @if (faseInicial() === 'cuartos') {
+              <span class="material-symbols-outlined text-[16px]">check</span>
+              }
+              <span>Cuartos de Final (8 eq.)</span>
+            </button>
+
+            <button type="button" (click)="setFaseInicial('octavos')"
+              [class]="faseInicial() === 'octavos'
+                  ? 'py-3 px-4 rounded-xl bg-primary-container text-on-primary font-body-bold text-xs text-center shadow-lg shadow-primary-container/20 transition-all flex items-center justify-center gap-1.5'
+                  : 'py-3 px-4 rounded-xl bg-surface-container text-text-secondary hover:text-white font-body-medium text-xs text-center transition-all'">
+              @if (faseInicial() === 'octavos') {
+              <span class="material-symbols-outlined text-[16px]">check</span>
+              }
+              <span>Octavos de Final (16 eq.)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dual Toggle Controls: 3° Puesto y Modalidad de Llaves -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Toggle 1: 3er y 4to Puesto -->
+          <div
+            class="p-4 rounded-xl bg-surface-container flex items-center justify-between gap-4 border border-white/5">
+            <div class="flex items-start gap-3">
+              <div
+                class="w-10 h-10 rounded-xl bg-accent-amber/15 text-accent-amber flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[22px]">workspace_premium</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="font-body-bold text-xs text-white">Partido por el 3° y 4° Puesto</span>
+                <span class="font-body-base text-xs text-text-muted">Disputa de medalla de bronce provincial entre semifinalistas.</span>
+              </div>
+            </div>
+            <div (click)="toggleTercerPuesto()"
+              class="w-12 h-6 rounded-full relative flex items-center px-1 cursor-pointer transition-colors"
+              [class]="tercerPuesto() ? 'bg-primary-container' : 'bg-slate-800'">
+              <div class="w-4 h-4 bg-white rounded-full shadow transition-transform"
+                [class]="tercerPuesto() ? 'translate-x-6' : 'translate-x-0'"></div>
+            </div>
+          </div>
+
+          <!-- Toggle 2: Modalidad de Cruces Playoffs -->
+          <div
+            class="p-4 rounded-xl bg-surface-container flex items-center justify-between gap-4 border border-white/5">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[22px]">swap_vert</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="font-body-bold text-xs text-white">Modalidad de Llaves (Semis &amp; Final)</span>
+                <span class="font-body-base text-xs text-text-muted">Define si los cruces eliminatorios son a partido único o ida y vuelta.</span>
+              </div>
+            </div>
+            <div
+              class="flex items-center gap-1 bg-surface-container-lowest p-1 rounded-lg shrink-0 border border-white/10">
+              <button type="button" (click)="setModalidadLlave('unico')" [class]="modalidadLlave() === 'unico'
+                    ? 'px-2.5 py-1 text-stat-label font-stat-label uppercase bg-primary-container text-on-primary rounded font-bold shadow'
+                    : 'px-2.5 py-1 text-stat-label font-stat-label uppercase text-text-muted hover:text-white'">
+                Único
+              </button>
+              <button type="button" (click)="setModalidadLlave('ida_vuelta')" [class]="modalidadLlave() === 'ida_vuelta'
+                    ? 'px-2.5 py-1 text-stat-label font-stat-label uppercase bg-primary-container text-on-primary rounded font-bold shadow'
+                    : 'px-2.5 py-1 text-stat-label font-stat-label uppercase text-text-muted hover:text-white'">
+                Ida y Vuelta
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mini Bracket Visual Preview -->
+        <div class="flex flex-col gap-3 pt-2">
+          <div class="flex items-center justify-between">
+            <span class="font-label-caps text-label-caps text-text-secondary uppercase tracking-wider">
+              Esquema Gráfico Preliminar de Llaves
+            </span>
+            <span class="font-stat-label text-stat-label text-primary uppercase font-bold">{{ crucesCalculados() }}</span>
+          </div>
+
+          <div class="w-full bg-surface-container-lowest/90 rounded-xl p-6 overflow-x-auto border border-white/5">
+            <div class="min-w-[620px] flex items-center justify-between gap-6 py-2">
+              <!-- Semifinales Node Column -->
+              <div class="flex flex-col gap-6 w-56">
+                <span class="font-stat-label text-stat-label text-primary uppercase text-center font-bold">
+                  {{ formato() === 'liga' ? 'SEMIFINALES FJH' : formato() === 'grupos_eliminatorias' ? 'SEMIS CRUZADAS' : 'SEMIFINALES' }}
+                  ({{ modalidadLlave() === 'ida_vuelta' ? 'IDA Y VUELTA' : 'PARTIDO ÚNICO' }})
+                </span>
+
+                <!-- Matchup 1 -->
+                <div class="flex flex-col gap-1 p-3 rounded-lg bg-surface-container border border-white/5">
+                  <div class="flex items-center justify-between text-xs font-body-medium text-white">
+                    <span class="truncate">
+                      {{ formato() === 'liga' ? '1° Tabla General' : formato() === 'grupos_eliminatorias' ? '1° Zona A' : 'Llave 1 Semifinal' }}
+                    </span>
+                    <span class="font-stat-label text-stat-label text-text-muted">LOCAL</span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs font-body-medium text-text-secondary">
+                    <span class="truncate">
+                      {{ formato() === 'liga' ? '4° Tabla General' : formato() === 'grupos_eliminatorias' ? '2° Zona B' : 'Llave 2 Semifinal' }}
+                    </span>
+                    <span class="font-stat-label text-stat-label text-text-muted">VISITANTE</span>
+                  </div>
+                </div>
+
+                <!-- Matchup 2 -->
+                <div class="flex flex-col gap-1 p-3 rounded-lg bg-surface-container border border-white/5">
+                  <div class="flex items-center justify-between text-xs font-body-medium text-white">
+                    <span class="truncate">
+                      {{ formato() === 'liga' ? '2° Tabla General' : formato() === 'grupos_eliminatorias' ? '1° Zona B' : 'Llave 3 Semifinal' }}
+                    </span>
+                    <span class="font-stat-label text-stat-label text-text-muted">LOCAL</span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs font-body-medium text-text-secondary">
+                    <span class="truncate">
+                      {{ formato() === 'liga' ? '3° Tabla General' : formato() === 'grupos_eliminatorias' ? '2° Zona A' : 'Llave 4 Semifinal' }}
+                    </span>
+                    <span class="font-stat-label text-stat-label text-text-muted">VISITANTE</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Connectors SVG -->
+              <div class="w-16 h-40 flex items-center justify-center text-text-muted shrink-0">
+                <svg class="stroke-primary/40" fill="none" height="120" viewBox="0 0 64 120" width="64">
+                  <path d="M0 25 H32 V60 H64" stroke-linecap="round" stroke-width="2"></path>
+                  <path d="M0 95 H32 V60" stroke-linecap="round" stroke-width="2"></path>
+                </svg>
+              </div>
+
+              <!-- Gran Final Node Column -->
+              <div class="flex flex-col gap-3 w-64 items-center justify-center">
+                <span class="font-stat-label text-stat-label text-tertiary uppercase text-center font-bold">
+                  GRAN FINAL PROVINCIAL
+                </span>
+                <div
+                  class="w-full flex flex-col gap-1.5 p-4 rounded-xl bg-surface-container shadow-lg shadow-primary-container/10 border border-primary/20">
+                  <div class="flex items-center justify-between text-xs font-body-bold text-white">
+                    <span>Ganador Semifinal 1</span>
+                    <span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                  </div>
+                  <div class="h-px bg-surface-bright/40 my-0.5"></div>
+                  <div class="flex items-center justify-between text-xs font-body-bold text-white">
+                    <span>Ganador Semifinal 2</span>
+                    <span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                  </div>
+                </div>
+
+                @if (tercerPuesto()) {
+                <div class="w-full flex items-center justify-between px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-300">
+                  <span class="flex items-center gap-1 font-bold">
+                    <span class="material-symbols-outlined text-[14px]">workspace_premium</span>
+                    3° y 4° Puesto
+                  </span>
+                  <span class="text-text-muted text-[10px]">Perdedor SF1 vs SF2</span>
+                </div>
+                }
+
+                <span class="font-stat-label text-stat-label text-text-muted uppercase text-center">
+                  Sede Oficial: Estadio Federación
+                </span>
+              </div>
+
+              <!-- Final Arrow -->
+              <div class="w-10 flex items-center justify-center text-tertiary">
+                <span class="material-symbols-outlined text-[28px]">arrow_forward</span>
+              </div>
+
+              <!-- Champion Node -->
+              <div
+                class="flex flex-col items-center justify-center w-48 p-4 rounded-xl bg-gradient-to-b from-primary/10 to-transparent text-center gap-2 border border-primary/20">
+                <div
+                  class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary shadow-lg shadow-primary/20">
+                  <span class="material-symbols-outlined text-[28px]">emoji_events</span>
+                </div>
+                <span class="font-label-caps text-label-caps text-white font-extrabold uppercase">
+                  CAMPEÓN FJH {{ temporada() }}
+                </span>
+                <span class="font-stat-label text-stat-label text-tertiary uppercase">
+                  Clasifica a Torneo Nacional 'A'
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-fila de Reglas para Liga Oficial FJH -->
+        @if (formato() === 'liga') {
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-white/5">
+          <!-- Modalidad Fase Regular -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-body-medium text-xs text-text-secondary">Fase Regular</label>
+            <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container border border-border-subtle">
+              <span class="text-xs text-white">{{ idaVuelta() ? 'Rueda Doble (Ida y Vuelta)' : 'Rueda Simple (Solo Ida)' }}</span>
+              <span class="font-stat-label text-stat-label uppercase px-2 py-0.5 rounded bg-surface-bright text-primary font-bold">
+                Tabla Única
+              </span>
+            </div>
+          </div>
+
+          <!-- Clasificación a Fase Final -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-body-medium text-xs text-text-secondary">Clasificación a Fase Final</label>
+            <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container border border-border-subtle">
+              <span class="text-xs text-white">Top 4 a Semifinales</span>
+              <span class="font-stat-label text-stat-label uppercase px-2 py-0.5 rounded bg-tertiary/20 text-tertiary font-bold">
+                1° vs 4° / 2° vs 3°
+              </span>
+            </div>
+          </div>
+
+          <!-- Criterio de Desempate -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-body-medium text-xs text-text-secondary">Criterio de Desempate en Tabla</label>
+            <div class="relative">
+              <select [ngModel]="criterioDesempate()" (ngModelChange)="criterioDesempate.set($event)"
+                name="criterioDesempate"
+                class="appearance-none w-full bg-surface-container border border-border-subtle rounded-xl px-4 py-3 text-white text-xs font-body-medium focus:border-primary focus:outline-none">
+                <option value="dif_gol">Dif. Gol &gt; Goles a Favor &gt; Fair Play</option>
+                <option value="olimpico">Resultado Olímpico (Entre Sí)</option>
+              </select>
+              <span
+                class="material-symbols-outlined absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none text-[18px]">tune</span>
+            </div>
+          </div>
+        </div>
+        }
+
+        <!-- Sub-fila de Reglas para Grupos + Eliminatorias -->
+        @if (formato() === 'grupos_eliminatorias') {
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-white/5">
+          <!-- Cantidad de Zonas -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-body-medium text-xs text-text-secondary">Cantidad de Zonas / Grupos</label>
+            <div class="relative">
+              <select [ngModel]="cantidadGrupos()" (ngModelChange)="cantidadGrupos.set($event)" name="cantidadGrupos"
+                class="appearance-none w-full bg-surface-container border border-border-subtle rounded-xl px-4 py-3 text-white text-xs font-body-medium focus:border-primary focus:outline-none">
+                <option [value]="2">2 Zonas (Zona A y Zona B)</option>
+                <option [value]="3">3 Zonas (A, B y C)</option>
+                <option [value]="4">4 Zonas (A, B, C y D)</option>
+              </select>
+              <span
+                class="material-symbols-outlined absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none text-[18px]">expand_more</span>
+            </div>
+          </div>
+
+          <!-- Modalidad de Zonas -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-body-medium text-xs text-text-secondary">Modalidad de Fase de Zonas</label>
+            <div
+              class="flex items-center justify-between p-3 rounded-xl bg-surface-container border border-border-subtle">
+              <span class="text-xs text-white">Partidos Ida y Vuelta</span>
+              <span
+                class="font-stat-label text-stat-label uppercase px-2 py-0.5 rounded bg-surface-bright text-primary font-bold">Oficial
+                FJH</span>
+            </div>
+          </div>
+
+          <!-- Criterio de Desempate -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-body-medium text-xs text-text-secondary">Criterio de Desempate en Tabla</label>
+            <div class="relative">
+              <select [ngModel]="criterioDesempate()" (ngModelChange)="criterioDesempate.set($event)"
+                name="criterioDesempate"
+                class="appearance-none w-full bg-surface-container border border-border-subtle rounded-xl px-4 py-3 text-white text-xs font-body-medium focus:border-primary focus:outline-none">
+                <option value="dif_gol">Dif. Gol &gt; Goles a Favor &gt; Fair Play</option>
+                <option value="olimpico">Resultado Olímpico (Entre Sí)</option>
+              </select>
+              <span
+                class="material-symbols-outlined absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none text-[18px]">tune</span>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+
+    <!-- SECTION 3: IDENTIDAD VISUAL & ESTILO DEL TORNEO -->
+    <section
+      class="bg-surface-container/70 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-xl flex flex-col gap-6 border border-border-glass">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-secondary/15 flex items-center justify-center text-secondary">
+            <span class="material-symbols-outlined text-[22px]">palette</span>
+          </div>
+          <div>
+            <h2 class="font-headline-md text-lg md:text-xl text-white font-bold">3. Identidad Visual en la Plataforma
+            </h2>
+            <p class="font-body-base text-xs text-text-secondary">Gradiente y presentación de tarjetas oficiales en el
+              Hub de Torneos</p>
+          </div>
+        </div>
+        <span class="font-stat-label text-stat-label text-text-muted uppercase">Paso 3 de 3</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <!-- Palette Selector (7 cols) -->
+        <div class="lg:col-span-7 flex flex-col gap-4">
+          <span class="font-body-medium text-xs text-text-secondary">Paletas de Gradientes Oficiales FJH</span>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            @for (theme of themes; track theme.name) {
+            <div (click)="setTheme(theme.class)"
+              class="p-3 rounded-xl bg-court-base flex items-center justify-between cursor-pointer border transition-all"
+              [class]="colorClase() === theme.class
+                  ? 'border-primary/50 shadow-md shadow-primary/10'
+                  : 'border-white/5 hover:border-white/20 hover:bg-surface-container'">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-r shadow-sm shrink-0" [ngClass]="theme.previewGradient">
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-body-bold text-xs text-white">{{ theme.name }}</span>
+                  <span class="font-stat-label text-stat-label text-text-muted">{{ theme.sublabel }}</span>
+                </div>
+              </div>
+              @if (colorClase() === theme.class) {
+              <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+              }
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Live Card Visual Preview (5 cols) -->
+        <div class="lg:col-span-5 flex flex-col gap-2">
+          <span class="font-label-caps text-label-caps text-text-secondary uppercase tracking-wider">Vista Previa
+            Dinámica de Tarjeta</span>
+
+          <div
+            class="rounded-2xl p-5 bg-gradient-to-br shadow-2xl relative overflow-hidden flex flex-col justify-between h-56 border border-white/10"
+            [ngClass]="colorClase()">
+            <!-- SVG texture -->
+            <svg class="absolute inset-0 w-full h-full opacity-10 stroke-white pointer-events-none" fill="none"
+              viewBox="0 0 400 200">
+              <path d="M 0,100 L 400,100" stroke-dasharray="4 4" stroke-width="1.5"></path>
+              <circle cx="200" cy="100" r="45" stroke-width="1.5"></circle>
+            </svg>
+
+            <div class="flex items-start justify-between relative z-10">
+              <span
+                class="px-2.5 py-1 rounded bg-court-base/80 text-primary font-stat-label text-stat-label uppercase tracking-widest font-extrabold backdrop-blur-md">
+                {{ categoria() }} • {{ rama() }}
+              </span>
+              <span class="w-2.5 h-2.5 rounded-full bg-tertiary shadow-[0_0_8px_currentColor]"></span>
+            </div>
+
+            <div class="flex flex-col gap-1 relative z-10">
+              <span class="font-stat-label text-stat-label text-primary-fixed uppercase tracking-wider">
+                FJH TEMPORADA {{ temporada() }}
+              </span>
+              <h4 class="font-headline-md text-lg text-white font-extrabold leading-tight truncate">
+                {{ nombre().trim() || 'NOMBRE OFICIAL DEL TORNEO' }}
+              </h4>
+              <div class="flex items-center gap-3 text-text-secondary text-xs pt-1">
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] text-primary">groups</span>
+                  {{ formato() === 'grupos_eliminatorias' ? (cantidadGrupos() + ' Zonas + Playoffs') : formato() === 'liga' ? ('Liga (' + (idaVuelta() ? 'Ida y Vuelta' : 'Solo Ida') + ') + Semis & Final') : 'Playoffs Directos' }}
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] text-primary">stadium</span>
+                  {{ sedes().length }} Sedes
+                </span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-white/10 relative z-10 text-xs">
+              <span class="text-stat-label font-stat-label text-text-muted uppercase">ESTADO: CONFIGURADO</span>
+              <span class="font-label-caps text-label-caps text-white font-bold inline-flex items-center gap-1">
+                Explorar Fixture <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STICKY ACTION BUTTONS DOCK -->
+    <div
+      class="sticky bottom-4 z-40 bg-surface-container/95 backdrop-blur-xl rounded-2xl p-4 md:p-5 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-border-glass">
+      <div class="flex items-center gap-2 text-text-muted text-xs">
+        <span class="material-symbols-outlined text-primary text-[20px]">help_outline</span>
+        <span>Requiere validación del Colegio Arbitral antes de oficializar fixtures y designaciones.</span>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+        <a routerLink="/admin/torneos"
+          class="px-5 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-bright text-text-secondary hover:text-white font-body-bold text-xs transition-colors cursor-pointer text-center">
+          Descartar Cambios
+        </a>
+
+        <button type="button" (click)="guardar(false)" [disabled]="saving() || !isFormValid()"
+          class="px-5 py-2.5 rounded-xl bg-court-card hover:bg-court-card-hover text-white font-body-bold text-xs transition-all shadow-md border border-white/10 disabled:opacity-40 cursor-pointer">
+          Guardar Borrador
+        </button>
+
+        <button type="button" (click)="guardar(true)" [disabled]="saving() || !isFormValid()"
+          class="px-7 py-3 rounded-xl bg-gradient-to-r from-accent-cyan-deep to-primary-container text-on-primary font-body-bold text-xs shadow-xl shadow-primary-container/30 hover:shadow-primary-container/50 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 disabled:opacity-40 cursor-pointer">
+          @if (saving()) {
+          <span class="inline-block w-4 h-4 border-2 border-slate-900 border-t-white rounded-full animate-spin"></span>
+          <span>Sincronizando...</span>
+          } @else {
+          <span class="material-symbols-outlined text-[18px]">cloud_upload</span>
+          <span>{{ isEditMode() ? 'Actualizar Torneo Oficial' : 'Publicar Torneo Oficial' }}</span>
+          }
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div>
