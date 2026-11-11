@@ -44,6 +44,7 @@ export interface Torneo {
   modalidadLlave?: string; // 'unico' | 'ida_vuelta'
   cantidadGrupos?: number;
   criterioDesempate?: string;
+  tipo?: string;
   tablaPosiciones?: PosicionClub[];
   partidos?: any[];
   _count?: {

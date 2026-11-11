@@ -20,6 +20,22 @@ export const routes: Routes = [
       import('./features/auth/pages/login/login.component').then((m) => m.LoginComponent),
     title: 'FJH - Login Institucional',
   },
+  {
+    path: 'fixture',
+    loadComponent: () =>
+      import('./features/public/pages/fixture/fixture.component').then((m) => m.FixtureComponent),
+    title: 'FJH - Fixture & Planilla en Vivo',
+  },
+  {
+    path: 'fixture/gestion',
+    redirectTo: 'fixture',
+    pathMatch: 'full',
+  },
+  {
+    path: 'fixtures-y-resultados',
+    redirectTo: 'fixture',
+    pathMatch: 'full',
+  },
 
   // Rutas protegidas de la Federación con Sidebar (FederationLayout)
   {

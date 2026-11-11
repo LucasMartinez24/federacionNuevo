@@ -40,4 +40,8 @@ export class ClubesService {
   deleteClub(id: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`);
   }
+
+  getJugadoresByClub(id: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${id}/jugadores`);
+  }
 }

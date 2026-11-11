@@ -38,8 +38,13 @@ export class AuthService {
   readonly isRepFederacion = computed(() => this.currentUser()?.role === 'REP_FEDERACION');
   readonly isOficialMesa = computed(() => this.currentUser()?.role === 'OFICIAL_MESA');
   readonly isJefeArbitros = computed(() => this.currentUser()?.role === 'JEFE_ARBITROS');
+  readonly isArbitro = computed(() => this.currentUser()?.role === 'ARBITRO');
   readonly isCM = computed(() => this.currentUser()?.role === 'CM');
   readonly isClub = computed(() => this.currentUser()?.role === 'user');
+  readonly canManagePlanilla = computed(() => {
+    const r = this.currentUser()?.role;
+    return r === 'admin' || r === 'REP_FEDERACION' || r === 'OFICIAL_MESA' || r === 'JEFE_ARBITROS' || r === 'ARBITRO';
+  });
 
   login(credentials: LoginCredentials): Observable<User> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(

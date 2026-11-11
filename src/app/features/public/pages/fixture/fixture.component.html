@@ -1,0 +1,1477 @@
+<div
+  class="relative w-full min-h-screen bg-surface font-body-base text-body-base text-on-surface antialiased selection:bg-primary/20 selection:text-primary pb-24">
+
+  <!-- ========================================== -->
+  <!-- 0. HEADER / BARRA DE NAVEGACIÓN INSTITUCIONAL FJH -->
+  <!-- ========================================== -->
+  <header class="w-full bg-[#080e18]/95 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-50">
+    <div class="h-20 max-w-7xl mx-auto px-4 lg:px-8 flex items-center justify-between gap-4">
+
+      <!-- Brand & Escudo Oficial -->
+      <a routerLink="/" class="flex items-center gap-3 min-w-0 group cursor-pointer">
+        <img alt="Logo FJH"
+          class="h-10 md:h-12 w-auto object-contain shrink-0 filter drop-shadow-[0_2px_8px_rgba(56,189,248,0.25)] transition-transform group-hover:scale-105"
+          src="https://lh3.googleusercontent.com/aida/AEtjO1UMUHTR4BEASnggXG7cmc_oVX5trlx3oewmdFmOb3bIVlHb25wLtYeQPIaJWZgmtb5gsh1q5jejUXvKuFZx6Lb2nX9U7L4uujgFAwpT5jm4b4eSZpGLTn8dVlYoMtlYCXp9F_9YFfh8pwyLhtmF8bA87mT4qqcbTb10zY_ec8nW2S_kjFUSa5R_WECJ1cqLKe8opkqlLhJ2o42b9TbdJOz5SNuCUAZKjCuhWHf6nu9aJzn6uZURQ1_RqoJJLUsL4izc1AjpqYMkQ7g" />
+        <div class="flex flex-col min-w-0">
+          <span class="font-headline-md text-sm md:text-base text-white tracking-tight font-bold truncate">
+            Federación Jujeña de Handball
+          </span>
+          <span
+            class="font-label-caps text-[10px] text-primary font-bold tracking-wider uppercase flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            FJH • Afiliada a la CAH
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden xl:flex items-center gap-1">
+        <a routerLink="/"
+          class="text-on-surface-variant hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs font-body-medium transition-colors">
+          Inicio
+        </a>
+        <a routerLink="/admin/torneos"
+          class="text-on-surface-variant hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs font-body-medium transition-colors">
+          Torneos &amp; Competencias
+        </a>
+        <a routerLink="/fixture"
+          class="bg-primary/15 text-primary font-body-bold rounded-lg px-3 py-1.5 border border-primary/30 text-xs">
+          Fixtures &amp; Planilla en Vivo
+        </a>
+        <a routerLink="/admin/jugadores"
+          class="text-on-surface-variant hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs font-body-medium transition-colors">
+          Padrón de Jugadores
+        </a>
+      </nav>
+
+      <!-- Quick Actions / User Status -->
+      <div class="flex items-center gap-3 shrink-0">
+        @if (authService.isAuthenticated()) {
+        <a routerLink="/admin"
+          class="hidden sm:inline-flex items-center gap-1.5 bg-secondary text-white hover:bg-secondary/90 px-3 py-1.5 rounded-lg transition-all shadow-[0_0_15px_rgba(244,63,94,0.35)] font-body-bold text-xs border border-secondary/50">
+          <span class="material-symbols-outlined text-[17px]">sports_handball</span>
+          <span>Panel Oficial ({{ authService.currentUser()?.role }})</span>
+        </a>
+        } @else {
+        <a routerLink="/login"
+          class="hidden sm:inline-flex items-center gap-1.5 bg-court-card hover:bg-court-card-hover border border-white/10 text-white px-3 py-1.5 rounded-lg text-xs font-body-bold transition-all shadow-sm">
+          <span class="material-symbols-outlined text-[16px] text-primary">login</span>
+          <span>Acceso Árbitros &amp; Clubes</span>
+        </a>
+        }
+      </div>
+
+    </div>
+  </header>
+
+  <!-- FEEDBACK TOAST (Elevado a z-[100] para ser visible por encima de cualquier modal o backdrop) -->
+  @if (feedback(); as fb) {
+  <div
+    class="fixed top-24 right-6 z-[100] flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md border animate-in slide-in-from-top-4 duration-300"
+    [ngClass]="fb.type === 'success' ? 'bg-emerald-950/95 border-emerald-500/70 text-emerald-200' : 'bg-rose-950/95 border-rose-500/70 text-rose-200'">
+    <span class="material-symbols-outlined text-[20px]">
+      {{ fb.type === 'success' ? 'check_circle' : 'error' }}
+    </span>
+    <span class="text-sm font-medium">{{ fb.message }}</span>
+    <button (click)="feedback.set(null)" class="p-1 hover:bg-white/10 rounded-lg transition-colors ml-2">
+      <span class="material-symbols-outlined text-[16px]">close</span>
+    </button>
+  </div>
+  }
+
+  <!-- TOP CONTEXT HEADER & TOURNAMENT MODE BAR -->
+  <section class="w-full bg-court-base relative overflow-hidden border-b border-white/[0.06]">
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-primary-container/10 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute -top-24 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 pt-6 pb-6 flex flex-col gap-4">
+
+      <!-- Breadcrumb Bar + Selector de Torneos -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 text-sm">
+        <nav class="flex items-center gap-1.5 text-text-muted text-xs">
+          <a routerLink="/" class="hover:text-primary transition-colors cursor-pointer flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px]">home</span>
+            <span>Inicio</span>
+          </a>
+          <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+          <a routerLink="/admin/torneos" class="text-text-secondary hover:text-white transition-colors cursor-pointer">
+            Torneos &amp; Competencias
+          </a>
+          <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+          <span class="text-primary font-body-bold">Fixture &amp; Match Center</span>
+        </nav>
+
+        <!-- Torneo Dropdown Selector -->
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] font-label-caps text-text-muted uppercase">Torneo:</span>
+          <select [ngModel]="torneoSeleccionado()?.id" (ngModelChange)="seleccionarTorneo($any($event))"
+            class="bg-court-card border border-white/10 text-white font-body-bold text-xs rounded-xl px-3 py-1.5 focus:border-primary outline-none cursor-pointer">
+            @for (t of torneos(); track t.id) {
+            <option [value]="t.id" class="bg-court-surface text-white">
+              {{ t.nombre }} • {{ t.categoria }} ({{ t.rama }})
+            </option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Main Tournament Bar -->
+      <div
+        class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-court-card/80 backdrop-blur-md p-4 lg:p-6 rounded-2xl shadow-xl border border-border-glass">
+        <div class="flex items-start sm:items-center gap-4 min-w-0">
+          <div
+            class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-cyan-deep to-primary-container flex items-center justify-center shrink-0 shadow-lg">
+            <span class="material-symbols-outlined text-white text-[32px]">emoji_events</span>
+          </div>
+          <div class="flex flex-col gap-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <span
+                class="font-label-caps text-[10px] px-2.5 py-0.5 rounded-full bg-primary/20 text-primary uppercase font-bold tracking-wider">
+                Federación Jujeña
+              </span>
+              <span
+                class="font-label-caps text-[10px] px-2 py-0.5 rounded-full bg-surface-container-highest text-text-secondary uppercase">
+                Oficial CAH #{{ torneoSeleccionado()?.temporada || '2026' }}
+              </span>
+              @if (torneoSeleccionado()?.estado === 'In Progress') {
+              <span
+                class="font-label-caps text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold uppercase flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                En Curso
+              </span>
+              }
+            </div>
+            <h1 class="font-headline-lg text-xl md:text-2xl text-white font-bold tracking-tight truncate uppercase">
+              {{ torneoSeleccionado()?.nombre || 'Torneo Oficial de Handball' }} - {{ torneoSeleccionado()?.categoria }}
+              ({{ torneoSeleccionado()?.rama }})
+            </h1>
+            <div class="flex items-center gap-2 text-text-secondary font-body-medium text-xs">
+              <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+              <span class="uppercase font-label-caps text-[10px] tracking-wider text-tertiary">
+                MODALIDAD: {{ torneoSeleccionado()?.formato || 'LIGA' }} {{ torneoSeleccionado()?.idaVuelta ? '+ IDA Y
+                VUELTA' : '' }}
+                • FASE FINAL: {{ (torneoSeleccionado()?.faseInicial || 'semifinales') | uppercase }} {{
+                torneoSeleccionado()?.tercerPuesto ? '+ 3° PUESTO' : '' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Segmented Navigation Pills -->
+        <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0">
+          <div class="flex p-1 bg-court-surface rounded-xl shadow-inner border border-white/5">
+            <button type="button" (click)="currentTab.set('fixture')" [class]="currentTab() === 'fixture'
+                ? 'bg-primary-container text-court-base font-body-bold shadow-md'
+                : 'text-text-secondary hover:text-white font-body-medium'"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
+              <span class="material-symbols-outlined text-[16px]">calendar_month</span>
+              <span>Fixture &amp; Partidos</span>
+            </button>
+            <button type="button" (click)="currentTab.set('playoffs')" [class]="currentTab() === 'playoffs'
+                ? 'bg-primary-container text-court-base font-body-bold shadow-md'
+                : 'text-text-secondary hover:text-white font-body-medium'"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
+              <span class="material-symbols-outlined text-[16px]">account_tree</span>
+              <span>Playoffs &amp; Finales</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+            </button>
+            <button type="button" (click)="currentTab.set('posiciones')" [class]="currentTab() === 'posiciones'
+                ? 'bg-primary-container text-court-base font-body-bold shadow-md'
+                : 'text-text-secondary hover:text-white font-body-medium'"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
+              <span class="material-symbols-outlined text-[16px]">leaderboard</span>
+              <span>Posiciones</span>
+            </button>
+          </div>
+
+          <!-- Botón Gestionar para Administradores -->
+          @if (authService.isAdmin() || authService.isRepFederacion()) {
+          <a [routerLink]="['/admin/torneos/gestionar', torneoSeleccionado()?.id]"
+            class="inline-flex items-center gap-1.5 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-xl font-body-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
+            title="Organizar grupos, fechas, horarios y sedes">
+            <span class="material-symbols-outlined text-[16px]">tune</span>
+            <span class="hidden sm:inline">Gestionar Fechas</span>
+          </a>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROUND SWITCHER & PHASE NAVIGATION BAR (STICKY) -->
+  <section class="w-full bg-court-surface sticky top-20 z-40 shadow-lg border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+
+      <!-- Phase Toggle + Round Pills -->
+      <div class="flex items-center gap-3 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+
+        <div class="flex p-0.5 bg-surface-container rounded-lg shrink-0">
+          <button type="button" (click)="currentFase.set('Fase Grupos'); currentTab.set('fixture')"
+            [class]="currentTab() === 'fixture' ? 'bg-accent-cyan-deep text-white font-body-bold shadow-sm' : 'text-text-muted hover:text-white font-body-medium'"
+            class="px-3 py-1 rounded text-xs transition-colors cursor-pointer">
+            Fase Regular
+          </button>
+          <button type="button" (click)="currentFase.set('Fase Final'); currentTab.set('playoffs')"
+            [class]="currentTab() === 'playoffs' ? 'bg-accent-cyan-deep text-white font-body-bold shadow-sm' : 'text-text-muted hover:text-white font-body-medium'"
+            class="px-3 py-1 rounded text-xs transition-colors cursor-pointer">
+            Fase Final (Playoffs)
+          </button>
+        </div>
+
+        <div class="h-6 w-px bg-surface-container-highest shrink-0"></div>
+
+        <!-- Stage / Jornadas pills -->
+        @if (currentTab() === 'fixture') {
+        <div class="flex items-center gap-1.5 shrink-0">
+          @for (num of jornadasIds(); track num) {
+          <button type="button" (click)="cargarPartidosJornada(torneoSeleccionado()!.id, num)" [class]="jornadaSeleccionada() === num
+                  ? 'bg-primary/20 text-primary border border-primary/50 font-body-bold shadow-[0_0_12px_rgba(56,189,248,0.3)]'
+                  : 'bg-court-card text-text-muted hover:text-white border border-white/5 font-body-medium'"
+            class="px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1.5 cursor-pointer">
+            <span>Fecha {{ num }}</span>
+          </button>
+          }
+        </div>
+        } @else if (currentTab() === 'playoffs') {
+        <div class="flex items-center gap-1.5 shrink-0">
+          <span class="text-xs text-text-secondary font-bold uppercase mr-1">Fases Disponibles:</span>
+          @if (torneoSeleccionado()?.faseInicial === 'cuartos' || torneoSeleccionado()?.faseInicial === 'octavos') {
+          <button
+            class="px-3 py-1.5 rounded-lg bg-court-card text-text-muted hover:text-white font-body-medium text-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[14px] text-tertiary">check_circle</span>
+            <span>Cuartos</span>
+          </button>
+          }
+          <button
+            class="px-3 py-1.5 rounded-lg bg-primary/15 text-primary font-body-bold text-xs shadow-[0_0_12px_rgba(56,189,248,0.3)] flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-ping"></span>
+            <span>Semifinales</span>
+          </button>
+          @if (torneoSeleccionado()?.tercerPuesto !== false) {
+          <button
+            class="px-3 py-1.5 rounded-lg bg-court-card text-text-muted hover:text-white font-body-medium text-xs">
+            3° Puesto (Bronce)
+          </button>
+          }
+          <button
+            class="px-3 py-1.5 rounded-lg bg-court-card text-text-muted hover:text-white font-body-medium text-xs flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px] text-accent-amber">military_tech</span>
+            <span>Gran Final Provincial</span>
+          </button>
+        </div>
+        }
+      </div>
+
+      <!-- Quick Filter Chips & Playoff Creator Action -->
+      <div class="flex items-center gap-2 shrink-0 self-end md:self-auto">
+        @if (currentTab() === 'playoffs' && canEdit()) {
+        <button type="button" (click)="abrirCrearPlayoff('Semifinales')"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-accent-cyan-deep to-primary text-court-base font-body-bold text-xs rounded-xl shadow-md hover:shadow-primary/30 transition-all cursor-pointer">
+          <span class="material-symbols-outlined text-[16px]">add</span>
+          <span>+ Programar Partido de Playoff</span>
+        </button>
+        }
+        @if (currentTab() === 'fixture') {
+        <select [ngModel]="filtroSede()" (ngModelChange)="filtroSede.set($event)"
+          class="bg-court-card text-text-secondary text-xs font-body-medium rounded-lg px-2.5 py-1 focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer border border-white/10">
+          <option value="Todas las Sedes">Todas las Sedes</option>
+          @for (s of sedesDisponibles(); track s) {
+          <option [value]="s">{{ s }}</option>
+          }
+        </select>
+        <select [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)"
+          class="bg-court-card text-text-secondary text-xs font-body-medium rounded-lg px-2.5 py-1 focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer border border-white/10">
+          <option value="Todos los Estados">Todos los Estados</option>
+          <option value="● En Vivo Ahora">● En Vivo Ahora</option>
+          <option value="Finalizados">Finalizados</option>
+          <option value="Próximos">Próximos</option>
+        </select>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- TAB 1: FIXTURE DE PARTIDOS DE LA JORNADA -->
+  <!-- ========================================== -->
+  @if (currentTab() === 'fixture') {
+  <section class="max-w-7xl mx-auto w-full px-4 lg:px-8 py-6 flex flex-col gap-6">
+
+    <div
+      class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-court-card p-4 rounded-2xl shadow-md border border-white/5">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-[22px]">event_available</span>
+        </div>
+        <div>
+          <h2 class="font-title-sm text-sm sm:text-base text-white font-bold">
+            Jornada {{ jornadaSeleccionada() }} • Fixture Oficial FJH
+          </h2>
+          <p class="font-stat-label text-[10px] text-text-secondary uppercase tracking-wider">
+            Torneo {{ torneoSeleccionado()?.nombre }} • Cancha Reglamentaria FJH • Protocolo IHF
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 self-start sm:self-auto">
+        <span class="font-label-caps text-[11px] text-text-muted uppercase">
+          {{ partidosFiltrados().length }} Encuentros
+        </span>
+        <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+        @if (canEdit()) {
+        <span class="font-label-caps text-[11px] text-secondary font-bold flex items-center gap-1">
+          <span class="material-symbols-outlined text-[15px]">sports</span>
+          Modo Mesa / Árbitro Habilitado
+        </span>
+        } @else {
+        <span class="font-label-caps text-[11px] text-tertiary font-bold">
+          Vista Espectador / Club
+        </span>
+        }
+      </div>
+    </div>
+
+    <!-- MATCH CARDS GRID -->
+    @if (partidosFiltrados().length === 0) {
+    <div
+      class="p-12 text-center bg-court-card rounded-2xl border border-dashed border-white/10 flex flex-col items-center justify-center gap-3">
+      <span class="material-symbols-outlined text-text-muted text-[40px]">calendar_today</span>
+      <p class="text-sm font-bold text-white">No hay partidos registrados en esta fecha con los filtros aplicados</p>
+      <p class="text-xs text-text-secondary">Selecciona otra jornada o restablece los filtros arriba.</p>
+    </div>
+    } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (p of partidosFiltrados(); track p.id) {
+      <div
+        class="bg-court-card rounded-2xl p-4 flex flex-col justify-between shadow-2xl relative overflow-hidden group border border-border-glass">
+
+        @if (p.estado === 'En Vivo' || p.estado === 'En disputa') {
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary via-primary to-secondary"></div>
+        } @else if (p.estado === 'Finalizado') {
+        <div class="absolute top-0 left-0 right-0 h-1 bg-tertiary"></div>
+        }
+
+        <div>
+          <!-- Card Header -->
+          <div class="flex items-center justify-between gap-2 pb-3 border-b border-white/5">
+            <div class="flex items-center gap-1.5 min-w-0 text-xs">
+              <span class="font-label-caps text-[10px] text-text-secondary uppercase truncate">
+                {{ p.fase || 'Fecha ' + p.jornada }}
+              </span>
+              <span class="text-text-muted">•</span>
+              <span class="font-label-caps text-[10px] text-text-muted truncate">
+                {{ p.lugar || 'Sede a definir' }}
+              </span>
+            </div>
+
+            <!-- Estado Badge -->
+            @if (p.estado === 'En Vivo' || p.estado === 'En disputa') {
+            <div
+              class="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container/30 text-secondary animate-pulse">
+              <span class="w-2 h-2 rounded-full bg-secondary"></span>
+              <span class="font-stat-label text-[10px] font-bold uppercase tracking-widest">EN VIVO</span>
+            </div>
+            } @else if (p.estado === 'Finalizado') {
+            <div class="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-tertiary-container/30 text-tertiary">
+              <span class="material-symbols-outlined text-[13px]">check</span>
+              <span class="font-stat-label text-[10px] font-bold uppercase tracking-wider">FINALIZADO</span>
+            </div>
+            } @else {
+            <div class="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-highest text-primary">
+              <span class="material-symbols-outlined text-[13px]">schedule</span>
+              <span class="font-stat-label text-[10px] font-bold uppercase tracking-wider">
+                {{ p.hora || '15:00 hs' }}
+              </span>
+            </div>
+            }
+          </div>
+
+          <!-- Teams & Center Scoreboard -->
+          <div class="grid grid-cols-7 items-center py-4">
+            <!-- Local Team -->
+            <div class="col-span-2 flex flex-col items-center text-center gap-1.5">
+              <div
+                class="w-14 h-14 rounded-full bg-surface-container p-0.5 shadow-lg flex items-center justify-center relative border border-white/10">
+                @if (p.local?.logoUrl) {
+                <img [src]="getClubLogoUrl(p.local.logoUrl)" [alt]="p.local.nombre"
+                  class="w-full h-full rounded-full object-cover">
+                } @else {
+                <div
+                  class="w-full h-full rounded-full bg-court-surface flex items-center justify-center text-text-muted">
+                  <span class="material-symbols-outlined text-[22px]">sports_handball</span>
+                </div>
+                }
+                <span
+                  class="absolute -bottom-1 bg-surface-container-highest text-white font-stat-label text-[9px] px-1.5 py-0.2 rounded-full">
+                  LOC
+                </span>
+              </div>
+              <h3 class="font-body-bold text-xs text-white leading-tight line-clamp-2">
+                {{ p.local?.nombre || 'Club Local' }}
+              </h3>
+            </div>
+
+            <!-- Score Center -->
+            <div class="col-span-3 flex flex-col items-center justify-center">
+              @if (p.estado === 'Finalizado' || p.estado === 'En Vivo' || p.estado === 'En disputa') {
+              <div
+                class="bg-court-surface px-3 py-1 rounded-xl shadow-inner flex items-center gap-2 border border-white/5">
+                <span class="font-scoreboard-score-mobile text-2xl font-bold text-white tabular-nums tracking-tight">
+                  {{ p.golesLocal }}
+                </span>
+                <span class="font-scoreboard-score-mobile text-2xl text-secondary font-bold"
+                  [class.animate-pulse]="p.estado !== 'Finalizado'">:</span>
+                <span class="font-scoreboard-score-mobile text-2xl font-bold text-white tabular-nums tracking-tight">
+                  {{ p.golesVisitante }}
+                </span>
+              </div>
+              <div class="flex flex-col items-center mt-1.5 text-center">
+                <span class="font-stat-label text-[10px] text-text-secondary uppercase">
+                  PT: {{ p.golesLocalHT }} - {{ p.golesVisitanteHT }}
+                </span>
+              </div>
+              } @else {
+              <div
+                class="w-10 h-10 rounded-full bg-court-surface flex items-center justify-center text-primary font-body-bold text-xs shadow-inner mb-1 border border-white/5">
+                VS
+              </div>
+              <span class="font-label-caps text-[10px] text-text-muted">
+                {{ p.fecha ? (p.fecha | date:'dd/MM/yyyy') : 'A programar' }}
+              </span>
+              }
+            </div>
+
+            <!-- Visitor Team -->
+            <div class="col-span-2 flex flex-col items-center text-center gap-1.5">
+              <div
+                class="w-14 h-14 rounded-full bg-surface-container p-0.5 shadow-lg flex items-center justify-center relative border border-white/10">
+                @if (p.visitante?.logoUrl) {
+                <img [src]="getClubLogoUrl(p.visitante.logoUrl)" [alt]="p.visitante.nombre"
+                  class="w-full h-full rounded-full object-cover">
+                } @else {
+                <div
+                  class="w-full h-full rounded-full bg-court-surface flex items-center justify-center text-text-muted">
+                  <span class="material-symbols-outlined text-[22px]">sports_handball</span>
+                </div>
+                }
+                <span
+                  class="absolute -bottom-1 bg-surface-container-highest text-white font-stat-label text-[9px] px-1.5 py-0.2 rounded-full">
+                  VIS
+                </span>
+              </div>
+              <h3 class="font-body-bold text-xs text-white leading-tight line-clamp-2">
+                {{ p.visitante?.nombre || 'Club Visita' }}
+              </h3>
+            </div>
+          </div>
+
+          <!-- Referee & Time Footer Strip -->
+          <div
+            class="bg-court-surface p-2 rounded-lg flex items-center justify-between text-text-secondary font-label-caps text-[10px] mb-3 border border-white/5">
+            <span class="flex items-center gap-1 truncate max-w-[180px]">
+              <span class="material-symbols-outlined text-[14px] text-text-muted">sports</span>
+              <span>{{ p.arbitro1 || p.arbitro2 ? (p.arbitro1 || '') + (p.arbitro2 ? ' / ' + p.arbitro2 : '') : 'Árbitro
+                a designar' }}</span>
+            </span>
+            <span class="text-primary font-bold">
+              {{ p.hora || '15:00 hs' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Footer Actions (Role-Based) -->
+        <div class="pt-2 flex items-center justify-between gap-2 border-t border-white/5">
+          <span class="text-[11px] text-text-muted flex items-center gap-1 truncate">
+            <span class="material-symbols-outlined text-[15px]">location_on</span>
+            <span class="truncate">{{ p.lugar || 'Sede Central' }}</span>
+          </span>
+
+          @if (canEdit()) {
+          <div class="flex items-center gap-1.5">
+            <button type="button" (click)="abrirActa(p, 'en_vivo')"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-accent-cyan-deep to-primary text-court-base font-body-bold text-xs shadow-md hover:shadow-primary/30 transition-all active:scale-95 cursor-pointer"
+              title="Iniciar o continuar el partido en tiempo real con cronómetro y acciones en vivo">
+              <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+              <span>En Vivo</span>
+            </button>
+            <button type="button" (click)="abrirActa(p, 'post_partido')"
+              class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-court-card-hover hover:bg-court-card-active border border-white/10 text-white font-body-bold text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
+              title="Cargar rápidamente la planilla física finalizada (goles, sanciones y firmas)">
+              <span class="material-symbols-outlined text-[16px] text-tertiary">assignment</span>
+              <span>Post-Partido</span>
+            </button>
+          </div>
+          } @else {
+          <button type="button" (click)="abrirActa(p, 'en_vivo')"
+            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-court-card-hover hover:bg-court-card-active text-text-primary font-body-bold text-xs shadow-sm transition-colors cursor-pointer">
+            <span class="material-symbols-outlined text-[16px] text-primary">visibility</span>
+            <span>Ver Acta Oficial</span>
+          </button>
+          }
+        </div>
+
+      </div>
+      }
+    </div>
+    }
+
+  </section>
+  }
+
+  <!-- ========================================== -->
+  <!-- TAB 2: INTERACTIVE PLAYOFF BRACKET & GESTIÓN DE PARTIDOS -->
+  <!-- ========================================== -->
+  @if (currentTab() === 'playoffs') {
+  <section class="w-full bg-court-base py-8" id="cuadro-playoffs">
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 flex flex-col gap-6">
+
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-1.5 text-primary font-label-caps text-xs tracking-wider uppercase">
+            <span class="material-symbols-outlined text-[18px]">account_tree</span>
+            <span>Ruta al Campeonato Provincial {{ torneoSeleccionado()?.temporada || '2026' }}</span>
+          </div>
+          <h2 class="font-headline-lg text-2xl text-white font-bold tracking-tight">
+            Cuadro de Llaves Oficial (Playoffs)
+          </h2>
+          <p class="font-body-base text-xs text-text-secondary">
+            Partidos de eliminación directa con planillaje digital en vivo y homologación CAH.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          @if (canEdit()) {
+          <button type="button" (click)="abrirCrearPlayoff('Semifinales')"
+            class="inline-flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-accent-cyan-deep to-primary text-court-base font-body-bold text-xs rounded-xl shadow-lg hover:shadow-primary/30 transition-all cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">add_circle</span>
+            <span>Crear Partido de Playoff</span>
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- LISTADO DE PARTIDOS DE PLAYOFFS EN CURSO / PROGRAMADOS -->
+      @if (partidosPlayoffs().length > 0) {
+      <div class="flex flex-col gap-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-text-muted">
+          Partidos Oficiales de Playoffs Asignados ({{ partidosPlayoffs().length }})
+        </span>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          @for (p of partidosPlayoffs(); track p.id) {
+          <div class="bg-court-card p-4 rounded-xl border border-white/10 flex flex-col justify-between shadow-lg">
+            <div class="flex items-center justify-between pb-2 border-b border-white/5 text-xs">
+              <span class="font-bold text-primary uppercase">{{ p.fase }}</span>
+              <span class="text-text-muted">{{ p.lugar }}</span>
+            </div>
+            <div class="py-3 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2 flex-1 min-w-0">
+                @if (p.local?.logoUrl) {
+                <img [src]="getClubLogoUrl(p.local.logoUrl)" class="w-7 h-7 rounded-full object-cover">
+                }
+                <span class="text-xs font-body-bold text-white truncate">{{ p.local?.nombre }}</span>
+              </div>
+              <div class="text-center font-bold px-3 py-1 bg-court-surface rounded-lg text-white">
+                {{ p.golesLocal }} : {{ p.golesVisitante }}
+              </div>
+              <div class="flex items-center gap-2 flex-1 justify-end min-w-0">
+                <span class="text-xs font-body-bold text-white truncate text-right">{{ p.visitante?.nombre }}</span>
+                @if (p.visitante?.logoUrl) {
+                <img [src]="getClubLogoUrl(p.visitante.logoUrl)" class="w-7 h-7 rounded-full object-cover">
+                }
+              </div>
+            </div>
+            <div class="pt-2 border-t border-white/5 flex items-center justify-between">
+              <span class="text-[11px] text-text-muted">{{ p.hora || '18:00 hs' }}</span>
+              @if (canEdit()) {
+                <div class="flex items-center gap-1">
+                  <button type="button" (click)="abrirActa(p, 'en_vivo')"
+                    class="px-2.5 py-1 rounded-lg bg-primary/20 hover:bg-primary/30 text-primary text-xs font-bold transition-all cursor-pointer">
+                    En Vivo
+                  </button>
+                  <button type="button" (click)="abrirActa(p, 'post_partido')"
+                    class="px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high border border-white/10 text-text-secondary hover:text-white text-xs font-bold transition-all cursor-pointer">
+                    Post-Partido
+                  </button>
+                </div>
+              } @else {
+                <button type="button" (click)="abrirActa(p, 'en_vivo')"
+                  class="px-3 py-1 rounded-lg bg-primary/20 hover:bg-primary/30 text-primary text-xs font-bold transition-all cursor-pointer">
+                  Ver Acta
+                </button>
+              }
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Horizontal Visual Bracket Board -->
+      <div class="w-full overflow-x-auto pb-4 scrollbar-none mt-4">
+        <div class="min-w-[1024px] grid grid-cols-4 gap-6 items-center py-2 relative">
+
+          <!-- COLUMN 1: CUARTOS -->
+          <div class="flex flex-col gap-4">
+            <div class="text-center pb-1">
+              <span class="font-label-caps text-xs uppercase text-text-secondary font-bold">Cuartos de Final</span>
+              <p class="font-stat-label text-[10px] text-text-muted">Resumen Global</p>
+            </div>
+            <div class="bg-court-card p-3 rounded-xl shadow-md flex flex-col gap-1 border border-white/5">
+              <span class="font-stat-label text-[10px] text-tertiary uppercase flex items-center justify-between">
+                <span>QF 1</span>
+                <span class="text-text-muted">FINAL</span>
+              </span>
+              <div class="flex items-center justify-between font-body-bold text-xs text-white">
+                <span>1° Zona A</span>
+                <span class="text-primary font-bold">Ganador A</span>
+              </div>
+              <div class="flex items-center justify-between font-body-medium text-xs text-text-muted">
+                <span>4° Zona B</span>
+                <span>-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMN 2: SEMIFINALES -->
+          <div class="flex flex-col gap-8">
+            <div class="text-center pb-1">
+              <span class="font-label-caps text-xs uppercase text-primary font-bold">Semifinales FJH</span>
+              <p class="font-stat-label text-[10px] text-secondary font-bold animate-pulse">● CRUCES OFICIALES</p>
+            </div>
+            <div class="bg-court-card p-4 rounded-2xl shadow-xl border border-white/5">
+              <span class="font-stat-label text-[10px] text-secondary font-bold uppercase block mb-2">Semifinal 1</span>
+              <div class="flex flex-col gap-2 text-xs">
+                <div class="p-2 bg-court-surface rounded-lg flex justify-between text-white font-bold">
+                  <span>1° Puesto Clasificado</span>
+                  <span>TBD</span>
+                </div>
+                <div class="p-2 bg-court-surface rounded-lg flex justify-between text-white font-bold">
+                  <span>2° Puesto Clasificado</span>
+                  <span>TBD</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMN 3: GRAN FINAL -->
+          <div class="flex flex-col gap-6">
+            <div class="text-center pb-1">
+              <span class="font-label-caps text-xs uppercase text-accent-amber font-bold">Gran Final Provincial</span>
+              <p class="font-stat-label text-[10px] text-text-muted">Por el Título Oficial</p>
+            </div>
+            <div
+              class="bg-gradient-to-b from-court-card-active to-court-card p-4 rounded-2xl shadow-2xl relative overflow-hidden border border-accent-amber/20">
+              <div
+                class="flex items-center justify-center gap-1.5 mb-3 bg-accent-amber/15 text-accent-amber py-1 px-3 rounded-full text-xs">
+                <span class="material-symbols-outlined text-[16px]">emoji_events</span>
+                <span class="font-stat-label text-[10px] font-bold uppercase tracking-wider">Por el Título
+                  Provincial</span>
+              </div>
+              <div class="flex flex-col gap-2 text-xs">
+                <div class="p-2.5 bg-court-surface rounded-xl flex items-center justify-between text-white font-bold">
+                  <span>Ganador Semifinal 1</span>
+                  <span class="text-text-muted">TBD</span>
+                </div>
+                <div class="p-2.5 bg-court-surface rounded-xl flex items-center justify-between text-white font-bold">
+                  <span>Ganador Semifinal 2</span>
+                  <span class="text-text-muted">TBD</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMN 4: CAMPEÓN -->
+          <div class="flex flex-col items-center justify-center text-center p-4">
+            <div
+              class="w-20 h-20 rounded-full bg-gradient-to-tr from-accent-amber/20 via-primary/30 to-accent-amber/40 p-1 shadow-2xl flex items-center justify-center animate-pulse mb-3">
+              <div class="w-full h-full rounded-full bg-court-card flex items-center justify-center">
+                <span class="material-symbols-outlined text-[36px] text-accent-amber">trophy</span>
+              </div>
+            </div>
+            <span class="font-label-caps text-[10px] text-accent-amber font-bold uppercase tracking-widest">
+              CAMPEÓN OFICIAL {{ torneoSeleccionado()?.temporada || '2026' }}
+            </span>
+            <h4 class="font-headline-md text-lg text-white font-bold tracking-tight mt-1">Por Definir</h4>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+  }
+
+  <!-- ========================================== -->
+  <!-- TAB 3: TABLA DE POSICIONES -->
+  <!-- ========================================== -->
+  @if (currentTab() === 'posiciones') {
+  <section class="max-w-7xl mx-auto w-full px-4 lg:px-8 py-6 flex flex-col gap-6" id="posiciones-fase">
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-1.5 text-primary font-label-caps text-xs tracking-wider uppercase">
+          <span class="material-symbols-outlined text-[18px]">leaderboard</span>
+          <span>Tablas Oficiales FJH</span>
+        </div>
+        <h2 class="font-headline-lg text-2xl text-white font-bold tracking-tight">
+          Tabla de Posiciones • {{ torneoSeleccionado()?.nombre }}
+        </h2>
+        <p class="font-body-base text-xs text-text-secondary">
+          Cálculo oficial de puntos: 3 por Victoria, 1 por Empate, 0 por Derrota (Reglamento CAH).
+        </p>
+      </div>
+
+      <div class="flex p-1 bg-court-card rounded-xl shadow-md shrink-0 border border-white/5">
+        <button type="button" (click)="cambiarGrupoPosiciones('A')"
+          [class]="grupoPosiciones() === 'A' ? 'bg-primary-container text-court-base font-body-bold shadow' : 'text-text-secondary hover:text-white font-body-medium'"
+          class="px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer">
+          Grupo A (Zona Capital)
+        </button>
+        <button type="button" (click)="cambiarGrupoPosiciones('B')"
+          [class]="grupoPosiciones() === 'B' ? 'bg-primary-container text-court-base font-body-bold shadow' : 'text-text-secondary hover:text-white font-body-medium'"
+          class="px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer">
+          Grupo B (Zona Ramal)
+        </button>
+      </div>
+    </div>
+
+    <!-- Table Container -->
+    <div class="bg-court-card rounded-2xl shadow-xl overflow-hidden border border-border-glass">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr
+              class="bg-court-surface text-text-secondary font-stat-label text-[10px] uppercase tracking-wider border-b border-white/5">
+              <th class="py-3 px-4 text-center">POS</th>
+              <th class="py-3 px-4">CLUB / EQUIPO</th>
+              <th class="py-3 px-3 text-center">PJ</th>
+              <th class="py-3 px-3 text-center text-tertiary">PG</th>
+              <th class="py-3 px-3 text-center text-accent-amber">PE</th>
+              <th class="py-3 px-3 text-center text-secondary">PP</th>
+              <th class="py-3 px-3 text-center">GF</th>
+              <th class="py-3 px-3 text-center">GC</th>
+              <th class="py-3 px-3 text-center">DG</th>
+              <th class="py-3 px-4 text-center">PTS</th>
+              <th class="py-3 px-4 text-right">ESTADO</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5 font-body-base">
+            @if (tablaPosiciones().length === 0) {
+            <tr>
+              <td colspan="11" class="py-8 text-center text-text-muted">
+                No hay registros de posiciones para este grupo todavía.
+              </td>
+            </tr>
+            } @else {
+            @for (pos of tablaPosiciones(); track pos.id; let idx = $index) {
+            <tr class="hover:bg-court-card-hover transition-colors">
+              <td class="py-3 px-4 text-center">
+                <span
+                  [class]="idx < 2 ? 'bg-primary/20 text-primary font-body-bold' : 'bg-surface-container text-text-muted'"
+                  class="w-6 h-6 rounded-full inline-flex items-center justify-center text-xs">
+                  {{ idx + 1 }}
+                </span>
+              </td>
+              <td class="py-3 px-4">
+                <div class="flex items-center gap-3">
+                  @if (pos.club?.logoUrl) {
+                  <img [src]="getClubLogoUrl(pos.club.logoUrl)" [alt]="pos.club.nombre"
+                    class="w-7 h-7 rounded-full object-cover">
+                  } @else {
+                  <div
+                    class="w-7 h-7 rounded-full bg-court-surface flex items-center justify-center text-text-muted border border-white/10">
+                    <span class="material-symbols-outlined text-[14px]">sports_handball</span>
+                  </div>
+                  }
+                  <div>
+                    <span class="font-body-bold text-white block">{{ pos.club?.nombre }}</span>
+                    <span class="font-stat-label text-[9px] text-text-muted uppercase">San Salvador / Ramal</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3 px-3 text-center font-body-medium">{{ pos.pj }}</td>
+              <td class="py-3 px-3 text-center text-tertiary font-body-bold">{{ pos.pg }}</td>
+              <td class="py-3 px-3 text-center text-accent-amber font-body-bold">{{ pos.pe }}</td>
+              <td class="py-3 px-3 text-center text-secondary font-body-bold">{{ pos.pp }}</td>
+              <td class="py-3 px-3 text-center text-text-secondary tabular-nums">{{ pos.gf }}</td>
+              <td class="py-3 px-3 text-center text-text-secondary tabular-nums">{{ pos.gc }}</td>
+              <td class="py-3 px-3 text-center font-body-bold tabular-nums"
+                [ngClass]="pos.dg >= 0 ? 'text-tertiary' : 'text-secondary'">
+                {{ pos.dg > 0 ? '+' + pos.dg : pos.dg }}
+              </td>
+              <td class="py-3 px-4 text-center">
+                <span
+                  class="inline-block px-2.5 py-0.5 rounded-lg bg-primary-container text-court-base font-body-bold tabular-nums shadow">
+                  {{ pos.puntos }}
+                </span>
+              </td>
+              <td class="py-3 px-4 text-right">
+                @if (idx < 2) { <span
+                  class="inline-flex items-center gap-1 font-stat-label text-[10px] text-primary font-bold uppercase bg-primary/10 px-2 py-0.5 rounded-full">
+                  <span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Semifinales
+                  </span>
+                  } @else {
+                  <span
+                    class="inline-flex items-center gap-1 font-stat-label text-[10px] text-text-muted uppercase bg-surface-container px-2 py-0.5 rounded-full">
+                    Fase Consuelo
+                  </span>
+                  }
+              </td>
+            </tr>
+            }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </section>
+  }
+
+  <!-- ========================================== -->
+  <!-- MODAL: ACTA DIGITAL / PLANILLA EN VIVO     -->
+  <!-- ========================================== -->
+  @if (showModalActa()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-6 overflow-y-auto">
+    <div
+      class="bg-[#0d1524] border border-white/10 rounded-2xl sm:rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
+
+      <!-- Modal Header -->
+      <div class="p-4 bg-[#080e18] border-b border-white/[0.08] flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-cyan-deep to-primary-container text-court-base flex items-center justify-center font-bold shadow shrink-0">
+            <span class="material-symbols-outlined text-[24px]">sports_handball</span>
+          </div>
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-stat-label text-[10px] text-primary font-bold uppercase tracking-wider">
+                MESA DE CONTROL &amp; PLANILLA OFICIAL FJH
+              </span>
+              @if (canEdit()) {
+              <span
+                class="px-2 py-0.5 rounded-full bg-secondary-container/30 text-secondary font-stat-label text-[9px] font-bold uppercase flex items-center gap-1 border border-secondary/40 animate-pulse">
+                <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> MODO ÁRBITRO / OFICIAL DE MESA
+              </span>
+              <!-- Toggle En Vivo vs Post-Partido -->
+              <div class="flex p-0.5 bg-surface-container rounded-lg border border-white/10 text-[10px]">
+                <button
+                  type="button"
+                  (click)="tipoCarga.set('en_vivo')"
+                  [class]="tipoCarga() === 'en_vivo' ? 'bg-primary text-court-base font-bold shadow' : 'text-text-muted hover:text-white'"
+                  class="px-2 py-0.5 rounded transition-all cursor-pointer"
+                >
+                  Modo En Vivo
+                </button>
+                <button
+                  type="button"
+                  (click)="tipoCarga.set('post_partido'); pasoActa.set('acta')"
+                  [class]="tipoCarga() === 'post_partido' ? 'bg-tertiary-container text-white font-bold shadow' : 'text-text-muted hover:text-white'"
+                  class="px-2 py-0.5 rounded transition-all cursor-pointer"
+                >
+                  Carga Post-Partido (Simple)
+                </button>
+              </div>
+              } @else {
+              <span
+                class="px-2 py-0.5 rounded-full bg-surface-container-highest text-text-secondary font-stat-label text-[9px] font-bold uppercase flex items-center gap-1">
+                <span class="material-symbols-outlined text-[13px]">visibility</span> MODO LECTURA
+              </span>
+              }
+            </div>
+            <h3 class="font-title-sm text-sm sm:text-base text-white font-bold truncate mt-0.5">
+              {{ partidoSeleccionado()?.local?.nombre }} vs {{ partidoSeleccionado()?.visitante?.nombre }}
+            </h3>
+          </div>
+        </div>
+        <button (click)="cerrarActa()"
+          class="p-1.5 rounded-xl text-text-muted hover:text-white hover:bg-white/10 transition-colors shrink-0">
+          <span class="material-symbols-outlined text-[24px]">close</span>
+        </button>
+      </div>
+
+      <!-- Sticky Scoreboard, Period & Control del Tiempo -->
+      <div
+        class="bg-[#131d2e] px-4 py-3 border-b border-white/[0.08] flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-4 flex-wrap">
+
+          <!-- Marcador Local vs Visita -->
+          <div
+            class="bg-court-surface px-4 py-2 rounded-xl border border-white/10 flex items-center gap-3 shadow-inner">
+            <div class="flex flex-col items-center">
+              <span class="text-[10px] text-text-muted uppercase font-bold">LOC</span>
+              <input type="number" [(ngModel)]="gLocal" [disabled]="!canEdit()"
+                class="w-12 text-center bg-transparent font-scoreboard-score-mobile text-2xl font-bold text-white tabular-nums outline-none" />
+            </div>
+            <span class="font-scoreboard-score-mobile text-2xl text-secondary font-bold animate-pulse">:</span>
+            <div class="flex flex-col items-center">
+              <span class="text-[10px] text-text-muted uppercase font-bold">VIS</span>
+              <input type="number" [(ngModel)]="gVisitante" [disabled]="!canEdit()"
+                class="w-12 text-center bg-transparent font-scoreboard-score-mobile text-2xl font-bold text-white tabular-nums outline-none" />
+            </div>
+          </div>
+
+          <!-- CRONÓMETRO DIGITAL DEL PARTIDO (Solo en modo En Vivo) -->
+          @if (tipoCarga() === 'en_vivo') {
+          <div class="flex items-center gap-3 bg-court-surface px-3 py-1.5 rounded-xl border border-white/10">
+            <div class="flex flex-col">
+              <span class="font-stat-label text-[9px] text-text-muted uppercase">Cronómetro IHF</span>
+              <span class="font-body-bold text-sm text-white tabular-nums tracking-wider flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full"
+                  [ngClass]="isTimerRunning() ? 'bg-secondary animate-ping' : 'bg-text-muted'"></span>
+                {{ timerDisplay() }}
+              </span>
+            </div>
+
+            @if (canEdit()) {
+            <div class="flex items-center gap-1">
+              <button type="button" (click)="toggleCronometro()"
+                [class]="isTimerRunning() ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'"
+                class="p-1.5 rounded-lg border text-xs font-bold flex items-center gap-1 transition-all cursor-pointer"
+                [title]="isTimerRunning() ? 'Pausar tiempo' : 'Iniciar tiempo'">
+                <span class="material-symbols-outlined text-[17px]">
+                  {{ isTimerRunning() ? 'pause' : 'play_arrow' }}
+                </span>
+              </button>
+              <button type="button" (click)="cambiarPeriodo(matchPeriod() === 1 ? 2 : 1)"
+                class="px-2 py-1 rounded-lg bg-surface-container text-text-secondary hover:text-white text-[11px] font-bold border border-white/5 cursor-pointer"
+                title="Alternar entre 1T y 2T">
+                Cambiar a {{ matchPeriod() === 1 ? '2T' : '1T' }}
+              </button>
+            </div>
+            }
+          </div>
+          }
+
+          <!-- Goles Primer Tiempo (HT) -->
+          <div class="flex flex-col text-xs">
+            <span class="font-stat-label text-[10px] text-text-muted uppercase tracking-wider">Marcador 1T (HT)</span>
+            <div class="flex items-center gap-1 mt-0.5">
+              <input type="number" [(ngModel)]="htLocal" [disabled]="!canEdit()" placeholder="0"
+                class="w-9 text-center bg-surface-container rounded px-1 py-0.5 text-xs text-white border border-white/10 outline-none" />
+              <span class="text-text-muted">-</span>
+              <input type="number" [(ngModel)]="htVisitante" [disabled]="!canEdit()" placeholder="0"
+                class="w-9 text-center bg-surface-container rounded px-1 py-0.5 text-xs text-white border border-white/10 outline-none" />
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Quick Undo & Tabs de Paso -->
+        <div class="flex items-center gap-2">
+          @if (canEdit()) {
+          <button type="button" (click)="pasoActa.set(pasoActa() === 'dorsales' ? 'acta' : 'dorsales')"
+            class="px-3 py-1.5 rounded-xl bg-court-surface hover:bg-court-card-hover border border-white/10 text-xs font-body-bold text-primary flex items-center gap-1 cursor-pointer">
+            <span class="material-symbols-outlined text-[16px]">
+              {{ pasoActa() === 'dorsales' ? 'sports_score' : 'badge' }}
+            </span>
+            <span>{{ pasoActa() === 'dorsales' ? 'Ir a Planilla en Vivo' : 'Editar Camisetas / Dorsales' }}</span>
+          </button>
+          <button type="button" (click)="deshacerUltimaAccion()"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-court-surface hover:bg-court-card-hover border border-accent-amber/40 text-accent-amber hover:text-white font-body-bold text-xs shadow transition-all active:scale-95 cursor-pointer"
+            title="Deshacer la última acción registrada (gol, 2 min, tarjeta, etc.)">
+            <span class="material-symbols-outlined text-[16px]">undo</span>
+            <span class="hidden sm:inline">Deshacer última acción</span>
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PASO 1: ASIGNACIÓN Y CHEQUEO DE DORSALES       -->
+      <!-- ============================================== -->
+      @if (pasoActa() === 'dorsales') {
+      <div class="p-4 overflow-y-auto flex flex-col gap-4">
+        <div class="bg-primary/10 border border-primary/20 p-3 rounded-xl flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[22px]">badge</span>
+            <div>
+              <h4 class="text-xs font-bold text-white uppercase">Revisión de Dorsales Pre-Partido</h4>
+              <p class="text-[11px] text-text-secondary">
+                Asigna o modifica los números de camiseta que los jugadores utilizarán en este encuentro antes de dar
+                inicio.
+              </p>
+            </div>
+          </div>
+          <button type="button" (click)="pasarAPlanillaEnVivo()"
+            class="px-4 py-2 rounded-xl bg-primary text-court-base font-body-bold text-xs shadow hover:bg-accent-cyan-deep hover:text-white transition-all cursor-pointer shrink-0">
+            Comenzar Partido &rarr;
+          </button>
+        </div>
+
+        <!-- Selector de Equipo para Dorsales -->
+        <div class="grid grid-cols-2 p-1 bg-court-surface rounded-xl border border-white/10 gap-1">
+          <button type="button" (click)="equipoActivoActa.set('local')"
+            [class]="equipoActivoActa() === 'local' ? 'bg-tertiary-container/30 border border-tertiary/50 text-white font-body-bold shadow' : 'text-text-muted hover:text-white font-body-medium'"
+            class="py-2 px-3 rounded-lg text-xs transition-all cursor-pointer truncate">
+            {{ partidoSeleccionado()?.local?.nombre }} (LOCAL)
+          </button>
+          <button type="button" (click)="equipoActivoActa.set('visitante')"
+            [class]="equipoActivoActa() === 'visitante' ? 'bg-accent-amber/20 border border-accent-amber/50 text-white font-body-bold shadow' : 'text-text-muted hover:text-white font-body-medium'"
+            class="py-2 px-3 rounded-lg text-xs transition-all cursor-pointer truncate">
+            {{ partidoSeleccionado()?.visitante?.nombre }} (VISITA)
+          </button>
+        </div>
+
+        @let listaDorsal = equipoActivoActa() === 'local' ? jugadoresLocal : jugadoresVisitante;
+
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-text-muted">
+            Listado de Atletas ({{ listaDorsal.length }})
+          </span>
+          @if (canEdit()) {
+          <button type="button" (click)="abrirModalInvitado()"
+            class="text-xs text-primary hover:underline font-bold flex items-center gap-1 cursor-pointer">
+            <span class="material-symbols-outlined text-[15px]">person_add</span>
+            <span>+ Agregar Jugador Invitado con Dorsal</span>
+          </button>
+          }
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          @for (j of listaDorsal; track $index; let idx = $index) {
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-court-surface border border-white/10">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="flex flex-col">
+                <span class="text-[9px] text-text-muted font-bold uppercase">N° Dorsal</span>
+                <input type="number" [(ngModel)]="j.numero" [disabled]="!canEdit()" placeholder="0"
+                  class="w-12 text-center bg-surface-container border border-primary/40 rounded-lg px-2 py-1 text-xs font-bold text-primary outline-none" />
+              </div>
+              <div class="min-w-0">
+                <span class="font-body-bold text-xs text-white block truncate">{{ j.nombreCompleto }}</span>
+                <span class="text-[9px] text-text-muted uppercase">
+                  {{ j.id ? 'Federado Oficial' : 'Invitado Planilla' }}
+                </span>
+              </div>
+            </div>
+            @if (!j.id && canEdit()) {
+            <button type="button" (click)="removerInvitado(listaDorsal, idx)"
+              class="p-1 text-text-muted hover:text-rose-400" title="Quitar invitado">
+              <span class="material-symbols-outlined text-[18px]">delete</span>
+            </button>
+            }
+          </div>
+          }
+        </div>
+
+      </div>
+      }
+
+      <!-- ============================================== -->
+      <!-- PASO 2: PLANILLA EN VIVO (PARTIDO EN JUEGO)    -->
+      <!-- ============================================== -->
+      @if (pasoActa() === 'acta') {
+      <div class="p-4 overflow-y-auto flex flex-col gap-4">
+
+        <!-- Team Selection Tabs & TIEMPOS MUERTOS -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div
+            class="grid grid-cols-2 p-1 bg-court-surface rounded-xl border border-white/10 gap-1 flex-1 w-full sm:w-auto">
+            <button type="button" (click)="equipoActivoActa.set('local')" [class]="equipoActivoActa() === 'local'
+                    ? 'bg-tertiary-container/30 border border-tertiary/50 text-white font-body-bold shadow'
+                    : 'text-text-muted hover:text-white font-body-medium'"
+              class="flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs transition-all cursor-pointer">
+              <span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+              <span class="truncate">{{ partidoSeleccionado()?.local?.nombre }} (LOCAL)</span>
+            </button>
+            <button type="button" (click)="equipoActivoActa.set('visitante')" [class]="equipoActivoActa() === 'visitante'
+                    ? 'bg-accent-amber/20 border border-accent-amber/50 text-white font-body-bold shadow'
+                    : 'text-text-muted hover:text-white font-body-medium'"
+              class="flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs transition-all cursor-pointer">
+              <span class="w-2.5 h-2.5 rounded-full bg-accent-amber"></span>
+              <span class="truncate">{{ partidoSeleccionado()?.visitante?.nombre }} (VISITA)</span>
+            </button>
+          </div>
+
+          <!-- BOTONES DE TIEMPO MUERTO (TIME-OUTS IHF) -->
+          @if (canEdit()) {
+          <div class="flex items-center gap-2 shrink-0">
+            <button type="button" (click)="solicitarTiempoMuerto('local')" [disabled]="tiemposMuertosLocal.length >= 3"
+              class="px-2.5 py-1.5 rounded-xl bg-court-surface border border-white/10 hover:border-tertiary text-xs font-bold text-tertiary flex items-center gap-1 cursor-pointer disabled:opacity-40"
+              title="Pausa el partido y registra time-out local (máx 3)">
+              <span class="material-symbols-outlined text-[15px]">timer_pause</span>
+              <span>TM Local ({{ tiemposMuertosLocal.length }}/3)</span>
+            </button>
+            <button type="button" (click)="solicitarTiempoMuerto('visitante')"
+              [disabled]="tiemposMuertosVisitante.length >= 3"
+              class="px-2.5 py-1.5 rounded-xl bg-court-surface border border-white/10 hover:border-accent-amber text-xs font-bold text-accent-amber flex items-center gap-1 cursor-pointer disabled:opacity-40"
+              title="Pausa el partido y registra time-out visita (máx 3)">
+              <span class="material-symbols-outlined text-[15px]">timer_pause</span>
+              <span>TM Visita ({{ tiemposMuertosVisitante.length }}/3)</span>
+            </button>
+          </div>
+          }
+        </div>
+
+        <!-- Fast Action Selector Bar (Con ROJA y AZUL separadas) -->
+        @if (canEdit()) {
+        <div class="flex flex-col gap-1.5">
+          <span class="font-label-caps text-[10px] text-text-muted uppercase tracking-wider flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px]">touch_app</span> 1. SELECCIONAR ACCIÓN RÁPIDA (LUEGO
+            CLIC EN EL JUGADOR)
+          </span>
+          <div class="grid grid-cols-2 sm:grid-cols-6 gap-2">
+            <button type="button" (click)="accionRapida.set('GOL')"
+              [class]="accionRapida() === 'GOL' ? 'ring-2 ring-tertiary bg-tertiary/30 text-white font-bold' : 'bg-tertiary-container/20 text-tertiary'"
+              class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl border border-tertiary/50 text-xs transition-all cursor-pointer">
+              <span class="material-symbols-outlined text-[17px]">sports_soccer</span>
+              <span>+ GOL</span>
+            </button>
+
+            <button type="button" (click)="accionRapida.set('7M')"
+              [class]="accionRapida() === '7M' ? 'ring-2 ring-primary bg-primary/30 text-white font-bold' : 'bg-primary/20 text-primary'"
+              class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl border border-primary/50 text-xs transition-all cursor-pointer">
+              <span class="material-symbols-outlined text-[17px]">sports_score</span>
+              <span>7 METROS</span>
+            </button>
+
+            <button type="button" (click)="accionRapida.set('2MIN')"
+              [class]="accionRapida() === '2MIN' ? 'ring-2 ring-accent-amber bg-accent-amber/30 text-white font-bold' : 'bg-accent-amber/20 text-accent-amber'"
+              class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl border border-accent-amber/50 text-xs transition-all cursor-pointer"
+              title="Al 3er 2' se aplica automáticamente Tarjeta Roja">
+              <span class="material-symbols-outlined text-[17px]">timer</span>
+              <span>2 MINUTOS</span>
+            </button>
+
+            <button type="button" (click)="accionRapida.set('AMARILLA')"
+              [class]="accionRapida() === 'AMARILLA' ? 'ring-2 ring-amber-400 bg-amber-400/30 text-white font-bold' : 'bg-amber-400/15 text-amber-300'"
+              class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl border border-amber-400/40 text-xs transition-all cursor-pointer">
+              <span class="material-symbols-outlined text-[17px]">style</span>
+              <span>AMARILLA</span>
+            </button>
+
+            <button type="button" (click)="accionRapida.set('ROJA')"
+              [class]="accionRapida() === 'ROJA' ? 'ring-2 ring-rose-500 bg-rose-600/30 text-white font-bold' : 'bg-rose-950/40 text-rose-300'"
+              class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl border border-rose-600/50 text-xs transition-all cursor-pointer">
+              <span class="material-symbols-outlined text-[17px]">emergency</span>
+              <span>ROJA</span>
+            </button>
+
+            <button type="button" (click)="accionRapida.set('AZUL')"
+              [class]="accionRapida() === 'AZUL' ? 'ring-2 ring-blue-500 bg-blue-600/30 text-white font-bold' : 'bg-blue-950/40 text-blue-300'"
+              class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl border border-blue-600/50 text-xs transition-all cursor-pointer"
+              title="Envía el informe directamente al Tribunal de Penas">
+              <span class="material-symbols-outlined text-[17px]">gavel</span>
+              <span>AZUL (TRIBUNAL)</span>
+            </button>
+          </div>
+        </div>
+        }
+
+        <!-- Jersey Grid (Jugadores del equipo activo) -->
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="font-label-caps text-[10px] text-text-muted uppercase tracking-wider flex items-center gap-1">
+              <span class="material-symbols-outlined text-[15px]">groups</span>
+              2. JUGADORES EN PLANILLA • {{ equipoActivoActa() === 'local' ? partidoSeleccionado()?.local?.nombre :
+              partidoSeleccionado()?.visitante?.nombre }}
+            </span>
+          </div>
+
+          @let listaActual = equipoActivoActa() === 'local' ? jugadoresLocal : jugadoresVisitante;
+
+          @if (listaActual.length === 0) {
+          <div
+            class="p-6 text-center bg-court-surface rounded-xl border border-dashed border-white/10 text-xs text-text-muted">
+            No hay jugadores registrados en el padrón de este club para la categoría.
+          </div>
+          } @else {
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            @for (j of listaActual; track $index; let idx = $index) {
+            <button type="button" (click)="aplicarAccionAJugador(j)" [disabled]="!canEdit()"
+              class="flex flex-col justify-between p-2.5 rounded-xl bg-court-surface hover:bg-court-card-hover border border-white/10 hover:border-primary/40 transition-all text-left shadow active:scale-95 min-h-[85px] cursor-pointer disabled:cursor-default"
+              [class.opacity-50]="j.roja || j.azul">
+              <div class="flex items-center justify-between w-full">
+                <span class="font-body-bold text-base text-primary tabular-nums">
+                  #{{ j.numero || 'S/N' }}
+                </span>
+                <div class="flex items-center gap-1">
+                  @if (j.goles > 0) {
+                  <span
+                    class="px-1.5 py-0.5 rounded bg-tertiary-container/30 text-tertiary font-stat-label text-[9px] font-bold tabular-nums">
+                    {{ j.goles }} G
+                  </span>
+                  }
+                  @if (j.am > 0) {
+                  <span class="w-2.5 h-3.5 bg-accent-amber rounded-xs" title="Tarjeta Amarilla"></span>
+                  }
+                  @if (j.excl > 0) {
+                  <span class="px-1 py-0.5 rounded bg-secondary/20 text-secondary font-stat-label text-[9px] font-bold">
+                    {{ j.excl }}x2'
+                  </span>
+                  }
+                  @if (j.roja) {
+                  <span class="w-2.5 h-3.5 bg-rose-600 rounded-xs" title="Tarjeta Roja (Descalificado)"></span>
+                  }
+                  @if (j.azul) {
+                  <span class="w-2.5 h-3.5 bg-blue-600 rounded-xs" title="Tarjeta Azul (Tribunal de Penas)"></span>
+                  }
+                </div>
+              </div>
+              <div class="w-full mt-1">
+                <span class="font-body-bold text-xs text-white block truncate">{{ j.nombreCompleto }}</span>
+                @if (j.azul) {
+                <span class="font-stat-label text-[8px] text-blue-400 uppercase font-bold">
+                  EN REVISIÓN TRIBUNAL
+                </span>
+                } @else if (j.roja) {
+                <span class="font-stat-label text-[8px] text-rose-400 uppercase font-bold">
+                  EXPULSADO
+                </span>
+                } @else {
+                <span class="font-stat-label text-[9px] text-text-muted uppercase">
+                  {{ j.id ? 'Federado Oficial' : 'Invitado Planilla' }}
+                </span>
+                }
+              </div>
+            </button>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Tiempos Muertos Solicitados Registrados -->
+        @if (tiemposMuertosLocal.length > 0 || tiemposMuertosVisitante.length > 0) {
+        <div
+          class="p-2.5 bg-court-surface rounded-xl border border-white/5 flex items-center justify-between text-xs text-text-secondary">
+          <span class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px] text-primary">history</span>
+            <strong>Tiempos Muertos:</strong>
+          </span>
+          <span>
+            Local: {{ tiemposMuertosLocal.join(', ') || 'Ninguno' }} • Visita: {{ tiemposMuertosVisitante.join(', ') ||
+            'Ninguno' }}
+          </span>
+        </div>
+        }
+
+        <!-- Árbitros & Mesa Oficial (inputs) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-court-surface rounded-xl border border-white/5">
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-bold text-text-secondary uppercase">Árbitro 1</label>
+            <input type="text" [(ngModel)]="arbitro1" [disabled]="!canEdit()" placeholder="Nombre del árbitro"
+              class="bg-surface-container border border-white/10 rounded-lg px-2.5 py-1 text-xs text-white outline-none focus:border-primary disabled:opacity-70" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-bold text-text-secondary uppercase">Árbitro 2</label>
+            <input type="text" [(ngModel)]="arbitro2" [disabled]="!canEdit()" placeholder="Dupla arbitral"
+              class="bg-surface-container border border-white/10 rounded-lg px-2.5 py-1 text-xs text-white outline-none focus:border-primary disabled:opacity-70" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-bold text-text-secondary uppercase">Oficial de Mesa / Cronometrista</label>
+            <input type="text" [(ngModel)]="cronometrista" [disabled]="!canEdit()" placeholder="Nombre cronometrista"
+              class="bg-surface-container border border-white/10 rounded-lg px-2.5 py-1 text-xs text-white outline-none focus:border-primary disabled:opacity-70" />
+          </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="flex flex-col gap-1">
+          <label class="text-[10px] font-bold text-text-secondary uppercase">Observaciones del Partido</label>
+          <input type="text" [(ngModel)]="observaciones" [disabled]="!canEdit()"
+            placeholder="Incidentes, balones oficiales utilizados, prórrogas o tarjetas especiales..."
+            class="bg-court-surface border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-primary disabled:opacity-70" />
+        </div>
+
+      </div>
+      }
+
+      <!-- Action Footer -->
+      <div
+        class="p-4 bg-[#080e18] border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3">
+        <button type="button" (click)="cerrarActa()"
+          class="w-full sm:w-auto px-4 py-2 rounded-xl bg-court-surface hover:bg-court-card-hover text-text-secondary hover:text-white font-body-medium text-xs transition-colors cursor-pointer">
+          Cerrar Visualización
+        </button>
+
+        @if (canEdit() && pasoActa() === 'dorsales') {
+        <button type="button" (click)="pasarAPlanillaEnVivo()"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary text-court-base font-body-bold text-xs shadow-lg hover:bg-accent-cyan-deep hover:text-white transition-all cursor-pointer">
+          <span>Confirmar Dorsales y Pasar al Partido</span>
+          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </button>
+        }
+
+        @if (canEdit() && pasoActa() === 'acta') {
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <button type="button" (click)="guardarActa(false)"
+            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-court-card hover:bg-court-card-active border border-white/10 text-white font-body-bold text-xs shadow transition-all active:scale-95 cursor-pointer">
+            <span class="material-symbols-outlined text-[16px] text-primary">save</span>
+            <span>Guardar Parcial</span>
+          </button>
+          <button type="button" (click)="guardarActa(true)"
+            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-accent-cyan-deep to-primary text-court-base font-body-bold text-xs shadow-lg hover:shadow-primary/30 transition-all active:scale-95 cursor-pointer">
+            <span class="material-symbols-outlined text-[16px]">verified</span>
+            <span>Finalizar &amp; Homologar Acta</span>
+          </button>
+        </div>
+        }
+      </div>
+
+    </div>
+  </div>
+  }
+
+  <!-- ============================================== -->
+  <!-- MODAL RESOLVER 7 METROS: ¿GOL O ERRADO?        -->
+  <!-- ============================================== -->
+  @if (showModal7Metros()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+    <div class="bg-court-card border border-primary/40 rounded-2xl max-w-sm w-full p-5 shadow-2xl flex flex-col gap-4">
+      <div class="flex items-center gap-2 text-primary">
+        <span class="material-symbols-outlined text-[24px]">sports_score</span>
+        <h4 class="text-sm font-bold text-white uppercase">Registro de 7 Metros</h4>
+      </div>
+      <p class="text-xs text-text-secondary">
+        Ejecutante: <strong class="text-white">#{{ jugador7mSeleccionado?.numero }} {{
+          jugador7mSeleccionado?.nombreCompleto }}</strong>
+      </p>
+      <p class="text-xs text-text-muted">
+        Indica si el lanzamiento de penal fue convertido en gol o resultado errado / atajado conforme a la planilla
+        oficial FJH:
+      </p>
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <button type="button" (click)="resolver7Metros(true)"
+          class="py-3 px-3 rounded-xl bg-tertiary-container/30 border border-tertiary text-tertiary font-bold text-xs flex flex-col items-center gap-1 hover:bg-tertiary/20 cursor-pointer shadow-md">
+          <span class="material-symbols-outlined text-[24px]">sports_soccer</span>
+          <span>+ GOL CONVERTIDO</span>
+        </button>
+        <button type="button" (click)="resolver7Metros(false)"
+          class="py-3 px-3 rounded-xl bg-rose-950/40 border border-rose-500 text-rose-300 font-bold text-xs flex flex-col items-center gap-1 hover:bg-rose-900/40 cursor-pointer shadow-md">
+          <span class="material-symbols-outlined text-[24px]">cancel</span>
+          <span>ERRADO / ATAJADO</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- ============================================== -->
+  <!-- MODAL: CREAR PARTIDO DE PLAYOFFS               -->
+  <!-- ============================================== -->
+  @if (showModalPlayoff()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+    <div class="bg-court-card border border-white/10 rounded-2xl max-w-md w-full p-5 shadow-2xl flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-white/5 pb-2">
+        <h4 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[20px]">account_tree</span>
+          Programar Partido de Playoffs
+        </h4>
+        <button (click)="showModalPlayoff.set(false)" class="text-text-muted hover:text-white">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <div class="grid grid-cols-2 gap-2">
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-bold text-text-secondary uppercase">Fase</label>
+            <select [(ngModel)]="playoffFase"
+              class="bg-court-surface border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
+              <option value="Cuartos">Cuartos de Final</option>
+              <option value="Semifinales">Semifinales</option>
+              <option value="Tercer Puesto">3° Puesto (Bronce)</option>
+              <option value="Final">Gran Final Provincial</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-bold text-text-secondary uppercase">Llave / Detalle</label>
+            <input type="text" [(ngModel)]="playoffLlave" placeholder="Ej: Semifinal 1 (Ida)"
+              class="bg-court-surface border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-bold text-text-secondary uppercase">Equipo Local</label>
+            <select [(ngModel)]="playoffLocalId"
+              class="bg-court-surface border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
+              <option value="">Seleccionar Club Local</option>
+              @for (c of todosLosClubes(); track c.id) {
+              <option [value]="c.id">{{ c.nombre }}</option>
+              }
+            </select>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-bold text-text-secondary uppercase">Equipo Visitante</label>
+            <select [(ngModel)]="playoffVisitanteId"
+              class="bg-court-surface border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
+              <option value="">Seleccionar Club Visita</option>
+              @for (c of todosLosClubes(); track c.id) {
+              <option [value]="c.id">{{ c.nombre }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-bold text-text-secondary uppercase">Fecha</label>
+            <input type="date" [(ngModel)]="playoffFecha"
+              class="bg-court-surface border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none [color-scheme:dark]" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-bold text-text-secondary uppercase">Hora</label>
+            <input type="text" [(ngModel)]="playoffHora" placeholder="18:00 hs"
+              class="bg-court-surface border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none" />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-[10px] font-bold text-text-secondary uppercase">Sede / Cancha</label>
+          <input type="text" [(ngModel)]="playoffLugar" placeholder="Polideportivo Cuyaya / Estadio Central"
+            class="bg-court-surface border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none" />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-white/5">
+        <button type="button" (click)="showModalPlayoff.set(false)"
+          class="px-3 py-1.5 text-xs text-text-muted hover:text-white">
+          Cancelar
+        </button>
+        <button type="button" (click)="guardarPartidoPlayoff()"
+          class="px-4 py-1.5 rounded-lg bg-primary text-court-base font-bold text-xs shadow hover:bg-accent-cyan-deep hover:text-white transition-all cursor-pointer">
+          Guardar &amp; Habilitar Partido
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- ============================================== -->
+  <!-- MODAL: AGREGAR INVITADO MANUAL                 -->
+  <!-- ============================================== -->
+  @if (showModalInvitado()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="bg-court-card border border-white/10 rounded-2xl max-w-sm w-full p-5 shadow-2xl flex flex-col gap-4">
+      <h4 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[18px]">person_add</span>
+        Agregar Jugador Invitado al Acta
+      </h4>
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-1">
+          <label class="text-[10px] font-bold text-text-secondary uppercase">Nombre y Apellido</label>
+          <input type="text" [(ngModel)]="nuevoInvitadoNombre" placeholder="Ej: Tolaba, Franco"
+            class="bg-court-surface border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-primary" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-[10px] font-bold text-text-secondary uppercase">Número de Camiseta / Dorsal</label>
+          <input type="number" [(ngModel)]="nuevoInvitadoNumero" placeholder="Ej: 9"
+            class="bg-court-surface border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-primary" />
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-white/5">
+        <button type="button" (click)="showModalInvitado.set(false)"
+          class="px-3 py-1.5 text-xs text-text-muted hover:text-white">
+          Cancelar
+        </button>
+        <button type="button" (click)="confirmarInvitado()"
+          class="px-4 py-1.5 rounded-lg bg-primary text-court-base font-bold text-xs shadow hover:bg-accent-cyan-deep hover:text-white transition-all cursor-pointer">
+          Agregar
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+</div>

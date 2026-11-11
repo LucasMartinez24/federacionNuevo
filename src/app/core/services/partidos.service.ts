@@ -153,6 +153,24 @@ export class PartidosService {
     return this.http.get<any[]>(`${this.apiUrl}/partidos/torneo/${torneoId}`);
   }
 
+  getPartidosByJornada(torneoId: string, jornadaNum: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/partidos/torneo/${torneoId}/jornada/${jornadaNum}`);
+  }
+
+  getTablaPosiciones(torneoId: string, grupo?: string): Observable<any[]> {
+    let url = `${this.apiUrl}/posiciones/torneo/${torneoId}`;
+    if (grupo) url += `?grupo=${encodeURIComponent(grupo)}`;
+    return this.http.get<any[]>(url);
+  }
+
+  updateResultado(partidoId: string, payload: any): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/partidos/${partidoId}/resultado`, payload);
+  }
+
+  crearPartidoPlayoff(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/partidos/partido`, payload);
+  }
+
   saveFixture(torneoId: string, jornadas: JornadaItem[]): Observable<any> {
     return this.http.post(`${this.apiUrl}/partidos/torneo/${torneoId}/fixture`, { jornadas });
   }
