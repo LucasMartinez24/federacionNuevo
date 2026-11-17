@@ -39,8 +39,10 @@ export const routes: Routes = [
   {
     path: 'calendario',
     loadComponent: () =>
-      import('./features/public/pages/not-found/not-found.component').then((m) => m.NotFoundComponent),
-    title: 'FJH - Página no disponible',
+      import('./features/public/pages/calendario/calendario.component').then(
+        (m) => m.CalendarioComponent,
+      ),
+    title: 'FJH - Calendario Oficial de Competencias',
   },
   {
     path: 'boletin-resoluciones',
@@ -66,9 +68,8 @@ export const routes: Routes = [
   },
   {
     path: 'soporte',
-    loadComponent: () =>
-      import('./features/public/pages/not-found/not-found.component').then((m) => m.NotFoundComponent),
-    title: 'FJH - Página no disponible',
+    redirectTo: 'admin/soporte',
+    pathMatch: 'full',
   },
 
   // Rutas protegidas de la Federación con Sidebar (FederationLayout)
@@ -187,6 +188,22 @@ export const routes: Routes = [
         title: 'FJH - Boletín Oficial & Resoluciones',
       },
       {
+        path: 'soporte',
+        loadComponent: () =>
+          import(
+            './features/federation-admin/pages/soporte/soporte-admin.component'
+          ).then((m) => m.SoporteAdminComponent),
+        title: 'FJH - Centro de Soporte & Mesa de Entradas',
+      },
+      {
+        path: 'calendario',
+        loadComponent: () =>
+          import('./features/public/pages/calendario/calendario.component').then(
+            (m) => m.CalendarioComponent,
+          ),
+        title: 'FJH - Calendario & Programación Oficial',
+      },
+      {
         path: 'dashboard',
         redirectTo: 'jugadores',
         pathMatch: 'full',
@@ -213,6 +230,14 @@ export const routes: Routes = [
             './features/club-admin/pages/partidos-posiciones/partidos-posiciones.component'
           ).then((m) => m.PartidosPosicionesComponent),
         title: 'FJH - Agenda, Partidos & Posiciones del Club',
+      },
+      {
+        path: 'calendario',
+        loadComponent: () =>
+          import('./features/public/pages/calendario/calendario.component').then(
+            (m) => m.CalendarioComponent,
+          ),
+        title: 'FJH - Calendario Oficial del Club',
       },
       {
         path: 'jugadores',

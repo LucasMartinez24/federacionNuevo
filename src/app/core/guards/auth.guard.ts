@@ -7,6 +7,14 @@ export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   if (authService.isAuthenticated()) {
+    const role = authService.role();
+    if (role === 'CM') {
+      // El Community Manager únicamente tiene acceso a la Galería Multimedia
+      if (!state.url.startsWith('/admin/galeria') && !state.url.startsWith('/galeria')) {
+        router.navigate(['/admin/galeria']);
+        return false;
+      }
+    }
     return true;
   }
 

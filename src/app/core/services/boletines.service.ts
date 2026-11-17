@@ -50,6 +50,7 @@ export interface BoletinOficial {
   // Vinculación opcional con sanción disciplinaria de base de datos
   sancionId?: string;
   sancionado?: string;
+  fallo?: string;
   cumplidas?: number;
   totales?: number;
   guardado?: boolean;

@@ -123,7 +123,7 @@ export class MesaAyudaClubComponent implements OnInit {
       .pipe(catchError(() => of([])))
       .subscribe({
         next: (msgs) => {
-          this.messages.set(msgs || []);
+          this.messages.set((msgs || []).filter((m) => !m.isInternal));
           this.loadingMessages.set(false);
         },
         error: () => this.loadingMessages.set(false),

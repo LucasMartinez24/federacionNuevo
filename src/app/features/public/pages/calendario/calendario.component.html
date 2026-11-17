@@ -1,0 +1,1163 @@
+<!-- Toast Flotante en Primer Plano Absoluto (z-[9999]) -->
+@if (toastMessage()) {
+<div
+  class="fixed top-6 right-6 z-[9999] px-5 py-3.5 rounded-2xl shadow-2xl border backdrop-blur-xl flex items-center gap-3.5 animate-fade-in transition-all pointer-events-auto"
+  [class.bg-court-card]="true"
+  [class.border-tertiary/50]="toastType() === 'success'"
+  [class.border-accent-crimson-deep/50]="toastType() === 'error'"
+  [class.border-primary/50]="toastType() === 'info'">
+  <div
+    class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+    [class.bg-tertiary/15]="toastType() === 'success'"
+    [class.text-tertiary]="toastType() === 'success'"
+    [class.bg-accent-crimson-deep/15]="toastType() === 'error'"
+    [class.text-accent-crimson-deep]="toastType() === 'error'"
+    [class.bg-primary/15]="toastType() === 'info'"
+    [class.text-primary]="toastType() === 'info'">
+    <span class="material-symbols-outlined text-[20px]">
+      {{ toastType() === 'success' ? 'check_circle' : toastType() === 'error' ? 'error' : 'calendar_month' }}
+    </span>
+  </div>
+  <div class="flex flex-col">
+    <span class="text-xs font-bold text-text-primary leading-tight">{{ toastMessage() }}</span>
+    <span class="text-[10px] text-text-muted mt-0.5">Calendario Oficial FJH</span>
+  </div>
+</div>
+}
+
+<!-- ======================================================================= -->
+<!-- CABECERA PÚBLICA (Solo visible cuando se accede desde /calendario)      -->
+<!-- ======================================================================= -->
+@if (!isEmbeddedInLayout()) {
+<header class="sticky top-0 z-40 bg-court-surface/95 backdrop-blur-xl border-b border-border-subtle/60 shadow-lg">
+  <div class="max-w-[1440px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+    <a routerLink="/" class="flex items-center gap-3 group">
+      <img src="/img/logo.png" alt="Logo FJH" class="h-9 w-auto object-contain" />
+      <div class="flex flex-col">
+        <span class="text-xs font-extrabold text-text-primary tracking-tight leading-tight">
+          FEDERACIÓN JUJEÑA DE HANDBALL
+        </span>
+        <span class="text-[10px] font-bold text-primary uppercase tracking-widest">
+          Calendario Oficial de Competencias
+        </span>
+      </div>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-1">
+      <a
+        routerLink="/"
+        class="px-3 py-1.5 rounded-lg text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-court-card transition-colors">
+        Inicio
+      </a>
+      <a
+        routerLink="/fixture"
+        class="px-3 py-1.5 rounded-lg text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-court-card transition-colors">
+        Fixture &amp; Resultados
+      </a>
+      <a
+        routerLink="/calendario"
+        class="px-3 py-1.5 rounded-lg text-xs font-bold bg-primary-container/20 text-primary border border-primary/30">
+        Calendario
+      </a>
+      <a
+        routerLink="/galeria"
+        class="px-3 py-1.5 rounded-lg text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-court-card transition-colors">
+        Galería
+      </a>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      @if (currentUser()) {
+      <a
+        [routerLink]="isClubUser() ? '/club/fixture' : '/admin/torneos'"
+        class="px-3.5 py-1.5 rounded-xl bg-primary-container text-on-primary-container text-xs font-bold flex items-center gap-1.5 shadow-sm">
+        <span class="material-symbols-outlined text-[16px]">dashboard</span>
+        <span>{{ isClubUser() ? 'Portal Mi Club' : 'Panel FJH' }}</span>
+      </a>
+      } @else {
+      <a
+        routerLink="/login"
+        class="px-3.5 py-1.5 rounded-xl bg-court-card hover:bg-court-card-hover border border-border-subtle text-xs font-bold text-text-primary flex items-center gap-1.5 transition-colors">
+        <span class="material-symbols-outlined text-[16px] text-primary">login</span>
+        <span>Acceso Oficial</span>
+      </a>
+      }
+    </div>
+  </div>
+</header>
+}
+
+<div class="w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-5 flex flex-col gap-5">
+  <!-- ===================================================================== -->
+  <!-- 1. BARRA SUPERIOR DE COMANDO & ACCIONES SEGÚN ROL                     -->
+  <!-- ===================================================================== -->
+  <section
+    class="bg-court-surface/90 border border-border-subtle/60 rounded-2xl p-4 sm:p-5 shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div class="flex items-start sm:items-center gap-3.5">
+      <div
+        class="w-11 h-11 rounded-xl bg-primary-container/15 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-inner">
+        <span class="material-symbols-outlined text-[24px]">calendar_month</span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <h1 class="text-lg sm:text-xl font-extrabold text-text-primary tracking-tight">
+            Calendario Oficial &amp; Programación FJH
+          </h1>
+          @if (isAdmin()) {
+          <span
+            class="px-2 py-0.5 rounded-md bg-primary/15 border border-primary/30 text-[10px] font-bold text-primary uppercase tracking-wider">
+            Modo Programador Admin
+          </span>
+          } @else if (isClubUser()) {
+          <span
+            class="px-2 py-0.5 rounded-md bg-tertiary/15 border border-tertiary/30 text-[10px] font-bold text-tertiary uppercase tracking-wider">
+            Agenda Club: {{ currentClubName() }}
+          </span>
+          }
+        </div>
+        <p class="text-xs text-text-secondary mt-0.5">
+          Cronograma unificado de partidos oficiales, sedes, designaciones arbitrales e hitos institucionales
+        </p>
+      </div>
+    </div>
+
+    <!-- Controles de Vista y Acciones Administrativas -->
+    <div class="flex items-center gap-2.5 flex-wrap">
+      <!-- Toggle Vista Mes vs Agenda -->
+      <div class="flex items-center gap-1 bg-court-base p-1 rounded-xl border border-border-subtle/50">
+        <button
+          type="button"
+          (click)="viewMode.set('mes')"
+          [class.bg-primary-container]="viewMode() === 'mes'"
+          [class.text-on-primary-container]="viewMode() === 'mes'"
+          [class.font-bold]="viewMode() === 'mes'"
+          [class.text-text-secondary]="viewMode() !== 'mes'"
+          class="px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1.5 cursor-pointer">
+          <span class="material-symbols-outlined text-[16px]">calendar_view_month</span>
+          <span>Grilla Mensual</span>
+        </button>
+        <button
+          type="button"
+          (click)="viewMode.set('agenda')"
+          [class.bg-primary-container]="viewMode() === 'agenda'"
+          [class.text-on-primary-container]="viewMode() === 'agenda'"
+          [class.font-bold]="viewMode() === 'agenda'"
+          [class.text-text-secondary]="viewMode() !== 'agenda'"
+          class="px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1.5 cursor-pointer">
+          <span class="material-symbols-outlined text-[16px]">view_agenda</span>
+          <span>Cronograma</span>
+        </button>
+      </div>
+
+      <!-- Si es Club: Filtro rápido "Solo Mi Club" -->
+      @if (isClubUser()) {
+      <button
+        type="button"
+        (click)="filterOnlyMyClub.set(!filterOnlyMyClub())"
+        [class.bg-tertiary/20]="filterOnlyMyClub()"
+        [class.border-tertiary/50]="filterOnlyMyClub()"
+        [class.text-tertiary]="filterOnlyMyClub()"
+        [class.bg-court-card]="!filterOnlyMyClub()"
+        [class.border-border-subtle]="!filterOnlyMyClub()"
+        [class.text-text-secondary]="!filterOnlyMyClub()"
+        class="px-3.5 py-2 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95">
+        <span class="material-symbols-outlined text-[16px]">shield</span>
+        <span>{{ filterOnlyMyClub() ? 'Viendo Solo Mi Club' : 'Filtrar Mi Club' }}</span>
+      </button>
+      }
+
+      <!-- Si es Admin: Bandeja de Partidos sin Fecha + Nuevo Evento -->
+      @if (isAdmin()) {
+      <button
+        type="button"
+        (click)="showUnscheduledDrawer.set(!showUnscheduledDrawer())"
+        [class.border-accent-amber]="unscheduledMatches().length > 0"
+        class="px-3.5 py-2 rounded-xl bg-court-card hover:bg-court-card-hover border border-border-subtle text-xs font-bold text-text-primary transition-all flex items-center gap-2 cursor-pointer active:scale-95">
+        <span
+          class="material-symbols-outlined text-[17px]"
+          [class.text-accent-amber]="unscheduledMatches().length > 0"
+          [class.text-primary]="unscheduledMatches().length === 0">
+          pending_actions
+        </span>
+        <span>Sin Fecha</span>
+        <span
+          class="px-1.5 py-0.5 rounded-md text-[10px] font-black num-tabular"
+          [class.bg-accent-amber/20]="unscheduledMatches().length > 0"
+          [class.text-accent-amber]="unscheduledMatches().length > 0"
+          [class.bg-surface-container]="unscheduledMatches().length === 0"
+          [class.text-text-muted]="unscheduledMatches().length === 0">
+          {{ unscheduledMatches().length }}
+        </span>
+      </button>
+
+      <button
+        type="button"
+        (click)="abrirModalNuevoEvento()"
+        class="px-4 py-2 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-[0.98]">
+        <span class="material-symbols-outlined text-[17px]">event_upcoming</span>
+        <span>Nuevo Evento FJH</span>
+      </button>
+      }
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- 2. BANNER CONTEXTUAL PARA CLUBES (Próximo Compromiso) O ADMIN (Sin Fecha) -->
+  <!-- ===================================================================== -->
+  @if (isClubUser() && nextClubMatch(); as nextMatch) {
+  <div
+    class="bg-court-card border border-primary/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-md animate-fade-in">
+    <div class="flex items-center gap-3.5">
+      <div
+        class="w-10 h-10 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center text-primary shrink-0">
+        <span class="material-symbols-outlined text-[22px]">sports_handball</span>
+      </div>
+      <div>
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-primary block">
+          PRÓXIMO COMPROMISO OFICIAL DE {{ currentClubName() }}
+        </span>
+        <h3 class="text-sm font-extrabold text-white">
+          {{ nextMatch.localNombre }} vs {{ nextMatch.visitanteNombre }}
+        </h3>
+        <p class="text-xs text-text-secondary">
+          {{ nextMatch.torneoNombre }} • {{ nextMatch.fase }} • {{ nextMatch.lugar }}
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 shrink-0">
+      <div class="text-right">
+        <span class="text-xs font-extrabold text-white block num-tabular">
+          {{ nextMatch.fechaISO ? formatFullDateLabel(nextMatch.fechaISO) : 'Fecha a confirmar' }}
+        </span>
+        <span class="text-[11px] text-primary font-mono font-bold">{{ nextMatch.hora }}</span>
+      </div>
+      <button
+        type="button"
+        (click)="irAMatchCenter(nextMatch)"
+        class="px-3.5 py-2 rounded-xl bg-court-surface hover:bg-court-card-hover border border-border-subtle text-xs font-bold text-text-primary cursor-pointer">
+        Ver Fixture
+      </button>
+    </div>
+  </div>
+  }
+
+  <!-- BANDEJA ADMIN DESPLEGABLE: PARTIDOS PENDIENTES DE FECHA -->
+  @if (isAdmin() && showUnscheduledDrawer()) {
+  <section
+    class="bg-court-card border border-accent-amber/40 rounded-2xl p-4 space-y-3 shadow-xl animate-fade-in">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-accent-amber text-[20px]">schedule_send</span>
+        <div>
+          <h3 class="text-xs font-extrabold uppercase tracking-wider text-white">
+            Partidos Pendientes de Programación ({{ unscheduledMatches().length }})
+          </h3>
+          <p class="text-[11px] text-text-secondary">
+            Haga clic en "Asignar Fecha" para programar el encuentro en el día seleccionado ({{
+              formatFullDateLabel(selectedDateISO())
+            }}) o elegir otra fecha.
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="showUnscheduledDrawer.set(false)"
+        class="p-1.5 rounded-lg text-text-muted hover:text-white cursor-pointer">
+        <span class="material-symbols-outlined text-[18px]">close</span>
+      </button>
+    </div>
+
+    @if (unscheduledMatches().length > 0) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
+      @for (um of unscheduledMatches(); track um.id) {
+      <div
+        class="p-3 rounded-xl bg-court-surface border border-border-subtle/60 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <span class="text-[10px] font-bold text-primary block truncate">
+            {{ um.torneoNombre }} • {{ um.fase }}
+          </span>
+          <p class="text-xs font-extrabold text-white truncate mt-0.5">
+            {{ um.localNombre }} vs {{ um.visitanteNombre }}
+          </p>
+          <span class="text-[10px] text-text-muted block truncate">
+            {{ um.categoria }} ({{ um.rama }}) • {{ um.lugar }}
+          </span>
+        </div>
+        <button
+          type="button"
+          (click)="abrirModalProgramarPartido(um, true)"
+          class="px-3 py-1.5 rounded-lg bg-accent-amber/20 hover:bg-accent-amber text-accent-amber hover:text-court-base text-[11px] font-bold transition-colors shrink-0 cursor-pointer">
+          Asignar Fecha
+        </button>
+      </div>
+      }
+    </div>
+    } @else {
+    <div class="py-4 text-center text-xs text-tertiary font-semibold flex items-center justify-center gap-1.5">
+      <span class="material-symbols-outlined text-[18px]">check_circle</span>
+      <span>Todos los partidos de los torneos activos tienen fecha asignada en el calendario.</span>
+    </div>
+    }
+  </section>
+  }
+
+  <!-- ===================================================================== -->
+  <!-- 3. BARRA DE FILTROS MULTIDIMENSIONAL Y NAVEGACIÓN DE MES              -->
+  <!-- ===================================================================== -->
+  <section
+    class="bg-court-card border border-border-subtle/60 rounded-2xl p-3.5 sm:p-4 flex flex-col xl:flex-row xl:items-center justify-between gap-3.5 shadow-md">
+    <!-- Selector de Mes y Año -->
+    <div class="flex items-center justify-between sm:justify-start gap-3">
+      <div class="flex items-center gap-1 bg-court-surface p-1 rounded-xl border border-border-subtle/50">
+        <button
+          type="button"
+          (click)="mesAnterior()"
+          class="p-1.5 rounded-lg hover:bg-court-card text-text-secondary hover:text-white transition-colors cursor-pointer"
+          title="Mes anterior">
+          <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+        </button>
+        <div class="px-3 min-w-[165px] text-center">
+          <span class="text-sm font-extrabold text-white tracking-tight">
+            {{ nombresMeses[currentMonth()] }} {{ currentYear() }}
+          </span>
+        </div>
+        <button
+          type="button"
+          (click)="mesSiguiente()"
+          class="p-1.5 rounded-lg hover:bg-court-card text-text-secondary hover:text-white transition-colors cursor-pointer"
+          title="Mes siguiente">
+          <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+        </button>
+      </div>
+
+      <button
+        type="button"
+        (click)="irAHoy()"
+        class="px-3 py-1.5 rounded-xl bg-court-surface hover:bg-court-card-hover border border-border-subtle/60 text-xs font-bold text-primary transition-colors cursor-pointer active:scale-95">
+        Hoy
+      </button>
+
+      <div class="hidden sm:flex items-center gap-2 text-xs text-text-muted pl-2 border-l border-white/10 num-tabular">
+        <span><strong class="text-text-primary">{{ monthMatchesCount() }}</strong> partidos</span>
+        <span>•</span>
+        <span><strong class="text-text-primary">{{ monthEventsCount() }}</strong> eventos</span>
+      </div>
+    </div>
+
+    <!-- Controles de Filtrado -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 flex-1 max-w-4xl">
+      <!-- Filtro Torneo -->
+      <select
+        [ngModel]="selectedTorneoId()"
+        (ngModelChange)="selectedTorneoId.set($event)"
+        class="px-3 py-2 rounded-xl bg-court-surface border border-border-subtle/60 text-xs text-text-primary focus:border-primary outline-none">
+        <option value="ALL">Todos los Torneos Oficiales</option>
+        @for (t of torneos(); track t.id) {
+        <option [value]="t.id">{{ t.nombre }} ({{ t.rama }})</option>
+        }
+      </select>
+
+      <!-- Filtro Categoría -->
+      <select
+        [ngModel]="selectedCategoria()"
+        (ngModelChange)="selectedCategoria.set($event)"
+        class="px-3 py-2 rounded-xl bg-court-surface border border-border-subtle/60 text-xs text-text-primary focus:border-primary outline-none">
+        <option value="ALL">Todas las Categorías</option>
+        @for (cat of categoriasDisponibles(); track cat) {
+        <option [value]="cat">{{ cat }}</option>
+        }
+      </select>
+
+      <!-- Filtro Club -->
+      <select
+        [ngModel]="selectedClubId()"
+        (ngModelChange)="selectedClubId.set($event); filterOnlyMyClub.set(false)"
+        class="px-3 py-2 rounded-xl bg-court-surface border border-border-subtle/60 text-xs text-text-primary focus:border-primary outline-none">
+        <option value="ALL">Todos los Clubes</option>
+        @for (c of clubes(); track c.id) {
+        <option [value]="c.id">{{ c.nombre }} ({{ c.siglas }})</option>
+        }
+      </select>
+
+      <!-- Buscador rápido -->
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-[16px]">
+          search
+        </span>
+        <input
+          type="text"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          placeholder="Buscar equipo o cancha..."
+          class="w-full pl-8 pr-7 py-2 rounded-xl bg-court-surface border border-border-subtle/60 text-xs text-text-primary placeholder:text-text-muted focus:border-primary outline-none" />
+        @if (searchQuery()) {
+        <button
+          type="button"
+          (click)="searchQuery.set('')"
+          class="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted hover:text-white cursor-pointer">
+          <span class="material-symbols-outlined text-[15px]">close</span>
+        </button>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- 4A. VISTA MENSUAL INTERACTIVA (GRILLA + INSPECTOR DEL DÍA)            -->
+  <!-- ===================================================================== -->
+  @if (viewMode() === 'mes') {
+  <div class="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+    <!-- GRILLA DEL CALENDARIO MENSUAL (xl:col-span-8) -->
+    <div
+      class="xl:col-span-8 bg-court-card border border-border-subtle/60 rounded-2xl overflow-hidden shadow-xl">
+      <!-- Cabecera Días de la Semana -->
+      <div class="grid grid-cols-7 bg-court-surface border-b border-border-subtle/60">
+        @for (dia of diasSemana; track dia; let i = $index) {
+        <div
+          class="py-2.5 text-center text-[11px] font-extrabold uppercase tracking-wider"
+          [class.text-primary]="i >= 5"
+          [class.text-text-secondary]="i < 5">
+          {{ dia }}
+        </div>
+        }
+      </div>
+
+      <!-- Celdas de los Días -->
+      <div class="grid grid-cols-7 divide-x divide-y divide-border-subtle/30 bg-court-base/40">
+        @for (cell of calendarGrid(); track cell.dateISO) {
+        <div
+          (click)="seleccionarDia(cell)"
+          [class.opacity-40]="!cell.isCurrentMonth"
+          [class.bg-court-card-active/70]="selectedDateISO() === cell.dateISO"
+          [class.ring-1]="selectedDateISO() === cell.dateISO"
+          [class.ring-inset]="selectedDateISO() === cell.dateISO"
+          [class.ring-primary]="selectedDateISO() === cell.dateISO"
+          [class.bg-court-surface/40]="cell.isWeekend && selectedDateISO() !== cell.dateISO"
+          class="min-h-[96px] sm:min-h-[118px] p-1.5 sm:p-2 flex flex-col justify-between transition-colors hover:bg-court-card-hover/60 cursor-pointer relative group">
+          <!-- Número de Día e Indicador Hoy / En Vivo -->
+          <div class="flex items-center justify-between gap-1">
+            <span
+              class="w-6 h-6 rounded-lg text-xs font-extrabold flex items-center justify-center num-tabular"
+              [class.bg-primary]="cell.isToday"
+              [class.text-court-base]="cell.isToday"
+              [class.text-white]="!cell.isToday && cell.isCurrentMonth"
+              [class.text-text-muted]="!cell.isToday && !cell.isCurrentMonth">
+              {{ cell.dayNumber }}
+            </span>
+
+            @if (cell.hasLiveMatch) {
+            <span
+              class="px-1.5 py-0.5 rounded bg-rose-600 text-[8px] font-black text-white uppercase animate-pulse">
+              LIVE
+            </span>
+            } @else if (cell.matches.length > 0) {
+            <span class="text-[10px] font-bold text-primary num-tabular">
+              {{ cell.matches.length }} {{ cell.matches.length === 1 ? 'part.' : 'parts.' }}
+            </span>
+            }
+          </div>
+
+          <!-- Píldoras de Eventos y Partidos del Día -->
+          <div class="mt-1.5 flex flex-col gap-1 overflow-hidden">
+            @for (ev of cell.events.slice(0, 1); track ev.id) {
+            <div
+              class="px-1.5 py-0.5 rounded bg-accent-amber/20 border border-accent-amber/40 text-amber-200 text-[9px] font-bold truncate flex items-center gap-1"
+              [title]="ev.titulo">
+              <span class="material-symbols-outlined text-[11px] text-accent-amber shrink-0">campaign</span>
+              <span class="truncate">{{ ev.titulo }}</span>
+            </div>
+            }
+
+            @for (m of cell.matches.slice(0, cell.events.length > 0 ? 1 : 2); track m.id) {
+            <div
+              class="px-1.5 py-0.5 rounded text-[9px] font-bold truncate flex items-center justify-between gap-1 border"
+              [class.bg-rose-500/20]="isLive(m.estado)"
+              [class.border-rose-500/40]="isLive(m.estado)"
+              [class.text-rose-200]="isLive(m.estado)"
+              [class.bg-tertiary/15]="m.estado === 'Finalizado'"
+              [class.border-tertiary/30]="m.estado === 'Finalizado'"
+              [class.text-tertiary]="m.estado === 'Finalizado'"
+              [class.bg-court-card]="m.estado !== 'Finalizado' && !isLive(m.estado)"
+              [class.border-primary/25]="m.estado !== 'Finalizado' && !isLive(m.estado)"
+              [class.text-text-primary]="m.estado !== 'Finalizado' && !isLive(m.estado)">
+              <span class="truncate">{{ m.localSiglas }} vs {{ m.visitanteSiglas }}</span>
+              @if (m.estado === 'Finalizado' && m.golesLocal !== null && m.golesVisitante !== null) {
+              <span class="font-mono font-black shrink-0 num-tabular">
+                {{ m.golesLocal }}-{{ m.golesVisitante }}
+              </span>
+              } @else {
+              <span class="text-[8px] text-text-muted shrink-0 num-tabular">
+                {{ m.hora.replace(' hs', '') }}
+              </span>
+              }
+            </div>
+            }
+
+            @if (cell.matches.length + cell.events.length > 2) {
+            <div class="text-[9px] font-bold text-primary px-1">
+              +{{ cell.matches.length + cell.events.length - 2 }} más...
+            </div>
+            }
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Leyenda Inferior del Calendario -->
+      <div
+        class="px-4 py-2.5 bg-court-surface border-t border-border-subtle/50 flex items-center justify-between flex-wrap gap-3 text-[11px] text-text-secondary">
+        <div class="flex items-center gap-4 flex-wrap">
+          <span class="inline-flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-sm bg-court-card border border-primary/40"></span>
+            <span>Partido Programado</span>
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-sm bg-tertiary/30 border border-tertiary"></span>
+            <span>Resultado Finalizado</span>
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-sm bg-accent-amber/30 border border-accent-amber"></span>
+            <span>Hito / Evento Institucional FJH</span>
+          </span>
+        </div>
+        <span class="text-[10px] text-text-muted">
+          Seleccione cualquier casilla para inspeccionar horarios, canchas y árbitros
+        </span>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- INSPECTOR LATERAL DEL DÍA SELECCIONADO (xl:col-span-4)              -->
+    <!-- =================================================================== -->
+    <aside
+      class="xl:col-span-4 bg-court-card border border-border-subtle/60 rounded-2xl p-4 sm:p-5 flex flex-col gap-4 shadow-xl">
+      <div class="flex items-start justify-between gap-2 pb-3 border-b border-white/5">
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-primary block">
+            CRONOGRAMA DE LA FECHA SELECCIONADA
+          </span>
+          <h2 class="text-base font-extrabold text-white capitalize mt-0.5">
+            {{ formatFullDateLabel(selectedDateISO()) }}
+          </h2>
+        </div>
+
+        @if (isAdmin()) {
+        <button
+          type="button"
+          (click)="abrirModalNuevoEvento(selectedDateISO())"
+          class="px-2.5 py-1.5 rounded-xl bg-court-surface hover:bg-court-card-hover border border-primary/30 text-[11px] font-bold text-primary flex items-center gap-1 cursor-pointer shrink-0"
+          title="Agendar evento en este día">
+          <span class="material-symbols-outlined text-[15px]">add</span>
+          <span>Agendar Hito</span>
+        </button>
+        }
+      </div>
+
+      <!-- 1. Eventos Institucionales del Día -->
+      @if (selectedDayEvents().length > 0) {
+      <div class="space-y-2">
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-accent-amber block">
+          Hitos &amp; Convocatorias Oficiales
+        </span>
+        @for (ev of selectedDayEvents(); track ev.id) {
+        <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-1.5">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-center gap-1.5 text-accent-amber">
+              <span class="material-symbols-outlined text-[16px]">campaign</span>
+              <h4 class="text-xs font-extrabold text-white">{{ ev.titulo }}</h4>
+            </div>
+            @if (isAdmin()) {
+            <button
+              type="button"
+              (click)="eliminarEventoInstitucional(ev)"
+              class="text-text-muted hover:text-rose-400 cursor-pointer"
+              title="Eliminar evento">
+              <span class="material-symbols-outlined text-[15px]">delete</span>
+            </button>
+            }
+          </div>
+          @if (ev.descripcion) {
+          <p class="text-xs text-amber-100/90 leading-relaxed">{{ ev.descripcion }}</p>
+          }
+          <div class="flex items-center gap-3 text-[10px] text-amber-200/80 font-semibold pt-1">
+            <span class="inline-flex items-center gap-1">
+              <span class="material-symbols-outlined text-[13px]">schedule</span>
+              {{ ev.hora }} hs
+            </span>
+            <span class="inline-flex items-center gap-1">
+              <span class="material-symbols-outlined text-[13px]">location_on</span>
+              {{ ev.sede }}
+            </span>
+          </div>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- 2. Partidos Oficiales del Día -->
+      <div class="flex flex-col gap-3 max-h-[520px] overflow-y-auto pr-1 custom-scrollbar">
+        @for (match of selectedDayMatches(); track match.id) {
+        <article
+          class="p-3.5 rounded-xl bg-court-surface border border-border-subtle/60 hover:border-primary/40 transition-all flex flex-col gap-3">
+          <!-- Cabecera Partido: Torneo, Fase y Estado -->
+          <div class="flex items-center justify-between gap-2 text-[10px]">
+            <span class="font-bold text-primary truncate">
+              {{ match.torneoNombre }} • {{ match.fase }}
+            </span>
+            @if (isLive(match.estado)) {
+            <span
+              class="px-2 py-0.5 rounded-full bg-rose-600 text-white font-black uppercase animate-pulse shrink-0">
+              En Vivo
+            </span>
+            } @else if (match.estado === 'Finalizado') {
+            <span
+              class="px-2 py-0.5 rounded-full bg-tertiary/15 text-tertiary font-bold uppercase shrink-0">
+              Finalizado
+            </span>
+            } @else {
+            <span
+              class="px-2 py-0.5 rounded-full bg-court-card text-text-secondary font-bold shrink-0 num-tabular">
+              {{ match.hora }}
+            </span>
+            }
+          </div>
+
+          <!-- Equipos y Marcador / VS -->
+          <div class="grid grid-cols-7 items-center gap-2 bg-court-card p-2.5 rounded-xl border border-white/5">
+            <!-- Local -->
+            <div class="col-span-3 flex items-center gap-2 min-w-0">
+              @if (getLogoUrl(match.localLogo, match.localId); as lLogo) {
+              <img
+                [src]="lLogo"
+                [alt]="match.localNombre"
+                (error)="onLogoError(match.localId)"
+                class="w-7 h-7 rounded-lg object-contain bg-court-surface p-0.5 shrink-0" />
+              } @else {
+              <div
+                class="w-7 h-7 rounded-lg bg-court-surface text-primary flex items-center justify-center text-[10px] font-black shrink-0">
+                {{ match.localSiglas }}
+              </div>
+              }
+              <span class="text-xs font-bold text-white truncate">{{ match.localNombre }}</span>
+            </div>
+
+            <!-- Centro: Score o VS -->
+            <div class="col-span-1 text-center">
+              @if (match.estado === 'Finalizado' || isLive(match.estado)) {
+              <span class="text-xs font-black text-primary font-mono num-tabular">
+                {{ match.golesLocal ?? 0 }} - {{ match.golesVisitante ?? 0 }}
+              </span>
+              } @else {
+              <span class="text-[10px] font-extrabold text-text-muted uppercase">VS</span>
+              }
+            </div>
+
+            <!-- Visitante -->
+            <div class="col-span-3 flex items-center justify-end gap-2 min-w-0 text-right">
+              <span class="text-xs font-bold text-white truncate">{{ match.visitanteNombre }}</span>
+              @if (getLogoUrl(match.visitanteLogo, match.visitanteId); as vLogo) {
+              <img
+                [src]="vLogo"
+                [alt]="match.visitanteNombre"
+                (error)="onLogoError(match.visitanteId)"
+                class="w-7 h-7 rounded-lg object-contain bg-court-surface p-0.5 shrink-0" />
+              } @else {
+              <div
+                class="w-7 h-7 rounded-lg bg-court-surface text-secondary flex items-center justify-center text-[10px] font-black shrink-0">
+                {{ match.visitanteSiglas }}
+              </div>
+              }
+            </div>
+          </div>
+
+          <!-- Sede, Categoría y Árbitros -->
+          <div class="flex flex-col gap-1 text-[11px] text-text-secondary">
+            <div class="flex items-center justify-between gap-2">
+              <span class="inline-flex items-center gap-1 truncate">
+                <span class="material-symbols-outlined text-primary text-[14px]">location_on</span>
+                <span class="truncate">{{ match.lugar }}</span>
+              </span>
+              <span class="text-[10px] text-text-muted shrink-0">
+                {{ match.categoria }} • {{ match.rama }}
+              </span>
+            </div>
+
+            @if (match.arbitro1 || match.arbitro2) {
+            <div class="flex items-center gap-1 text-[10px] text-text-muted">
+              <span class="material-symbols-outlined text-[13px]">sports</span>
+              <span>
+                Árbitros: {{ match.arbitro1 || 'A designar'
+                }}{{ match.arbitro2 ? ' / ' + match.arbitro2 : '' }}
+              </span>
+            </div>
+            }
+          </div>
+
+          <!-- Botones de Acción (Ver Match Center / Reprogramar si es Admin) -->
+          <div class="pt-2 border-t border-white/5 flex items-center justify-between gap-2">
+            <button
+              type="button"
+              (click)="irAMatchCenter(match)"
+              class="text-[11px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer">
+              <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+              <span>Ir al Match Center</span>
+            </button>
+
+            @if (isAdmin()) {
+            <button
+              type="button"
+              (click)="abrirModalProgramarPartido(match)"
+              class="px-2.5 py-1 rounded-lg bg-court-card hover:bg-court-card-hover border border-border-subtle text-[11px] font-bold text-text-primary flex items-center gap-1 cursor-pointer">
+              <span class="material-symbols-outlined text-[14px] text-primary">edit_calendar</span>
+              <span>Reprogramar</span>
+            </button>
+            }
+          </div>
+        </article>
+        } @empty {
+          @if (selectedDayEvents().length === 0) {
+          <div class="py-12 px-4 text-center space-y-2.5">
+            <div
+              class="w-12 h-12 rounded-2xl bg-court-surface border border-border-subtle mx-auto flex items-center justify-center text-text-muted">
+              <span class="material-symbols-outlined text-2xl">event_busy</span>
+            </div>
+            <div class="space-y-1">
+              <h4 class="text-xs font-bold text-text-primary">Sin actividad programada en esta fecha</h4>
+              <p class="text-[11px] text-text-muted max-w-[240px] mx-auto">
+                No se registran encuentros ni convocatorias oficiales para el día seleccionado.
+              </p>
+            </div>
+
+            @if (isAdmin() && unscheduledMatches().length > 0) {
+            <button
+              type="button"
+              (click)="showUnscheduledDrawer.set(true)"
+              class="px-3.5 py-2 rounded-xl bg-accent-amber/20 border border-accent-amber/40 text-accent-amber text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer">
+              <span class="material-symbols-outlined text-[16px]">pending_actions</span>
+              <span>Asignar Partido Pendiente ({{ unscheduledMatches().length }})</span>
+            </button>
+            }
+          </div>
+          }
+        }
+      </div>
+    </aside>
+  </div>
+  } @else {
+  <!-- ===================================================================== -->
+  <!-- 4B. VISTA CRONOGRAMA / AGENDA MENSUAL                                 -->
+  <!-- ===================================================================== -->
+  <section class="space-y-4">
+    @for (group of agendaGroups(); track group.dateISO) {
+    <div class="bg-court-card border border-border-subtle/60 rounded-2xl overflow-hidden shadow-lg">
+      <div
+        class="px-5 py-3 bg-court-surface border-b border-border-subtle/60 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-primary text-[20px]">event</span>
+          <h3 class="text-sm font-extrabold text-white capitalize">{{ group.label }}</h3>
+        </div>
+        <span class="text-xs font-bold text-text-secondary num-tabular">
+          {{ group.matches.length }} partido(s)
+          {{ group.events.length > 0 ? ' • ' + group.events.length + ' evento(s)' : '' }}
+        </span>
+      </div>
+
+      <div class="p-4 space-y-2.5">
+        @for (ev of group.events; track ev.id) {
+        <div
+          class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-accent-amber text-xl mt-0.5">campaign</span>
+            <div>
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-accent-amber">
+                HITO INSTITUCIONAL FJH • {{ ev.hora }} HS
+              </span>
+              <h4 class="text-sm font-extrabold text-white">{{ ev.titulo }}</h4>
+              @if (ev.descripcion) {
+              <p class="text-xs text-text-secondary mt-0.5">{{ ev.descripcion }}</p>
+              }
+            </div>
+          </div>
+          <div class="flex items-center gap-3 self-end sm:self-center">
+            <span class="text-xs text-amber-200 font-semibold flex items-center gap-1">
+              <span class="material-symbols-outlined text-[15px]">location_on</span>
+              {{ ev.sede }}
+            </span>
+            @if (isAdmin()) {
+            <button
+              type="button"
+              (click)="eliminarEventoInstitucional(ev)"
+              class="p-1.5 rounded-lg bg-court-surface text-text-muted hover:text-rose-400 cursor-pointer">
+              <span class="material-symbols-outlined text-[16px]">delete</span>
+            </button>
+            }
+          </div>
+        </div>
+        }
+
+        @for (m of group.matches; track m.id) {
+        <div
+          class="p-3.5 rounded-xl bg-court-surface border border-border-subtle/50 hover:border-primary/40 transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span
+              class="px-2.5 py-1.5 rounded-lg bg-court-card border border-white/5 text-xs font-mono font-bold text-primary num-tabular shrink-0">
+              {{ m.hora }}
+            </span>
+            <div>
+              <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">
+                {{ m.torneoNombre }} • {{ m.categoria }} ({{ m.rama }}) • {{ m.fase }}
+              </span>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-sm font-extrabold text-white">{{ m.localNombre }}</span>
+                @if (m.estado === 'Finalizado' || isLive(m.estado)) {
+                <span class="px-2 py-0.5 rounded bg-primary/15 text-primary font-mono font-black text-xs num-tabular">
+                  {{ m.golesLocal ?? 0 }} - {{ m.golesVisitante ?? 0 }}
+                </span>
+                } @else {
+                <span class="text-xs font-bold text-text-muted">vs</span>
+                }
+                <span class="text-sm font-extrabold text-white">{{ m.visitanteNombre }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between lg:justify-end gap-3 pt-2 lg:pt-0 border-t lg:border-t-0 border-white/5">
+            <span class="text-xs text-text-secondary flex items-center gap-1">
+              <span class="material-symbols-outlined text-primary text-[16px]">location_on</span>
+              {{ m.lugar }}
+            </span>
+
+            <div class="flex items-center gap-2">
+              @if (isAdmin()) {
+              <button
+                type="button"
+                (click)="abrirModalProgramarPartido(m)"
+                class="px-3 py-1.5 rounded-lg bg-court-card hover:bg-court-card-hover border border-border-subtle text-xs font-bold text-text-primary flex items-center gap-1 cursor-pointer">
+                <span class="material-symbols-outlined text-[15px] text-primary">edit_calendar</span>
+                <span>Editar</span>
+              </button>
+              }
+              <button
+                type="button"
+                (click)="irAMatchCenter(m)"
+                class="px-3 py-1.5 rounded-lg bg-primary-container/15 hover:bg-primary-container/25 text-primary text-xs font-bold cursor-pointer">
+                Match Center
+              </button>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    } @empty {
+    <div
+      class="bg-court-card border border-dashed border-border-subtle rounded-2xl p-12 text-center space-y-3">
+      <div
+        class="w-14 h-14 rounded-2xl bg-court-surface border border-border-subtle mx-auto flex items-center justify-center text-primary">
+        <span class="material-symbols-outlined text-3xl">calendar_month</span>
+      </div>
+      <h3 class="text-base font-extrabold text-white">
+        Sin encuentros ni eventos programados en {{ nombresMeses[currentMonth()] }} {{ currentYear() }}
+      </h3>
+      <p class="text-xs text-text-secondary max-w-md mx-auto">
+        Puede navegar a otro mes con las flechas superiores o restablecer los filtros de búsqueda.
+      </p>
+      <div class="flex items-center justify-center gap-2.5">
+        <button
+          type="button"
+          (click)="limpiarFiltros()"
+          class="px-4 py-2 rounded-xl bg-court-surface hover:bg-court-card-hover border border-primary/30 text-xs font-bold text-primary cursor-pointer">
+          Restablecer Filtros
+        </button>
+      </div>
+    </div>
+    }
+  </section>
+  }
+
+  @if (!isEmbeddedInLayout()) {
+  <footer class="pt-6 pb-4 border-t border-border-subtle/40 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-text-muted">
+    <span>© 2026 Federación Jujeña de Handball (FJH). Todos los derechos reservados.</span>
+    <span>Desarrollado por <strong class="text-primary font-bold">REC Technologies</strong></span>
+  </footer>
+  }
+</div>
+
+<!-- ======================================================================= -->
+<!-- MODAL ADMIN 1: REPROGRAMAR PARTIDO / DESIGNACIÓN ARBITRAL               -->
+<!-- ======================================================================= -->
+@if (editingMatch(); as m) {
+<div
+  class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+  (click)="cerrarModalProgramarPartido()">
+  <div
+    class="w-full max-w-lg bg-court-card border border-border-subtle rounded-2xl shadow-2xl overflow-hidden"
+    (click)="$event.stopPropagation()">
+    <div class="p-5 bg-court-surface border-b border-border-subtle flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-xl bg-primary-container/20 border border-primary/30 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-xl">edit_calendar</span>
+        </div>
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-primary block">
+            {{ m.torneoNombre }} • {{ m.fase }}
+          </span>
+          <h3 class="text-sm font-extrabold text-white">
+            {{ m.localNombre }} vs {{ m.visitanteNombre }}
+          </h3>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="cerrarModalProgramarPartido()"
+        class="p-1.5 rounded-lg text-text-muted hover:text-white cursor-pointer">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="p-5 space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            Fecha Oficial *
+          </label>
+          <input
+            type="date"
+            [ngModel]="editMatchFecha()"
+            (ngModelChange)="editMatchFecha.set($event)"
+            class="w-full px-3.5 py-2 rounded-xl bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none" />
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            Horario de Inicio *
+          </label>
+          <input
+            type="time"
+            [ngModel]="editMatchHora()"
+            (ngModelChange)="editMatchHora.set($event)"
+            class="w-full px-3.5 py-2 rounded-xl bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            Sede / Estadio *
+          </label>
+          <input
+            type="text"
+            [ngModel]="editMatchLugar()"
+            (ngModelChange)="editMatchLugar.set($event)"
+            placeholder="Ej: Polideportivo Cuyaya"
+            class="w-full px-3.5 py-2 rounded-xl bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none" />
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            Estado del Encuentro
+          </label>
+          <select
+            [ngModel]="editMatchEstado()"
+            (ngModelChange)="editMatchEstado.set($event)"
+            class="w-full px-3.5 py-2 rounded-xl bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none">
+            <option value="Programado">Programado</option>
+            <option value="En Vivo">En Vivo</option>
+            <option value="Reprogramado">Reprogramado</option>
+            <option value="Suspendido">Suspendido</option>
+            <option value="Finalizado">Finalizado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-white/5 space-y-3">
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-primary block">
+          Designación de Autoridades de Mesa y Arbitraje
+        </span>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="text-[10px] font-bold text-text-muted uppercase block mb-1">Árbitro 1</label>
+            <input
+              type="text"
+              [ngModel]="editMatchArbitro1()"
+              (ngModelChange)="editMatchArbitro1.set($event)"
+              placeholder="Nombre Árbitro 1"
+              class="w-full px-3 py-1.5 rounded-lg bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none" />
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-text-muted uppercase block mb-1">Árbitro 2</label>
+            <input
+              type="text"
+              [ngModel]="editMatchArbitro2()"
+              (ngModelChange)="editMatchArbitro2.set($event)"
+              placeholder="Nombre Árbitro 2"
+              class="w-full px-3 py-1.5 rounded-lg bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none" />
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-text-muted uppercase block mb-1">Mesa / Crono</label>
+            <input
+              type="text"
+              [ngModel]="editMatchCronometrista()"
+              (ngModelChange)="editMatchCronometrista.set($event)"
+              placeholder="Oficial de Mesa"
+              class="w-full px-3 py-1.5 rounded-lg bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 bg-court-surface border-t border-border-subtle flex items-center justify-end gap-2.5">
+      <button
+        type="button"
+        (click)="cerrarModalProgramarPartido()"
+        class="px-4 py-2 rounded-xl bg-court-card text-text-secondary hover:text-white text-xs font-bold cursor-pointer">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        (click)="guardarProgramacionPartido()"
+        [disabled]="isSavingMatch()"
+        class="px-5 py-2 rounded-xl bg-primary-container text-on-primary-container text-xs font-bold shadow-md hover:brightness-110 flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
+        @if (isSavingMatch()) {
+        <span class="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+        <span>Guardando...</span>
+        } @else {
+        <span class="material-symbols-outlined text-[16px]">save</span>
+        <span>Guardar Programación</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- ======================================================================= -->
+<!-- MODAL ADMIN 2: CREAR NUEVO EVENTO / HITO INSTITUCIONAL FJH              -->
+<!-- ======================================================================= -->
+@if (showEventModal()) {
+<div
+  class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+  (click)="cerrarModalNuevoEvento()">
+  <div
+    class="w-full max-w-lg bg-court-card border border-border-subtle rounded-2xl shadow-2xl overflow-hidden"
+    (click)="$event.stopPropagation()">
+    <div class="p-5 bg-court-surface border-b border-border-subtle flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-xl bg-accent-amber/20 border border-accent-amber/30 flex items-center justify-center text-accent-amber">
+          <span class="material-symbols-outlined text-xl">event_upcoming</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-extrabold text-white uppercase tracking-tight">
+            Nuevo Evento Institucional FJH
+          </h3>
+          <p class="text-[11px] text-text-secondary">
+            Visible en el calendario público, de clubes y administrativo
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="cerrarModalNuevoEvento()"
+        class="p-1.5 rounded-lg text-text-muted hover:text-white cursor-pointer">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="p-5 space-y-4">
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+          Título del Evento / Convocatoria *
+        </label>
+        <input
+          type="text"
+          [ngModel]="newEventTitulo()"
+          (ngModelChange)="newEventTitulo.set($event)"
+          placeholder="Ej: Cierre de Libro de Pases Torneo Apertura 2026"
+          class="w-full px-3.5 py-2.5 rounded-xl bg-court-surface border border-border-subtle text-xs text-white placeholder:text-text-muted focus:border-primary outline-none" />
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            Fecha *
+          </label>
+          <input
+            type="date"
+            [ngModel]="newEventFecha()"
+            (ngModelChange)="newEventFecha.set($event)"
+            class="w-full px-3 py-2 rounded-xl bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none" />
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            Hora
+          </label>
+          <input
+            type="time"
+            [ngModel]="newEventHora()"
+            (ngModelChange)="newEventHora.set($event)"
+            class="w-full px-3 py-2 rounded-xl bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none" />
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            Categoría
+          </label>
+          <select
+            [ngModel]="newEventTipo()"
+            (ngModelChange)="newEventTipo.set($event)"
+            class="w-full px-3 py-2 rounded-xl bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none">
+            <option value="institucional">Institucional FJH</option>
+            <option value="fichajes">Fichajes &amp; Padrón</option>
+            <option value="arbitraje">Colegio de Árbitros</option>
+            <option value="torneo">Hito de Competencia</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+          Sede / Modalidad
+        </label>
+        <input
+          type="text"
+          [ngModel]="newEventSede()"
+          (ngModelChange)="newEventSede.set($event)"
+          placeholder="Ej: Sede Central FJH • San Salvador de Jujuy"
+          class="w-full px-3.5 py-2 rounded-xl bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none" />
+      </div>
+
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+          Descripción / Observaciones
+        </label>
+        <textarea
+          rows="3"
+          [ngModel]="newEventDescripcion()"
+          (ngModelChange)="newEventDescripcion.set($event)"
+          placeholder="Detalle las disposiciones o alcances para los clubes afiliados..."
+          class="w-full px-3.5 py-2 rounded-xl bg-court-surface border border-border-subtle text-xs text-white placeholder:text-text-muted focus:border-primary outline-none resize-none"></textarea>
+      </div>
+    </div>
+
+    <div class="p-4 bg-court-surface border-t border-border-subtle flex items-center justify-end gap-2.5">
+      <button
+        type="button"
+        (click)="cerrarModalNuevoEvento()"
+        class="px-4 py-2 rounded-xl bg-court-card text-text-secondary hover:text-white text-xs font-bold cursor-pointer">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        (click)="guardarNuevoEventoInstitucional()"
+        [disabled]="isSavingEvent()"
+        class="px-5 py-2 rounded-xl bg-accent-amber text-court-base text-xs font-bold shadow-md hover:brightness-110 flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
+        @if (isSavingEvent()) {
+        <span class="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+        } @else {
+        <span class="material-symbols-outlined text-[16px]">event_available</span>
+        }
+        <span>Publicar en Calendario</span>
+      </button>
+    </div>
+  </div>
+</div>
+}

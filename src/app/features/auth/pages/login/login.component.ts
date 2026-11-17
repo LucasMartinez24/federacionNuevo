@@ -105,18 +105,24 @@ export class LoginComponent {
           localStorage.removeItem('fjh_saved_username');
         }
 
+        // Redirección según rol
+        if (user.role === 'CM') {
+          // Community Manager: Acceso exclusivo a la Galería Multimedia
+          this.router.navigate(['/admin/galeria']);
+          return;
+        }
+
         const returnUrl = this.route.snapshot.queryParams['returnUrl'];
         if (returnUrl) {
           this.router.navigateByUrl(returnUrl);
           return;
         }
 
-        // Redirección según rol
         if (user.role === 'user') {
           // Club: Redirigir directamente al panel unificado de club
           this.router.navigate(['/club/fixture']);
         } else {
-          // Staff (Admin, Rep Federación, Oficial de Mesa, Árbitros, CM)
+          // Staff (Admin, Rep Federación, Oficial de Mesa, Árbitros)
           this.router.navigate(['/admin/jugadores']);
         }
       },

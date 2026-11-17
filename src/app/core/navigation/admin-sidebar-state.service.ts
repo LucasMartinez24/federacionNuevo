@@ -4,6 +4,7 @@ import { catchError, startWith, switchMap } from 'rxjs/operators';
 import { PartidoItem, PartidosService } from '../services/partidos.service';
 import { JugadoresService } from '../services/jugadores.service';
 import { SancionesService } from '../services/sanciones.service';
+import { TicketsService } from '../services/tickets.service';
 import { TorneosService } from '../services/torneos.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -33,6 +34,7 @@ export class AdminSidebarStateService {
   private readonly sancionesService = inject(SancionesService);
   private readonly torneosService = inject(TorneosService);
   private readonly partidosService = inject(PartidosService);
+  private readonly ticketsService = inject(TicketsService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly state = signal<AdminSidebarState>({
@@ -56,11 +58,12 @@ export class AdminSidebarStateService {
             athletes: this.jugadoresService.getJugadores().pipe(catchError(() => of(null))),
             resolutions: this.sancionesService.getSanciones().pipe(catchError(() => of(null))),
             tournaments: this.torneosService.getTorneos().pipe(catchError(() => of(null))),
+            tickets: this.ticketsService.getTickets().pipe(catchError(() => of(null))),
           }),
         ),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(({ athletes, resolutions, tournaments }) => {
+      .subscribe(({ athletes, resolutions, tournaments, tickets }) => {
         const liveMatches$: Observable<PartidoItem[][] | null> = tournaments && tournaments.length > 0
           ? forkJoin(
               tournaments.map((torneo) =>
@@ -75,11 +78,11 @@ export class AdminSidebarStateService {
           const matches: PartidoItem[] = fixtures?.flat() || [];
           const pendingAthletesCount = athletes ? athletes.filter((j) => j.estado === 'Pendiente').length : 0;
           const activeResolutionsCount = resolutions
-            ? resolutions.filter((s) => Number(s.cumplidas) < Number(s.totales)).length
+            ? resolutions.filter((s) => Number(s.totales) === 0 || Number(s.cumplidas) < Number(s.totales)).length
             : 0;
           const liveMatchesCount = fixtures ? matches.filter((p) => this.isLiveStatus(p.estado)).length : 0;
-          const pendingFilesCount = athletes
-            ? athletes.filter((j) => !j.fichaMedicaUrl || !j.autorizacionUrl).length
+          const openTicketsCount = tickets
+            ? tickets.filter((t) => t.status !== 'Resuelto' && t.status !== 'Cerrado').length
             : 0;
 
           this.state.set({
@@ -87,7 +90,7 @@ export class AdminSidebarStateService {
             pendingAthletes: pendingAthletesCount,
             activeResolutions: activeResolutionsCount,
             liveMatches: liveMatchesCount,
-            pendingFiles: pendingFilesCount,
+            pendingFiles: openTicketsCount,
             totalTournaments: tournaments ? tournaments.length : null,
           });
 
@@ -96,7 +99,7 @@ export class AdminSidebarStateService {
             pendingAthletes: pendingAthletesCount,
             activeResolutions: activeResolutionsCount,
             liveMatches: liveMatchesCount,
-            pendingFiles: pendingFilesCount,
+            pendingFiles: openTicketsCount,
             athletesList: athletes || [],
             matchesList: matches,
           });
@@ -120,7 +123,8 @@ export class AdminSidebarStateService {
       athletes: this.jugadoresService.getJugadores().pipe(catchError(() => of(null))),
       resolutions: this.sancionesService.getSanciones().pipe(catchError(() => of(null))),
       tournaments: this.torneosService.getTorneos().pipe(catchError(() => of(null))),
-    }).subscribe(({ athletes, resolutions, tournaments }) => {
+      tickets: this.ticketsService.getTickets().pipe(catchError(() => of(null))),
+    }).subscribe(({ athletes, resolutions, tournaments, tickets }) => {
       if (tournaments) {
         forkJoin(
           tournaments.map((t) =>
@@ -129,16 +133,16 @@ export class AdminSidebarStateService {
         ).subscribe((fixtures) => {
           const matches = fixtures.flat();
           const pAthletes = athletes ? athletes.filter((j) => j.estado === 'Pendiente').length : 0;
-          const aRes = resolutions ? resolutions.filter((s) => Number(s.cumplidas) < Number(s.totales)).length : 0;
+          const aRes = resolutions ? resolutions.filter((s) => Number(s.totales) === 0 || Number(s.cumplidas) < Number(s.totales)).length : 0;
           const lMat = matches.filter((p) => this.isLiveStatus(p.estado)).length;
-          const pFiles = athletes ? athletes.filter((j) => !j.fichaMedicaUrl || !j.autorizacionUrl).length : 0;
+          const openTickets = tickets ? tickets.filter((t) => t.status !== 'Resuelto' && t.status !== 'Cerrado').length : 0;
 
           this.state.set({
             totalAthletes: athletes ? athletes.length : null,
             pendingAthletes: pAthletes,
             activeResolutions: aRes,
             liveMatches: lMat,
-            pendingFiles: pFiles,
+            pendingFiles: openTickets,
             totalTournaments: tournaments.length,
           });
         });
@@ -188,16 +192,16 @@ export class AdminSidebarStateService {
       });
     }
 
-    // 3. Faltante de documentación médica o autorizaciones
+    // 3. Consultas / Tickets pendientes en Soporte
     if (data.pendingFiles > 0) {
       notifs.push({
         id: 'notif-files-pending',
         type: 'athlete',
-        title: 'Documentación incompleta',
-        message: `${data.pendingFiles} jugador(es) sin ficha médica o autorización legal cargada.`,
+        title: 'Soporte & Mesa de Entradas',
+        message: `${data.pendingFiles} consulta(s) o expediente(s) de clubes pendientes de respuesta.`,
         time: 'Atención',
-        route: '/admin/jugadores',
-        icon: 'medical_services',
+        route: '/admin/soporte',
+        icon: 'support_agent',
         read: false,
       });
     }

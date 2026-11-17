@@ -86,6 +86,11 @@ export class ClubLayoutComponent implements OnInit {
           badgeTone: 'info',
         },
         {
+          label: 'Calendario Oficial',
+          route: '/club/calendario',
+          icon: 'calendar_month',
+        },
+        {
           label: 'Plantilla de Jugadores',
           route: '/club/jugadores',
           icon: 'groups',

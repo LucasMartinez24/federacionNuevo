@@ -3,7 +3,7 @@
   <!-- FEEDBACK TOAST -->
   @if (feedback(); as fb) {
   <div
-    class="fixed top-20 sm:top-24 right-4 sm:right-6 z-[100] max-w-sm sm:max-w-md flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md border animate-in slide-in-from-top-4 duration-300"
+    class="fixed top-20 sm:top-24 right-4 sm:right-6 z-[9999] max-w-sm sm:max-w-md flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md border animate-in slide-in-from-top-4 duration-300 pointer-events-auto"
     [ngClass]="fb.type === 'success' ? 'bg-emerald-950/95 border-emerald-500/70 text-emerald-200' : 'bg-rose-950/95 border-rose-500/70 text-rose-200'">
     <span class="material-symbols-outlined text-[20px] shrink-0">
       {{ fb.type === 'success' ? 'check_circle' : 'error' }}

@@ -27,8 +27,11 @@ export interface TicketItem {
   status: 'Abierto' | 'En Espera' | 'Resuelto' | 'Cerrado' | string;
   clubId: string;
   club?: {
+    id?: string;
     nombre: string;
+    siglas?: string;
     logoUrl?: string | null;
+    esInvitado?: boolean;
   };
   createdAt: string;
   messages?: TicketMessage[];
@@ -64,8 +67,12 @@ export class TicketsService {
     return this.http.post<TicketMessage>(`${this.apiUrl}/${ticketId}/reply`, formData);
   }
 
-  actualizarEstado(ticketId: string, status: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${ticketId}/status`, { status });
+  actualizarEstado(ticketId: string, status: string): Observable<TicketItem> {
+    return this.http.patch<TicketItem>(`${this.apiUrl}/${ticketId}/status`, { status });
+  }
+
+  eliminarTicket(ticketId: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/${ticketId}`);
   }
 }
 

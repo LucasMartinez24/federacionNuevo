@@ -8,7 +8,6 @@ const competitionUsers: readonly UserRole[] = [
   'admin',
   'REP_FEDERACION',
   'user',
-  'CM',
   'ARBITRO',
   'OFICIAL_MESA',
   'JEFE_ARBITROS',
@@ -27,7 +26,8 @@ export const publicNavigation: readonly NavigationGroup[] = [
     label: 'Competencias',
     audience: 'public',
     items: [
-      { label: 'Fixture', route: '/fixture', icon: 'calendar_month' },
+      { label: 'Fixture', route: '/fixture', icon: 'sports_handball' },
+      { label: 'Calendario', route: '/calendario', icon: 'calendar_month' },
       { label: 'Tabla de goleadores', route: '/tabla-goleadores', icon: 'leaderboard' },
     ],
   },
@@ -45,9 +45,9 @@ export const authenticatedNavigation: readonly NavigationGroup[] = [
       },
       {
         label: 'Calendario',
-        route: '/calendario',
+        route: '/admin/calendario',
         icon: 'calendar_month',
-        roles: [...clubUsers, ...refereeUsers, 'admin'],
+        roles: [...federationStaff, ...refereeUsers],
       },
       {
         label: 'Mesa y planilla en vivo',
@@ -85,7 +85,7 @@ export const authenticatedNavigation: readonly NavigationGroup[] = [
     items: [
       {
         label: 'Galería Multimedia',
-        route: '/galeria/admin',
+        route: '/admin/galeria',
         icon: 'photo_library',
         roles: federationContent,
         children: [
@@ -97,7 +97,7 @@ export const authenticatedNavigation: readonly NavigationGroup[] = [
           },
           {
             label: 'Subir & Gestionar Fotos',
-            route: '/galeria/admin',
+            route: '/admin/galeria',
             icon: 'add_a_photo',
             roles: federationContent,
           },
@@ -109,14 +109,14 @@ export const authenticatedNavigation: readonly NavigationGroup[] = [
     label: 'Mesa de Ayuda & Soporte',
     items: [
       {
-        label: 'Expedientes & Trámites',
-        route: '/soporte',
-        icon: 'confirmation_number',
-        roles: federationStaff,
+        label: 'Soporte',
+        route: '/admin/soporte',
+        icon: 'support_agent',
+        roles: [...federationStaff, ...refereeUsers],
       },
       {
         label: 'Mesa de Entradas Digital',
-        route: '/soporte',
+        route: '/club/mesa-ayuda',
         icon: 'support_agent',
         roles: clubUsers,
       },

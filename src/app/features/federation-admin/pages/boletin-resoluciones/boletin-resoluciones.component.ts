@@ -77,6 +77,10 @@ export class BoletinResolucionesComponent implements OnInit {
   protected readonly formSancionadoManual = signal<string>('');
   protected formJugadorId = '';
   protected formRegistrarSancionDb = true;
+  protected formTipoPenalidad: 'suspension' | 'multa' | 'mixta' | 'advertencia' = 'suspension';
+  protected formMontoMulta = '$50.000';
+  protected formCausalMulta = 'Inconducta deportiva / disturbios';
+  protected formPlazoPago = '5 días hábiles en Tesorería FJH';
   protected formInhabilitarJugador = true;
   protected formFechasTotales = 2;
   protected formFalloCorto = '2 Fechas de Suspensión';
@@ -128,7 +132,20 @@ export class BoletinResolucionesComponent implements OnInit {
           createdDate.getMinutes()
         ).padStart(2, '0')} hs`;
 
-        const isActiva = (s.cumplidas ?? 0) < (s.totales ?? 1);
+        const isFalloMulta = (s.fallo || '').toLowerCase().includes('multa') || (s.totales === 0);
+        const isActiva = isFalloMulta ? true : (s.cumplidas ?? 0) < (s.totales ?? 1);
+
+        const arancelesItem: BoletinArancel[] = isFalloMulta
+          ? [
+              {
+                concepto: `Multa Tribunal de Penas - ${s.institucion}`,
+                monto: (s.fallo.match(/\$[\d.]+/)?.[0]) || '$50.000',
+                moneda: 'ARS',
+                detalle: 'Sanción Pecuniaria a cancelar en Tesorería FJH',
+                destacado: true,
+              },
+            ]
+          : [];
 
         return {
           id: `sancion-${s.id}`,
@@ -146,7 +163,8 @@ export class BoletinResolucionesComponent implements OnInit {
           clubAfectado: s.institucion,
           sancionado: s.sancionado,
           cumplidas: s.cumplidas ?? 0,
-          totales: s.totales ?? 1,
+          totales: s.totales ?? (isFalloMulta ? 0 : 1),
+          fallo: s.fallo,
           visto: `Las actuaciones labradas en el ${s.expediente} correspondientes a la categoría ${s.categoria} (${
             s.vigencia || 'Temporada 2026'
           }) involucrando a ${s.sancionado} de la institución ${s.institucion}; y`,
@@ -155,15 +173,21 @@ export class BoletinResolucionesComponent implements OnInit {
             'Que los hechos informados en la planilla electrónica oficial constituyen una infracción tipificada en el Código de Penas de la Federación Jujeña de Handball y reglamentos CAH;',
           resuelve: [
             `Art. 1°: Sancionar a ${s.sancionado} (${s.institucion} • ${s.categoria}) con la pena de ${s.fallo}.`,
-            `Art. 2°: Registrar el cómputo de cumplimiento en el sistema oficial (${s.cumplidas} de ${s.totales} fechas cumplidas) y notificar al delegado acreditado.`,
+            isFalloMulta
+              ? `Art. 2°: Intimar a la institución al pago de la multa pecuniaria ante Tesorería FJH dentro de los plazos reglamentarios.`
+              : `Art. 2°: Registrar el cómputo de cumplimiento en el sistema oficial (${s.cumplidas} de ${s.totales} fechas cumplidas) y notificar al delegado acreditado.`,
           ],
           resumen: null,
-          alertaTitulo: isActiva ? 'Sanción Disciplinaria en Curso:' : 'Sanción Cumplida / Homologada:',
-          alertaTexto: isActiva
-            ? `El atleta o miembro sancionado registra ${s.cumplidas} de ${s.totales} fecha(s) cumplidas bajo el expediente ${s.expediente}.`
-            : `La sanción de ${s.totales} fecha(s) fue cumplida en su totalidad, rehabilitando su condición federativa.`,
-          alertaTipo: isActiva ? 'amber' : 'tertiary',
-          aranceles: [],
+          alertaTitulo: isFalloMulta
+            ? 'Multa Económica al Club (Sanción Pecuniaria):'
+            : (isActiva ? 'Sanción Disciplinaria en Curso:' : 'Sanción Cumplida / Homologada:'),
+          alertaTexto: isFalloMulta
+            ? `Fallo pecuniario emitido por el Tribunal de Penas bajo ${s.expediente}: ${s.fallo}. Deberá ser cancelado ante Tesorería FJH.`
+            : (isActiva
+                ? `El atleta o miembro sancionado registra ${s.cumplidas} de ${s.totales} fecha(s) cumplidas bajo el expediente ${s.expediente}.`
+                : `La sanción de ${s.totales} fecha(s) fue cumplida en su totalidad, rehabilitando su condición federativa.`),
+          alertaTipo: isFalloMulta ? 'amber' : (isActiva ? 'amber' : 'tertiary'),
+          aranceles: arancelesItem,
           adjuntos: [
             {
               nombre: `Acta-Tribunal-${s.expediente.replace(/[^a-zA-Z0-9_-]/g, '')}.pdf`,
@@ -328,6 +352,10 @@ export class BoletinResolucionesComponent implements OnInit {
     this.formSancionadoManual.set('');
     this.formJugadorId = '';
     this.formRegistrarSancionDb = categoriaInicial === 'tribunal';
+    this.formTipoPenalidad = 'suspension';
+    this.formMontoMulta = '$50.000';
+    this.formCausalMulta = 'Inconducta deportiva / disturbios';
+    this.formPlazoPago = '5 días hábiles en Tesorería FJH';
     this.formInhabilitarJugador = true;
     this.formFechasTotales = 2;
     this.formFalloCorto = '2 Fechas de Suspensión';
@@ -429,6 +457,46 @@ export class BoletinResolucionesComponent implements OnInit {
     return (partes[0]?.slice(0, 2) || 'JU').toUpperCase();
   }
 
+  cambiarTipoPenalidad(tipo: 'suspension' | 'multa' | 'mixta' | 'advertencia'): void {
+    this.formTipoPenalidad = tipo;
+    this.actualizarTextosFallo();
+  }
+
+  setMontoMultaRapido(monto: string): void {
+    this.formMontoMulta = monto;
+    this.actualizarTextosFallo();
+  }
+
+  actualizarTextosFallo(): void {
+    const clubObj = this.clubes().find((c) => c.id === this.formClubId());
+    const clubNombre = clubObj ? clubObj.nombre : 'Club Afiliado';
+
+    if (this.formTipoPenalidad === 'multa') {
+      this.formFalloCorto = `Multa Económica: ${this.formMontoMulta} ARS (${this.formPlazoPago})`;
+      this.formFechasTotales = 0;
+      this.formInhabilitarJugador = false;
+      this.formTitulo = `SANCIÓN DISCIPLINARIA: MULTA PECUNIARIA A ${clubNombre.toUpperCase()} — ${this.formMontoMulta} ARS`;
+      this.formResuelveTexto = `Art. 1°: Aplicar a ${clubNombre} una multa económica de ${this.formMontoMulta} ARS por ${this.formCausalMulta.toLowerCase()}.\nArt. 2°: Intimar al pago en Tesorería FJH dentro del plazo perentorio de ${this.formPlazoPago}.\nArt. 3°: Notifíquese, regístrese y archívese.`;
+    } else if (this.formTipoPenalidad === 'mixta') {
+      this.formFalloCorto = `${this.formFechasTotales} Fechas de Suspensión + Multa ${this.formMontoMulta} ARS`;
+      this.formInhabilitarJugador = true;
+      this.formTitulo = `SANCIÓN DISCIPLINARIA Y MULTA A ${clubNombre.toUpperCase()}`;
+      this.formResuelveTexto = `Art. 1°: Aplicar suspensión deportiva de ${this.formFechasTotales} fecha(s) oficiales.\nArt. 2°: Imponer a la institución ${clubNombre} una multa económica de ${this.formMontoMulta} ARS (${this.formPlazoPago}).\nArt. 3°: Comuníquese y regístrese.`;
+    } else if (this.formTipoPenalidad === 'advertencia') {
+      this.formFalloCorto = 'Apercibimiento / Advertencia Formal';
+      this.formFechasTotales = 0;
+      this.formInhabilitarJugador = false;
+      this.formTitulo = `APERCIBIMIENTO DISCIPLINARIO FORMAL A ${clubNombre.toUpperCase()}`;
+      this.formResuelveTexto = `Art. 1°: Dictar formal apercibimiento disciplinario a la institución ${clubNombre}.\nArt. 2°: Notifíquese que la reiteración de conductas similares motivará sanciones pecuniarias y quita de puntos.\nArt. 3°: Notifíquese.`;
+    } else {
+      this.formFalloCorto = `${this.formFechasTotales || 2} Fechas de Suspensión`;
+      this.formInhabilitarJugador = true;
+      if (!this.formFechasTotales || this.formFechasTotales === 0) {
+        this.formFechasTotales = 2;
+      }
+    }
+  }
+
   onPdfSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -490,8 +558,29 @@ export class BoletinResolucionesComponent implements OnInit {
     if (this.formResumen.trim()) formData.append('resumen', this.formResumen.trim());
     if (this.formAlertaTitulo.trim()) formData.append('alertaTitulo', this.formAlertaTitulo.trim());
     if (this.formAlertaTexto.trim()) formData.append('alertaTexto', this.formAlertaTexto.trim());
-    if (this.formCategoria === 'tesoreria' && this.formAranceles.length > 0) {
-      formData.append('aranceles', JSON.stringify(this.formAranceles));
+    const esMulta = this.formTipoPenalidad === 'multa' || this.formTipoPenalidad === 'mixta';
+    const arancelesMulta: BoletinArancel[] =
+      esMulta && this.formMontoMulta
+        ? [
+            {
+              concepto: `Multa Tribunal de Penas - ${this.formCausalMulta}`,
+              monto: this.formMontoMulta,
+              moneda: 'ARS',
+              detalle: this.formPlazoPago || 'Tesorería FJH',
+              destacado: true,
+            },
+          ]
+        : [];
+
+    const finalAranceles =
+      this.formCategoria === 'tesoreria'
+        ? this.formAranceles
+        : this.formCategoria === 'tribunal' && esMulta
+        ? arancelesMulta
+        : [];
+
+    if (finalAranceles.length > 0) {
+      formData.append('aranceles', JSON.stringify(finalAranceles));
     }
     if (this.selectedPdfFile) {
       formData.append('archivoPdf', this.selectedPdfFile);
@@ -502,19 +591,27 @@ export class BoletinResolucionesComponent implements OnInit {
       this.formCategoria === 'tribunal' && this.formRegistrarSancionDb && (jugadorObj || clubObj || sancionadoManual)
         ? this.sancionesService
             .crearSancion({
-              sancionado: personaSancionada,
+              sancionado: this.formTipoPenalidad === 'multa' ? clubNombre : personaSancionada,
               institucion: clubNombre,
-              categoria: jugadorObj?.categoria || 'Primera División',
-              fallo: this.formFalloCorto || `${this.formFechasTotales} Fechas de Suspensión`,
+              categoria:
+                jugadorObj?.categoria || (this.formTipoPenalidad === 'multa' ? 'Institucional' : 'Primera División'),
+              fallo:
+                this.formFalloCorto ||
+                (this.formTipoPenalidad === 'multa'
+                  ? `Multa Económica ${this.formMontoMulta} ARS`
+                  : `${this.formFechasTotales} Fechas de Suspensión`),
               cumplidas: 0,
-              totales: Number(this.formFechasTotales) || 1,
+              totales:
+                this.formTipoPenalidad === 'multa' || this.formTipoPenalidad === 'advertencia'
+                  ? 0
+                  : Number(this.formFechasTotales) || 1,
               vigencia: 'Temporada Oficial 2026',
               expediente: this.formExpediente.trim(),
               estado: this.formUrgente ? 'grave' : 'advertencia',
               motivo: this.formConsiderando.trim() || this.formResumen.trim(),
-              jugadorId: jugadorObj?.id || null,
+              jugadorId: (this.formTipoPenalidad === 'multa' ? null : jugadorObj?.id) || null,
               clubId: clubObj?.id || null,
-              inhabilitarJugador: this.formInhabilitarJugador,
+              inhabilitarJugador: this.formTipoPenalidad === 'multa' ? false : this.formInhabilitarJugador,
             })
             .pipe(catchError(() => of(null)))
         : of(null);
@@ -547,6 +644,12 @@ export class BoletinResolucionesComponent implements OnInit {
             estado: 'vigente',
             clubAfectado: clubNombre,
             sancionado: jugadorObj || sancionadoManual ? personaSancionada : undefined,
+            fallo: this.formFalloCorto,
+            totales:
+              this.formTipoPenalidad === 'multa' || this.formTipoPenalidad === 'advertencia'
+                ? 0
+                : Number(this.formFechasTotales) || 1,
+            cumplidas: 0,
             visto: this.formVisto.trim() || null,
             considerando: this.formConsiderando.trim() || null,
             resuelve: articulos,
@@ -559,7 +662,7 @@ export class BoletinResolucionesComponent implements OnInit {
                 : this.formCategoria === 'tesoreria'
                 ? 'tertiary'
                 : 'primary',
-            aranceles: this.formCategoria === 'tesoreria' ? [...this.formAranceles] : [],
+            aranceles: finalAranceles,
             adjuntos: this.selectedPdfFile
               ? [
                   {

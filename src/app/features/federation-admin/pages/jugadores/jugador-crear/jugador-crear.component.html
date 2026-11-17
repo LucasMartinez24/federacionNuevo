@@ -9,7 +9,7 @@
   <!-- Toast Notification -->
   @if (feedbackMensaje) {
   <div
-    class="fixed top-5 right-5 z-50 px-5 py-3.5 rounded-2xl shadow-2xl border flex items-center gap-3 animate-in fade-in backdrop-blur-md transition-all"
+    class="fixed top-5 right-5 z-[9999] px-5 py-3.5 rounded-2xl shadow-2xl border flex items-center gap-3 animate-in fade-in backdrop-blur-md transition-all pointer-events-auto"
     [class.bg-slate-900]="true"
     [class.border-emerald-500]="feedbackTipo === 'success'"
     [class.text-emerald-400]="feedbackTipo === 'success'"

@@ -100,7 +100,12 @@
           <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container text-text-muted border border-white/5 uppercase">
             {{ sancion.expediente || 'EXP-FJH' }}
           </span>
-          @if (sancion.cumplidas < sancion.totales) {
+          @if ((sancion.fallo && sancion.fallo.toLowerCase().includes('multa')) || sancion.totales === 0) {
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">payments</span>
+            Multa Institucional
+          </span>
+          } @else if (sancion.cumplidas < sancion.totales) {
           <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-accent-crimson-deep/20 text-accent-crimson-deep border border-accent-crimson-deep/30 flex items-center gap-1">
             <span class="size-1.5 rounded-full bg-accent-crimson-deep animate-ping"></span>
             Suspensión Activa
@@ -121,6 +126,7 @@
         <div class="p-3 rounded-xl bg-surface-dim border border-white/5 flex flex-col gap-1 text-xs">
           <span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Resolución del Fallo</span>
           <strong class="text-white font-bold">{{ sancion.fallo }}</strong>
+          @if (sancion.totales > 0) {
           <div class="flex items-center justify-between text-[11px] text-text-muted mt-2 pt-2 border-t border-white/5">
             <span>Fechas cumplidas:</span>
             <strong class="text-white">{{ sancion.cumplidas }} de {{ sancion.totales }}</strong>
@@ -131,6 +137,15 @@
               class="h-full bg-accent-crimson-deep transition-all"
               [style.width.%]="(sancion.cumplidas / sancion.totales) * 100"></div>
           </div>
+          } @else {
+          <div class="flex items-center justify-between text-[11px] text-amber-300 mt-2 pt-2 border-t border-white/5">
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">payments</span>
+              <span>Sanción Pecuniaria:</span>
+            </span>
+            <strong class="text-amber-200">A cancelar en Tesorería FJH</strong>
+          </div>
+          }
         </div>
 
         <p class="text-xs text-text-secondary italic line-clamp-2">

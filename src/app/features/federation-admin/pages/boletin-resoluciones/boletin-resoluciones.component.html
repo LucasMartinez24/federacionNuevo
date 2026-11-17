@@ -10,7 +10,7 @@
 <!-- Toast Notification Feedback -->
 @if (toastMessage()) {
 <div
-  class="fixed top-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-2xl border backdrop-blur-xl flex items-center gap-3.5 animate-fade-in transition-all no-print"
+  class="fixed top-6 right-6 z-[9999] px-5 py-3.5 rounded-2xl shadow-2xl border backdrop-blur-xl flex items-center gap-3.5 animate-fade-in transition-all pointer-events-auto no-print"
   [class.bg-court-card]="true" [class.border-tertiary/50]="toastType() === 'success'"
   [class.border-accent-crimson-deep/50]="toastType() === 'error'" [class.border-primary/50]="toastType() === 'info'">
   <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
@@ -107,12 +107,6 @@
             <span>+ Emitir Resolución / Circular</span>
           </button>
           }
-
-          <a href="/docs/Formulario-Fichaje-FJH.pdf" download="Compendio-Boletin-Oficial-FJH-2026.pdf" target="_blank"
-            class="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-court-card hover:bg-court-card-hover border border-border-subtle hover:border-primary/40 text-text-primary text-xs font-bold tracking-wide transition-all shadow-md active:scale-95 cursor-pointer">
-            <span class="material-symbols-outlined text-primary text-[18px]">picture_as_pdf</span>
-            <span>Compendio PDF</span>
-          </a>
 
           <button type="button" (click)="imprimirBoletin()"
             class="inline-flex items-center gap-1.5 px-3.5 py-3 rounded-xl bg-court-surface hover:bg-court-card border border-border-subtle text-text-secondary hover:text-white transition-colors text-xs font-semibold active:scale-95 cursor-pointer"
@@ -529,6 +523,15 @@
             </div>
             }
           </div>
+          } @else if (item.categoria === 'tribunal' && (item.totales === 0 || (item.fallo && item.fallo.toLowerCase().includes('multa')))) {
+          <div
+            class="inline-flex items-center gap-2 bg-accent-amber/15 border border-accent-amber/40 px-3.5 py-2 rounded-xl shrink-0 self-start text-accent-amber shadow-sm">
+            <span class="material-symbols-outlined text-lg">payments</span>
+            <div class="flex flex-col">
+              <span class="text-[9px] font-black uppercase tracking-wider text-amber-300">Sanción al Club</span>
+              <span class="text-xs font-black text-amber-200">Multa Pecuniaria FJH</span>
+            </div>
+          </div>
           }
         </div>
 
@@ -737,10 +740,10 @@
       class="pt-6 border-t border-border-subtle/40 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left text-xs text-text-muted">
       <div class="space-y-1">
         <p class="font-semibold text-text-secondary">
-          © 2026 Federación Jujeña de Handball (FJH) • Afiliada a la Confederación Argentina de Handball (CAH)
+          © 2026 Federación Jujeña de Handball (FJH) • Desarrollado por <strong class="text-primary">REC Technologies</strong>
         </p>
         <p class="text-[11px]">
-          Sistema Oficial de Gestión Federativa, Tribunal de Disciplina &amp; Mesa Electrónica
+          Sistema Oficial de Gestión Federativa, Tribunal de Disciplina &amp; Mesa Electrónica CAH
         </p>
       </div>
       <div class="flex items-center gap-4 text-[11px]">
@@ -1025,26 +1028,189 @@
         </div>
 
         @if (formCategoria === 'tribunal' && formRegistrarSancionDb) {
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-white/5">
+        <div class="space-y-3 pt-3 border-t border-white/5">
           <div>
-            <label class="text-[10px] font-bold uppercase tracking-wider text-text-muted block mb-1">
-              Sanción Resumida (Padrón)
+            <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1.5">
+              Tipo de Penalidad / Dictamen del Tribunal *
             </label>
-            <input type="text" [(ngModel)]="formFalloCorto" placeholder="Ej: 2 Fechas de Suspensión"
-              class="w-full px-3 py-2 rounded-lg bg-court-surface border border-border-subtle text-white text-xs" />
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button
+                type="button"
+                (click)="cambiarTipoPenalidad('suspension')"
+                [class.bg-accent-crimson-deep/20]="formTipoPenalidad === 'suspension'"
+                [class.border-accent-crimson-deep]="formTipoPenalidad === 'suspension'"
+                [class.text-white]="formTipoPenalidad === 'suspension'"
+                [class.bg-court-surface]="formTipoPenalidad !== 'suspension'"
+                [class.border-border-subtle]="formTipoPenalidad !== 'suspension'"
+                [class.text-text-muted]="formTipoPenalidad !== 'suspension'"
+                class="p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col gap-1">
+                <span class="material-symbols-outlined text-lg">person_off</span>
+                <span class="text-xs font-bold leading-tight">Suspensión</span>
+                <span class="text-[9px]">Fechas a cumplir</span>
+              </button>
+
+              <button
+                type="button"
+                (click)="cambiarTipoPenalidad('multa')"
+                [class.bg-accent-amber/20]="formTipoPenalidad === 'multa'"
+                [class.border-accent-amber]="formTipoPenalidad === 'multa'"
+                [class.text-white]="formTipoPenalidad === 'multa'"
+                [class.bg-court-surface]="formTipoPenalidad !== 'multa'"
+                [class.border-border-subtle]="formTipoPenalidad !== 'multa'"
+                [class.text-text-muted]="formTipoPenalidad !== 'multa'"
+                class="p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col gap-1">
+                <span class="material-symbols-outlined text-lg text-amber-400">payments</span>
+                <span class="text-xs font-bold leading-tight">Multa al Club</span>
+                <span class="text-[9px]">Sanción económica</span>
+              </button>
+
+              <button
+                type="button"
+                (click)="cambiarTipoPenalidad('mixta')"
+                [class.bg-primary/20]="formTipoPenalidad === 'mixta'"
+                [class.border-primary]="formTipoPenalidad === 'mixta'"
+                [class.text-white]="formTipoPenalidad === 'mixta'"
+                [class.bg-court-surface]="formTipoPenalidad !== 'mixta'"
+                [class.border-border-subtle]="formTipoPenalidad !== 'mixta'"
+                [class.text-text-muted]="formTipoPenalidad !== 'mixta'"
+                class="p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col gap-1">
+                <span class="material-symbols-outlined text-lg">balance</span>
+                <span class="text-xs font-bold leading-tight">Mixta</span>
+                <span class="text-[9px]">Fechas + Multa</span>
+              </button>
+
+              <button
+                type="button"
+                (click)="cambiarTipoPenalidad('advertencia')"
+                [class.bg-surface-container-high]="formTipoPenalidad === 'advertencia'"
+                [class.border-text-secondary]="formTipoPenalidad === 'advertencia'"
+                [class.text-white]="formTipoPenalidad === 'advertencia'"
+                [class.bg-court-surface]="formTipoPenalidad !== 'advertencia'"
+                [class.border-border-subtle]="formTipoPenalidad !== 'advertencia'"
+                [class.text-text-muted]="formTipoPenalidad !== 'advertencia'"
+                class="p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col gap-1">
+                <span class="material-symbols-outlined text-lg">warning</span>
+                <span class="text-xs font-bold leading-tight">Apercibimiento</span>
+                <span class="text-[9px]">Llamado de atención</span>
+              </button>
+            </div>
           </div>
-          <div>
-            <label class="text-[10px] font-bold uppercase tracking-wider text-text-muted block mb-1">
-              Total de Fechas a Cumplir
-            </label>
-            <input type="number" min="1" max="99" [(ngModel)]="formFechasTotales"
-              class="w-full px-3 py-2 rounded-lg bg-court-surface border border-border-subtle text-white text-xs num-tabular" />
+
+          <!-- Campos específicos según tipo de penalidad -->
+          @if (formTipoPenalidad === 'multa' || formTipoPenalidad === 'mixta') {
+          <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">paid</span>
+                <span>Configuración de la Multa Pecuniaria al Club</span>
+              </span>
+              <div class="flex items-center gap-1">
+                <button
+                  type="button"
+                  (click)="setMontoMultaRapido('$25.000')"
+                  class="px-2 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-[10px] font-bold cursor-pointer transition-colors">
+                  $25.000
+                </button>
+                <button
+                  type="button"
+                  (click)="setMontoMultaRapido('$50.000')"
+                  class="px-2 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-[10px] font-bold cursor-pointer transition-colors">
+                  $50.000
+                </button>
+                <button
+                  type="button"
+                  (click)="setMontoMultaRapido('$80.000')"
+                  class="px-2 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-[10px] font-bold cursor-pointer transition-colors">
+                  $80.000
+                </button>
+                <button
+                  type="button"
+                  (click)="setMontoMultaRapido('$120.000')"
+                  class="px-2 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-[10px] font-bold cursor-pointer transition-colors">
+                  $120.000
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[10px] font-bold uppercase tracking-wider text-amber-200/80 block mb-1">
+                  Monto de la Multa *
+                </label>
+                <input
+                  type="text"
+                  [(ngModel)]="formMontoMulta"
+                  (ngModelChange)="actualizarTextosFallo()"
+                  placeholder="Ej: $50.000"
+                  class="w-full px-3 py-2 rounded-lg bg-court-base border border-amber-500/40 text-white text-xs font-mono font-bold focus:border-amber-400 outline-none" />
+              </div>
+              <div>
+                <label class="text-[10px] font-bold uppercase tracking-wider text-amber-200/80 block mb-1">
+                  Causal de la Multa
+                </label>
+                <select
+                  [(ngModel)]="formCausalMulta"
+                  (ngModelChange)="actualizarTextosFallo()"
+                  class="w-full px-3 py-2 rounded-lg bg-court-base border border-amber-500/40 text-white text-xs focus:border-amber-400 outline-none">
+                  <option value="Inconducta deportiva / disturbios">Inconducta deportiva / disturbios</option>
+                  <option value="Incomparecencia injustificada (Walkover / WO)">Incomparecencia / Walkover (WO)</option>
+                  <option value="Incumplimiento de localía o seguridad">Incumplimiento de localía o seguridad</option>
+                  <option value="Alineación indebida de jugadores">Alineación indebida</option>
+                  <option value="Aranceles o deudas federativas">Aranceles federativos adeudados</option>
+                  <option value="Agresión verbal o física a árbitros">Agresión a autoridades de mesa</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] font-bold uppercase tracking-wider text-amber-200/80 block mb-1">
+                  Plazo de Pago (Tesorería)
+                </label>
+                <input
+                  type="text"
+                  [(ngModel)]="formPlazoPago"
+                  (ngModelChange)="actualizarTextosFallo()"
+                  placeholder="Ej: 5 días hábiles en Tesorería FJH"
+                  class="w-full px-3 py-2 rounded-lg bg-court-base border border-amber-500/40 text-white text-xs focus:border-amber-400 outline-none" />
+              </div>
+            </div>
           </div>
-          <div class="flex items-end">
-            <label class="flex items-center gap-2 text-xs text-text-secondary cursor-pointer pb-2">
-              <input type="checkbox" [(ngModel)]="formInhabilitarJugador" class="rounded text-accent-crimson-deep" />
-              <span>Inhabilitar ficha en partido</span>
-            </label>
+          }
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="text-[10px] font-bold uppercase tracking-wider text-text-muted block mb-1">
+                Fallo Resumido Oficial
+              </label>
+              <input
+                type="text"
+                [(ngModel)]="formFalloCorto"
+                placeholder="Ej: Multa $50.000 ARS"
+                class="w-full px-3 py-2 rounded-lg bg-court-surface border border-border-subtle text-white text-xs font-medium" />
+            </div>
+
+            @if (formTipoPenalidad === 'suspension' || formTipoPenalidad === 'mixta') {
+            <div>
+              <label class="text-[10px] font-bold uppercase tracking-wider text-text-muted block mb-1">
+                Fechas de Suspensión Deportiva
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="99"
+                [(ngModel)]="formFechasTotales"
+                (ngModelChange)="actualizarTextosFallo()"
+                class="w-full px-3 py-2 rounded-lg bg-court-surface border border-border-subtle text-white text-xs num-tabular" />
+            </div>
+            <div class="flex items-end">
+              <label class="flex items-center gap-2 text-xs text-text-secondary cursor-pointer pb-2">
+                <input type="checkbox" [(ngModel)]="formInhabilitarJugador" class="rounded text-accent-crimson-deep" />
+                <span>Inhabilitar ficha en planilla</span>
+              </label>
+            </div>
+            } @else {
+            <div class="sm:col-span-2 flex items-center p-2 rounded-lg bg-court-base/50 text-[11px] text-text-muted">
+              <span>Sanción pecuniaria o institucional registrada sin inhabilitación física de atletas.</span>
+            </div>
+            }
           </div>
         </div>
         }

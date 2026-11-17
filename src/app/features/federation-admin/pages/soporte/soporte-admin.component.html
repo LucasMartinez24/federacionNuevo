@@ -1,0 +1,1093 @@
+<!-- Toast Flotante en Primer Plano Absoluto (z-[9999]) -->
+@if (toastMessage()) {
+<div
+  class="fixed top-6 right-6 z-[9999] px-5 py-3.5 rounded-2xl shadow-2xl border backdrop-blur-xl flex items-center gap-3.5 animate-fade-in transition-all pointer-events-auto"
+  [class.bg-court-card]="true"
+  [class.border-tertiary/50]="toastType() === 'success'"
+  [class.border-accent-crimson-deep/50]="toastType() === 'error'"
+  [class.border-primary/50]="toastType() === 'info'">
+  <div
+    class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+    [class.bg-tertiary/15]="toastType() === 'success'"
+    [class.text-tertiary]="toastType() === 'success'"
+    [class.bg-accent-crimson-deep/15]="toastType() === 'error'"
+    [class.text-accent-crimson-deep]="toastType() === 'error'"
+    [class.bg-primary/15]="toastType() === 'info'"
+    [class.text-primary]="toastType() === 'info'">
+    <span class="material-symbols-outlined text-[20px]">
+      {{ toastType() === 'success' ? 'check_circle' : toastType() === 'error' ? 'error' : 'support_agent' }}
+    </span>
+  </div>
+  <div class="flex flex-col">
+    <span class="text-xs font-bold text-text-primary leading-tight">{{ toastMessage() }}</span>
+    <span class="text-[10px] text-text-muted mt-0.5">Centro de Soporte &amp; Mesa de Entradas FJH</span>
+  </div>
+</div>
+}
+
+<div class="w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-5 flex flex-col gap-5">
+  <!-- ===================================================================== -->
+  <!-- 1. BARRA DE COMANDO Y TELEMETRÍA OPERATIVA                            -->
+  <!-- ===================================================================== -->
+  <section
+    class="w-full bg-court-surface/90 border border-border-subtle/60 rounded-2xl p-4 sm:p-5 shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div class="flex items-start sm:items-center gap-3.5">
+      <div
+        class="w-11 h-11 rounded-xl bg-primary-container/15 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-inner">
+        <span class="material-symbols-outlined text-[24px]">support_agent</span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <h1 class="text-lg sm:text-xl font-extrabold text-text-primary tracking-tight">
+            Centro de Soporte &amp; Mesa de Entradas
+          </h1>
+          <span
+            class="px-2 py-0.5 rounded-md bg-surface-container-high border border-white/5 text-[10px] font-bold text-primary uppercase tracking-wider">
+            Consola FJH
+          </span>
+        </div>
+        <p class="text-xs text-text-secondary mt-0.5">
+          Supervisión de consultas institucionales, homologación de fichajes, tesorería y descargos de clubes afiliados
+        </p>
+      </div>
+    </div>
+
+    <!-- Indicadores en Vivo + Acciones Principales -->
+    <div class="flex items-center gap-2.5 flex-wrap">
+      <!-- Contador Pendientes -->
+      <div
+        class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-court-card border border-border-subtle/50 shadow-sm">
+        <span class="relative flex h-2 w-2">
+          @if (pendientesCount() > 0) {
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-amber opacity-75"></span>
+          }
+          <span
+            class="relative inline-flex rounded-full h-2 w-2"
+            [class.bg-accent-amber]="pendientesCount() > 0"
+            [class.bg-text-muted]="pendientesCount() === 0"></span>
+        </span>
+        <span class="text-[11px] font-bold text-accent-amber num-tabular">
+          {{ pendientesCount() }} Pendientes
+        </span>
+      </div>
+
+      <!-- Contador Resueltos -->
+      <div
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-court-card border border-border-subtle/50 shadow-sm">
+        <span class="material-symbols-outlined text-tertiary text-[16px]">check_circle</span>
+        <span class="text-[11px] font-bold text-tertiary num-tabular">
+          {{ resueltosCount() }} Resueltos
+        </span>
+      </div>
+
+      <!-- Botón Sincronizar -->
+      <button
+        type="button"
+        (click)="cargarConsola(activeTicket()?.id)"
+        class="p-2 rounded-xl bg-court-card hover:bg-court-card-hover border border-border-subtle/50 text-text-secondary hover:text-text-primary transition-colors cursor-pointer active:scale-95"
+        title="Sincronizar bandeja de entrada">
+        <span class="material-symbols-outlined text-[18px]" [class.animate-spin]="loading()">refresh</span>
+      </button>
+
+      <!-- CTA: Nuevo Expediente hacia un Club -->
+      <button
+        type="button"
+        (click)="abrirModalNuevoTicket()"
+        class="px-4 py-2 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-[0.98]">
+        <span class="material-symbols-outlined text-[18px]">add_comment</span>
+        <span>Iniciar Expediente a Club</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- 2. CONSOLA DE TRABAJO EN 3 COLUMNAS (INBOX | CONVERSACIÓN | DOSSIER)   -->
+  <!-- ===================================================================== -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+    <!-- ================================================================= -->
+    <!-- COLUMNA 1: BANDEJA DE ENTRADA DE TICKETS (lg:col-span-4)           -->
+    <!-- ================================================================= -->
+    <aside
+      class="lg:col-span-5 xl:col-span-4 bg-court-surface/90 border border-border-subtle/60 rounded-2xl p-3.5 flex flex-col gap-3 shadow-xl">
+      <!-- Buscador + Pestañas de Estado -->
+      <div class="flex flex-col gap-2.5">
+        <div class="relative w-full">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-[18px]">
+            search
+          </span>
+          <input
+            type="text"
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+            placeholder="Buscar por club, #expediente o asunto..."
+            class="w-full pl-9 pr-8 py-2 bg-court-card rounded-xl border border-border-subtle/50 text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors" />
+          @if (searchQuery()) {
+          <button
+            type="button"
+            (click)="searchQuery.set('')"
+            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-white cursor-pointer">
+            <span class="material-symbols-outlined text-[16px]">close</span>
+          </button>
+          }
+        </div>
+
+        <!-- Tabs de Estado -->
+        <div class="grid grid-cols-4 gap-1 bg-court-base p-1 rounded-xl border border-white/5 text-[10px] font-bold uppercase">
+          <button
+            type="button"
+            (click)="statusFilter.set('todos')"
+            [class.bg-primary-container]="statusFilter() === 'todos'"
+            [class.text-on-primary-container]="statusFilter() === 'todos'"
+            [class.text-text-secondary]="statusFilter() !== 'todos'"
+            class="py-1.5 rounded-lg text-center transition-colors cursor-pointer num-tabular">
+            Todos ({{ totalTicketsCount() }})
+          </button>
+          <button
+            type="button"
+            (click)="statusFilter.set('pendientes')"
+            [class.bg-primary-container]="statusFilter() === 'pendientes'"
+            [class.text-on-primary-container]="statusFilter() === 'pendientes'"
+            [class.text-text-secondary]="statusFilter() !== 'pendientes'"
+            class="py-1.5 rounded-lg text-center transition-colors cursor-pointer num-tabular">
+            Abiertos ({{ pendientesCount() }})
+          </button>
+          <button
+            type="button"
+            (click)="statusFilter.set('espera')"
+            [class.bg-primary-container]="statusFilter() === 'espera'"
+            [class.text-on-primary-container]="statusFilter() === 'espera'"
+            [class.text-text-secondary]="statusFilter() !== 'espera'"
+            class="py-1.5 rounded-lg text-center transition-colors cursor-pointer num-tabular">
+            Espera ({{ enEsperaCount() }})
+          </button>
+          <button
+            type="button"
+            (click)="statusFilter.set('resueltos')"
+            [class.bg-primary-container]="statusFilter() === 'resueltos'"
+            [class.text-on-primary-container]="statusFilter() === 'resueltos'"
+            [class.text-text-secondary]="statusFilter() !== 'resueltos'"
+            class="py-1.5 rounded-lg text-center transition-colors cursor-pointer num-tabular">
+            Resueltos ({{ resueltosCount() }})
+          </button>
+        </div>
+
+        <!-- Chips de Categoría -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar">
+          @for (cat of [
+            { id: 'ALL', label: 'Todas las Áreas' },
+            { id: 'Fichajes', label: 'Fichajes' },
+            { id: 'Tesorería', label: 'Tesorería' },
+            { id: 'Competencias', label: 'Competencias' },
+            { id: 'Tribunal', label: 'Tribunal' }
+          ]; track cat.id) {
+          <button
+            type="button"
+            (click)="categoryFilter.set(cat.id)"
+            [class.bg-court-card-active]="categoryFilter() === cat.id"
+            [class.text-primary]="categoryFilter() === cat.id"
+            [class.border-primary/40]="categoryFilter() === cat.id"
+            [class.bg-court-card]="categoryFilter() !== cat.id"
+            [class.text-text-muted]="categoryFilter() !== cat.id"
+            [class.border-transparent]="categoryFilter() !== cat.id"
+            class="px-2.5 py-1 rounded-lg border text-[10px] font-bold whitespace-nowrap transition-colors cursor-pointer hover:text-text-primary">
+            {{ cat.label }}
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- Lista de Tickets -->
+      <div class="flex flex-col gap-2 max-h-[580px] overflow-y-auto pr-1 custom-scrollbar">
+        @if (loading()) {
+          @for (n of [1, 2, 3, 4]; track n) {
+          <div class="p-3.5 rounded-xl bg-court-card/60 border border-white/5 animate-pulse space-y-2.5">
+            <div class="flex justify-between">
+              <div class="h-4 w-20 bg-surface-container rounded"></div>
+              <div class="h-3 w-16 bg-surface-container rounded"></div>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-lg bg-surface-container shrink-0"></div>
+              <div class="flex-1 space-y-1.5">
+                <div class="h-3.5 w-3/4 bg-surface-container rounded"></div>
+                <div class="h-3 w-full bg-surface-container rounded"></div>
+              </div>
+            </div>
+          </div>
+          }
+        } @else {
+          @for (ticket of filteredTickets(); track ticket.id) {
+          <article
+            (click)="seleccionarTicket(ticket)"
+            [class.bg-court-card-active]="activeTicket()?.id === ticket.id"
+            [class.border-primary/50]="activeTicket()?.id === ticket.id"
+            [class.bg-court-card]="activeTicket()?.id !== ticket.id"
+            [class.border-border-subtle/40]="activeTicket()?.id !== ticket.id"
+            class="group relative p-3.5 rounded-xl border hover:bg-court-card-hover transition-all cursor-pointer flex flex-col gap-2 shadow-sm">
+            <!-- Fila Superior: Estado + ID y Hora -->
+            <div class="flex items-center justify-between gap-2">
+              @if (ticket.status === 'Resuelto' || ticket.status === 'Cerrado') {
+              <span
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary/15 text-tertiary text-[10px] font-bold uppercase tracking-wider">
+                <span class="material-symbols-outlined text-[12px]">check_circle</span>
+                {{ ticket.status }}
+              </span>
+              } @else if (ticket.status === 'En Espera') {
+              <span
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-amber/15 text-accent-amber text-[10px] font-bold uppercase tracking-wider">
+                <span class="material-symbols-outlined text-[12px]">hourglass_top</span>
+                En Espera
+              </span>
+              } @else {
+              <span
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-container/30 text-secondary text-[10px] font-bold uppercase tracking-wider">
+                <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                Abierto
+              </span>
+              }
+
+              <div class="flex items-center gap-1.5 text-[10px] text-text-muted num-tabular">
+                <span class="font-mono font-bold text-primary-container">
+                  #{{ ticket.id.substring(0, 6).toUpperCase() }}
+                </span>
+                <span>•</span>
+                <span>{{ formatRelativeTime(ticket.createdAt) }}</span>
+              </div>
+            </div>
+
+            <!-- Fila Central: Escudo del Club + Nombre y Asunto -->
+            <div class="flex items-start gap-2.5">
+              @if (getClubLogo(ticket); as logo) {
+              <img
+                [src]="logo"
+                [alt]="getClubName(ticket)"
+                (error)="onLogoError(ticket.clubId)"
+                class="w-9 h-9 rounded-lg object-contain bg-court-surface p-1 border border-white/10 shrink-0" />
+              } @else {
+              <div
+                class="w-9 h-9 rounded-lg bg-court-surface border border-primary/20 flex items-center justify-center text-xs font-extrabold text-primary shrink-0 shadow-inner">
+                {{ getClubSiglas(ticket) }}
+              </div>
+              }
+
+              <div class="min-w-0 flex-1">
+                <h3 class="text-xs font-extrabold text-text-primary truncate group-hover:text-primary transition-colors">
+                  {{ getClubName(ticket) }}
+                </h3>
+                <p class="text-xs font-semibold text-on-surface-variant truncate mt-0.5">
+                  {{ ticket.asunto }}
+                </p>
+                @if (ticket.messages && ticket.messages.length > 0) {
+                <p class="text-[11px] text-text-muted truncate mt-0.5">
+                  {{ ticket.messages[0].text }}
+                </p>
+                }
+              </div>
+            </div>
+
+            <!-- Fila Inferior: Categoría + Cantidad de Mensajes -->
+            <div class="flex items-center justify-between pt-1.5 border-t border-white/5 text-[10px] text-text-muted">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-text-secondary font-semibold">
+                <span class="material-symbols-outlined text-[13px] text-primary">
+                  {{ getCategoryIcon(ticket.categoria) }}
+                </span>
+                <span class="truncate max-w-[150px]">{{ ticket.categoria || 'General' }}</span>
+              </span>
+
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1 font-bold text-text-secondary num-tabular">
+                  <span class="material-symbols-outlined text-[14px]">forum</span>
+                  {{ ticket._count?.messages || 1 }}
+                </span>
+                <button
+                  type="button"
+                  (click)="confirmarEliminarTicket(ticket, $event)"
+                  title="Eliminar expediente"
+                  class="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-rose-500/20 text-text-muted hover:text-rose-400 transition-all cursor-pointer">
+                  <span class="material-symbols-outlined text-[14px]">delete</span>
+                </button>
+              </div>
+            </div>
+          </article>
+          } @empty {
+          <!-- Estado Vacío de Bandeja de Entrada -->
+          <div class="py-12 px-4 text-center flex flex-col items-center justify-center gap-3">
+            <div
+              class="w-12 h-12 rounded-2xl bg-court-card border border-border-subtle flex items-center justify-center text-text-muted">
+              <span class="material-symbols-outlined text-[26px]">inbox</span>
+            </div>
+            <div class="space-y-1">
+              <h4 class="text-xs font-bold text-text-primary">
+                @if (tickets().length === 0) {
+                  No hay consultas ni expedientes activos
+                } @else {
+                  Sin coincidencias para el filtro actual
+                }
+              </h4>
+              <p class="text-[11px] text-text-muted max-w-[240px] mx-auto">
+                @if (tickets().length === 0) {
+                  Las solicitudes enviadas por los clubes desde su Mesa de Entradas aparecerán aquí en tiempo real.
+                } @else {
+                  Pruebe limpiando los filtros de estado o categoría para ver todos los expedientes.
+                }
+              </p>
+            </div>
+            @if (tickets().length > 0) {
+            <button
+              type="button"
+              (click)="limpiarFiltros()"
+              class="px-3 py-1.5 rounded-lg bg-court-card hover:bg-court-card-hover border border-primary/30 text-[11px] font-bold text-primary transition-colors cursor-pointer">
+              Restablecer Filtros
+            </button>
+            } @else {
+            <button
+              type="button"
+              (click)="abrirModalNuevoTicket()"
+              class="px-3.5 py-2 rounded-xl bg-primary-container text-on-primary-container text-[11px] font-bold transition-colors cursor-pointer flex items-center gap-1">
+              <span class="material-symbols-outlined text-[15px]">add_comment</span>
+              <span>Iniciar Primer Expediente</span>
+            </button>
+            }
+          </div>
+          }
+        }
+      </div>
+    </aside>
+
+    <!-- ================================================================= -->
+    <!-- COLUMNA 2: CONVERSACIÓN EN VIVO Y COMPOSER (lg:col-span-7 xl:col-span-5) -->
+    <!-- ================================================================= -->
+    <section
+      class="lg:col-span-7 xl:col-span-5 bg-court-card border border-border-subtle/60 rounded-2xl flex flex-col shadow-xl overflow-hidden min-h-[680px]">
+      @if (activeTicket(); as ticket) {
+      <!-- Cabecera del Ticket Activo -->
+      <header
+        class="p-4 bg-court-surface/90 border-b border-border-subtle/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          @if (getClubLogo(ticket); as logo) {
+          <img
+            [src]="logo"
+            [alt]="getClubName(ticket)"
+            (error)="onLogoError(ticket.clubId)"
+            class="w-10 h-10 rounded-xl object-contain bg-court-card p-1 border border-white/10 shrink-0" />
+          } @else {
+          <div
+            class="w-10 h-10 rounded-xl bg-primary-container/20 border border-primary/30 flex items-center justify-center text-sm font-black text-primary shrink-0">
+            {{ getClubSiglas(ticket) }}
+          </div>
+          }
+
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <h2 class="text-sm font-extrabold text-text-primary truncate">
+                {{ getClubName(ticket) }}
+              </h2>
+              <span class="material-symbols-outlined text-tertiary text-[16px]" title="Institución Verificada">
+                verified
+              </span>
+            </div>
+            <p class="text-[11px] text-text-secondary truncate">
+              <span class="font-mono font-bold text-primary">#{{ ticket.id.substring(0, 6).toUpperCase() }}</span>
+              <span> • {{ ticket.categoria || 'Trámite General' }}</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Selector Interactivo de Estado -->
+        <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+          <div class="relative">
+            <button
+              type="button"
+              (click)="showStatusMenu.set(!showStatusMenu())"
+              class="px-3 py-1.5 rounded-xl bg-court-card hover:bg-court-card-hover border border-border-subtle flex items-center gap-2 text-xs font-bold transition-colors cursor-pointer">
+              <span
+                class="w-2 h-2 rounded-full"
+                [class.bg-secondary]="ticket.status === 'Abierto'"
+                [class.bg-accent-amber]="ticket.status === 'En Espera'"
+                [class.bg-tertiary]="ticket.status === 'Resuelto' || ticket.status === 'Cerrado'"></span>
+              <span class="text-text-primary">{{ ticket.status || 'Abierto' }}</span>
+              <span class="material-symbols-outlined text-[16px] text-text-muted">expand_more</span>
+            </button>
+
+            @if (showStatusMenu()) {
+            <div
+              class="absolute right-0 mt-1.5 w-44 rounded-xl bg-court-surface border border-border-subtle shadow-2xl py-1.5 z-40 animate-fade-in">
+              <div class="px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-text-muted">
+                Cambiar Estado Oficial
+              </div>
+              @for (st of [
+                { val: 'Abierto', label: 'Abierto / En Curso', dot: 'bg-secondary' },
+                { val: 'En Espera', label: 'En Espera de Club', dot: 'bg-accent-amber' },
+                { val: 'Resuelto', label: 'Resuelto / Homologado', dot: 'bg-tertiary' },
+                { val: 'Cerrado', label: 'Cerrado / Archivado', dot: 'bg-text-muted' }
+              ]; track st.val) {
+              <button
+                type="button"
+                (click)="cambiarEstadoTicket($any(st.val))"
+                class="w-full px-3 py-2 text-left text-xs hover:bg-court-card flex items-center justify-between transition-colors cursor-pointer"
+                [class.text-primary]="ticket.status === st.val"
+                [class.font-bold]="ticket.status === st.val"
+                [class.text-text-secondary]="ticket.status !== st.val">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full" [ngClass]="st.dot"></span>
+                  <span>{{ st.label }}</span>
+                </div>
+                @if (ticket.status === st.val) {
+                <span class="material-symbols-outlined text-[15px] text-primary">check</span>
+                }
+              </button>
+              }
+            </div>
+            }
+          </div>
+        </div>
+      </header>
+
+      <!-- Barra de Asunto del Expediente -->
+      <div class="px-4 py-2.5 bg-court-base/60 border-b border-white/5 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="material-symbols-outlined text-primary text-[16px] shrink-0">subject</span>
+          <span class="text-xs font-bold text-text-primary truncate">{{ ticket.asunto }}</span>
+        </div>
+        <span class="text-[10px] text-text-muted shrink-0 num-tabular">
+          {{ messages().length }} mensaje(s)
+        </span>
+      </div>
+
+      <!-- Stream de Mensajes -->
+      <div
+        class="flex-1 p-4 flex flex-col gap-4 min-h-[340px] max-h-[430px] overflow-y-auto custom-scrollbar bg-court-base/30">
+        @if (loadingMessages()) {
+        <div class="py-16 flex flex-col items-center justify-center gap-2 text-text-muted">
+          <span class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
+          <span class="text-xs">Cargando historial de actuaciones...</span>
+        </div>
+        } @else {
+          @for (msg of messages(); track msg.id || $index) {
+            @if (msg.isInternal) {
+            <!-- 1. NOTA INTERNA CONFIDENCIAL DE STAFF FJH -->
+            <div
+              class="w-full bg-amber-500/10 border border-amber-500/30 rounded-xl p-3.5 shadow-sm animate-fade-in">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <div class="flex items-center gap-1.5 text-accent-amber">
+                  <span class="material-symbols-outlined text-[16px]">lock_person</span>
+                  <span class="text-[10px] font-extrabold uppercase tracking-wider">
+                    NOTA INTERNA STAFF FJH • SOLO ADMINISTRACIÓN
+                  </span>
+                </div>
+                <span class="text-[10px] text-amber-300/80 font-mono num-tabular">
+                  {{ formatMessageTime(msg.createdAt) }}
+                </span>
+              </div>
+              <p class="text-xs text-amber-100/95 leading-relaxed whitespace-pre-line">
+                {{ msg.text }}
+              </p>
+              <div class="mt-1.5 text-[10px] text-amber-300/70 font-semibold">
+                Registrado por: {{ msg.senderName || 'Auditoría FJH' }}
+              </div>
+            </div>
+            } @else if (msg.senderRole === 'CLUB') {
+            <!-- 2. MENSAJE ENTRANTE DEL CLUB -->
+            <div class="flex flex-col items-start max-w-[88%] self-start animate-fade-in">
+              <div class="flex items-center gap-1.5 mb-1 px-1">
+                <span class="text-[11px] font-bold text-text-primary">
+                  {{ msg.senderName || getClubName(ticket) }}
+                </span>
+                <span class="text-[10px] text-text-muted">• Secretaría del Club</span>
+                <span class="text-[10px] text-text-muted font-mono num-tabular">
+                  {{ formatMessageTime(msg.createdAt) }}
+                </span>
+              </div>
+              <div
+                class="bg-surface-container border border-white/10 rounded-2xl rounded-tl-sm p-3.5 text-xs text-text-primary leading-relaxed shadow-sm space-y-2.5">
+                <p class="whitespace-pre-line">{{ msg.text }}</p>
+
+                @if (msg.attachments && msg.attachments.length > 0) {
+                <div class="pt-2 border-t border-white/10 flex flex-col gap-1.5">
+                  @for (att of msg.attachments; track att.name) {
+                  <a
+                    [href]="getAttachmentUrl(att.url)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center justify-between gap-2.5 px-3 py-2 rounded-xl bg-court-surface hover:bg-court-card-hover border border-border-subtle/60 transition-colors text-text-primary group">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="material-symbols-outlined text-primary text-[18px] shrink-0">description</span>
+                      <div class="min-w-0">
+                        <span class="text-xs font-semibold block truncate">{{ att.name }}</span>
+                        <span class="text-[10px] text-text-muted">Documento Adjunto del Club</span>
+                      </div>
+                    </div>
+                    <span
+                      class="material-symbols-outlined text-text-secondary group-hover:text-primary text-[18px] shrink-0">
+                      open_in_new
+                    </span>
+                  </a>
+                  }
+                </div>
+                }
+              </div>
+            </div>
+            } @else {
+            <!-- 3. RESPUESTA OFICIAL SALIENTE DE LA FEDERACIÓN -->
+            <div class="flex flex-col items-end max-w-[88%] self-end animate-fade-in">
+              <div class="flex items-center gap-1.5 mb-1 px-1">
+                <span class="text-[10px] text-text-muted font-mono num-tabular">
+                  {{ formatMessageTime(msg.createdAt) }}
+                </span>
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-primary">
+                  RESPUESTA OFICIAL FJH
+                </span>
+                <span class="text-[10px] text-text-muted">• {{ msg.senderName || 'Mesa de Control' }}</span>
+              </div>
+              <div
+                class="bg-primary/15 border border-primary/30 rounded-2xl rounded-tr-sm p-3.5 text-xs text-text-primary leading-relaxed shadow-sm space-y-2.5">
+                <p class="whitespace-pre-line">{{ msg.text }}</p>
+
+                @if (msg.attachments && msg.attachments.length > 0) {
+                <div class="pt-2 border-t border-primary/20 flex flex-col gap-1.5">
+                  @for (att of msg.attachments; track att.name) {
+                  <a
+                    [href]="getAttachmentUrl(att.url)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center justify-between gap-2.5 px-3 py-2 rounded-xl bg-court-base/70 hover:bg-court-base border border-primary/30 transition-colors text-text-primary">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="material-symbols-outlined text-primary text-[18px] shrink-0">verified</span>
+                      <div class="min-w-0">
+                        <span class="text-xs font-semibold block truncate">{{ att.name }}</span>
+                        <span class="text-[10px] text-primary/80">Anexo Oficial FJH</span>
+                      </div>
+                    </div>
+                    <span class="material-symbols-outlined text-primary text-[18px] shrink-0">download</span>
+                  </a>
+                  }
+                </div>
+                }
+              </div>
+            </div>
+            }
+          } @empty {
+          <div class="py-16 text-center text-text-muted space-y-1">
+            <span class="material-symbols-outlined text-3xl text-text-muted/50">mark_chat_unread</span>
+            <p class="text-xs font-semibold text-text-secondary">Expediente sin actuaciones previas</p>
+            <p class="text-[11px]">Redacte la primera respuesta oficial o registre una nota de auditoría debajo.</p>
+          </div>
+          }
+        }
+      </div>
+
+      <!-- =============================================================== -->
+      <!-- COMPOSER DOCK: MODO OFICIAL VS MODO NOTA INTERNA DE STAFF       -->
+      <!-- =============================================================== -->
+      <div class="p-3.5 bg-court-surface border-t border-border-subtle/60 flex flex-col gap-2.5">
+        <!-- Barra Superior del Composer: Selector de Modo + Plantillas -->
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-1 bg-court-base p-1 rounded-xl border border-white/5">
+            <button
+              type="button"
+              (click)="cambiarModoComposer('official')"
+              [class.bg-primary-container]="composerMode() === 'official'"
+              [class.text-on-primary-container]="composerMode() === 'official'"
+              [class.font-bold]="composerMode() === 'official'"
+              [class.text-text-muted]="composerMode() !== 'official'"
+              class="px-2.5 py-1 rounded-lg text-[10px] uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer">
+              <span class="material-symbols-outlined text-[14px]">send</span>
+              <span>Respuesta Oficial al Club</span>
+            </button>
+            <button
+              type="button"
+              (click)="cambiarModoComposer('internal')"
+              [class.bg-accent-amber]="composerMode() === 'internal'"
+              [class.text-court-base]="composerMode() === 'internal'"
+              [class.font-bold]="composerMode() === 'internal'"
+              [class.text-text-muted]="composerMode() !== 'internal'"
+              class="px-2.5 py-1 rounded-lg text-[10px] uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer">
+              <span class="material-symbols-outlined text-[14px]">lock_person</span>
+              <span>Nota Interna Staff</span>
+            </button>
+          </div>
+
+          <!-- Botón Desplegable de Plantillas Oficiales -->
+          <div class="relative">
+            <button
+              type="button"
+              (click)="showTemplatesMenu.set(!showTemplatesMenu())"
+              class="px-2.5 py-1 rounded-lg bg-court-card hover:bg-court-card-hover border border-border-subtle text-[10px] font-bold text-primary flex items-center gap-1 transition-colors cursor-pointer">
+              <span class="material-symbols-outlined text-[14px]">bolt</span>
+              <span>Plantillas FJH</span>
+            </button>
+
+            @if (showTemplatesMenu()) {
+            <div
+              class="absolute right-0 bottom-full mb-2 w-72 sm:w-80 rounded-2xl bg-court-card border border-border-subtle shadow-2xl p-2 z-40 space-y-1 animate-fade-in">
+              <div class="px-2.5 py-1 flex items-center justify-between border-b border-white/5">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-primary">
+                  Respuestas Rápidas Homologadas
+                </span>
+                <button
+                  type="button"
+                  (click)="showTemplatesMenu.set(false)"
+                  class="text-text-muted hover:text-white cursor-pointer">
+                  <span class="material-symbols-outlined text-[14px]">close</span>
+                </button>
+              </div>
+              @for (pl of plantillas; track pl.id) {
+              <button
+                type="button"
+                (click)="aplicarPlantilla(pl)"
+                class="w-full p-2 rounded-xl hover:bg-court-surface text-left transition-colors flex items-start gap-2.5 cursor-pointer">
+                <span class="material-symbols-outlined text-primary text-[18px] mt-0.5 shrink-0">
+                  {{ pl.icono }}
+                </span>
+                <div class="min-w-0">
+                  <span class="text-xs font-bold text-text-primary block truncate">{{ pl.titulo }}</span>
+                  <span class="text-[10px] text-text-muted line-clamp-2">{{ pl.texto }}</span>
+                </div>
+              </button>
+              }
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Banner de Aviso cuando está activo Modo Nota Interna -->
+        @if (composerMode() === 'internal') {
+        <div
+          class="px-3 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center gap-2 text-accent-amber text-[11px] font-medium">
+          <span class="material-symbols-outlined text-[16px] shrink-0">security</span>
+          <span>
+            Modo Confidencial: Esta nota quedará asentada en el legajo interno y <strong>NO será visible para el club</strong>.
+          </span>
+        </div>
+        }
+
+        <!-- Área de Texto -->
+        <textarea
+          rows="3"
+          [ngModel]="replyText()"
+          (ngModelChange)="replyText.set($event)"
+          (keydown)="onComposerKeydown($event)"
+          [placeholder]="
+            composerMode() === 'internal'
+              ? 'Escribir nota interna de auditoría para el equipo administrativo FJH...'
+              : 'Escribir respuesta oficial vinculante para la secretaría del club (Ctrl+Enter para enviar)...'
+          "
+          [class.focus:border-accent-amber]="composerMode() === 'internal'"
+          [class.focus:border-primary]="composerMode() === 'official'"
+          class="w-full bg-court-card rounded-xl p-3 text-xs text-text-primary placeholder:text-text-muted border border-border-subtle/60 focus:outline-none resize-none transition-colors"></textarea>
+
+        <!-- Archivos Adjuntos en Cola -->
+        @if (selectedFiles().length > 0) {
+        <div class="flex items-center gap-1.5 flex-wrap">
+          @for (file of selectedFiles(); track file.name; let i = $index) {
+          <div
+            class="inline-flex items-center gap-1.5 bg-court-card px-2.5 py-1 rounded-lg border border-primary/30 text-[11px] text-text-primary">
+            <span class="material-symbols-outlined text-primary text-[14px]">attach_file</span>
+            <span class="truncate max-w-[160px] font-medium">{{ file.name }}</span>
+            <button
+              type="button"
+              (click)="removeSelectedFile(i)"
+              class="text-text-muted hover:text-rose-400 cursor-pointer">
+              <span class="material-symbols-outlined text-[14px]">close</span>
+            </button>
+          </div>
+          }
+        </div>
+        }
+
+        <!-- Pie de Acciones del Composer -->
+        <div class="flex items-center justify-between gap-2 pt-0.5">
+          <div class="flex items-center gap-2">
+            <label
+              class="px-2.5 py-1.5 rounded-lg bg-court-card hover:bg-court-card-hover border border-border-subtle/60 text-text-secondary hover:text-text-primary text-[11px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Adjuntar PDF, imagen o dictamen">
+              <span class="material-symbols-outlined text-[16px]">attach_file</span>
+              <span class="hidden sm:inline">Adjuntar Archivo</span>
+              <input type="file" multiple (change)="onFilesSelected($event)" class="hidden" />
+            </label>
+          </div>
+
+          <div class="flex items-center gap-2">
+            @if (composerMode() === 'official' && ticket.status !== 'Resuelto') {
+            <button
+              type="button"
+              (click)="enviarMensaje(true)"
+              [disabled]="isSending() || (!replyText().trim() && selectedFiles().length === 0)"
+              class="px-3 py-2 rounded-xl bg-tertiary/15 hover:bg-tertiary/25 border border-tertiary/40 text-tertiary font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-40 active:scale-[0.98]"
+              title="Enviar respuesta y marcar el expediente como Resuelto">
+              <span class="material-symbols-outlined text-[16px]">task_alt</span>
+              <span class="hidden sm:inline">Responder y Resolver</span>
+            </button>
+            }
+
+            <button
+              type="button"
+              (click)="enviarMensaje(false)"
+              [disabled]="isSending() || (!replyText().trim() && selectedFiles().length === 0)"
+              [class.bg-accent-amber]="composerMode() === 'internal'"
+              [class.text-court-base]="composerMode() === 'internal'"
+              [class.bg-primary-container]="composerMode() === 'official'"
+              [class.text-on-primary-container]="composerMode() === 'official'"
+              class="px-4 py-2 rounded-xl font-bold text-xs shadow-md hover:brightness-110 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-40 active:scale-[0.98]">
+              @if (isSending()) {
+              <span class="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+              <span>Enviando...</span>
+              } @else {
+              <span class="material-symbols-outlined text-[16px]">
+                {{ composerMode() === 'internal' ? 'lock' : 'send' }}
+              </span>
+              <span>
+                {{ composerMode() === 'internal' ? 'Guardar Nota Interna' : 'Enviar Respuesta Oficial' }}
+              </span>
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+      } @else {
+      <!-- Estado sin Ticket Seleccionado -->
+      <div class="flex-1 p-12 flex flex-col items-center justify-center text-center gap-3">
+        <div
+          class="w-16 h-16 rounded-2xl bg-court-surface border border-border-subtle flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-3xl">support_agent</span>
+        </div>
+        <div class="max-w-sm space-y-1">
+          <h3 class="text-base font-extrabold text-text-primary">Consola de Expedientes Lista</h3>
+          <p class="text-xs text-text-secondary">
+            Seleccione un expediente de la bandeja izquierda para auditar los mensajes del club, adjuntar dictámenes o iniciar una nueva comunicación oficial.
+          </p>
+        </div>
+        <button
+          type="button"
+          (click)="abrirModalNuevoTicket()"
+          class="mt-2 px-4 py-2 rounded-xl bg-primary-container text-on-primary-container text-xs font-bold flex items-center gap-1.5 cursor-pointer active:scale-95">
+          <span class="material-symbols-outlined text-[16px]">add_comment</span>
+          <span>Iniciar Expediente a un Club</span>
+        </button>
+      </div>
+      }
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- COLUMNA 3: EXPEDIENTE INSTITUCIONAL DEL CLUB (lg:col-span-12 xl:col-span-3) -->
+    <!-- ================================================================= -->
+    <aside class="lg:col-span-12 xl:col-span-3 flex flex-col gap-4">
+      @if (activeClubDossier(); as dossier) {
+      <div class="bg-court-card border border-border-subtle/60 rounded-2xl p-4 flex flex-col gap-4 shadow-xl">
+        <!-- Encabezado Dossier -->
+        <div class="flex items-center justify-between pb-2.5 border-b border-white/5">
+          <div class="flex items-center gap-2 text-primary">
+            <span class="material-symbols-outlined text-[20px]">shield</span>
+            <h3 class="text-xs font-extrabold text-text-primary uppercase tracking-wider">
+              Legajo Institucional
+            </h3>
+          </div>
+          <span
+            class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase flex items-center gap-1"
+            [class.bg-tertiary/15]="!dossier.esInvitado"
+            [class.text-tertiary]="!dossier.esInvitado"
+            [class.bg-accent-amber/15]="dossier.esInvitado"
+            [class.text-accent-amber]="dossier.esInvitado">
+            <span class="material-symbols-outlined text-[12px]">verified</span>
+            {{ dossier.esInvitado ? 'Invitado' : 'Afiliado FJH' }}
+          </span>
+        </div>
+
+        <!-- Ficha del Club -->
+        <div class="bg-court-surface p-3.5 rounded-xl border border-white/5 flex flex-col gap-3">
+          <div class="flex items-center gap-3">
+            @if (getDossierLogoUrl(dossier.logoUrl, dossier.id); as dLogo) {
+            <img
+              [src]="dLogo"
+              [alt]="dossier.nombre"
+              (error)="onLogoError(dossier.id)"
+              class="w-12 h-12 rounded-xl object-contain bg-court-card p-1.5 border border-white/10 shrink-0" />
+            } @else {
+            <div
+              class="w-12 h-12 rounded-xl bg-court-card border border-primary/30 flex items-center justify-center text-sm font-black text-primary shrink-0">
+              {{ dossier.siglas }}
+            </div>
+            }
+            <div class="min-w-0">
+              <h4 class="text-sm font-extrabold text-text-primary truncate">{{ dossier.nombre }}</h4>
+              <span class="text-[11px] text-text-muted font-mono block">
+                Siglas Oficiales: {{ dossier.siglas }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Métricas Reales del Padrón del Club -->
+          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-white/5">
+            <div class="p-2.5 rounded-xl bg-court-card text-center border border-white/5">
+              <span class="block text-lg font-black text-primary num-tabular">
+                {{ dossier.totalAtletas }}
+              </span>
+              <span class="text-[10px] font-bold text-text-secondary uppercase">Atletas Reg.</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-court-card text-center border border-white/5">
+              <span class="block text-lg font-black text-tertiary num-tabular">
+                {{ dossier.habilitados }}
+              </span>
+              <span class="text-[10px] font-bold text-text-secondary uppercase">Habilitados</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-court-card text-center border border-white/5">
+              <span
+                class="block text-lg font-black num-tabular"
+                [class.text-accent-amber]="dossier.pendientes > 0"
+                [class.text-text-muted]="dossier.pendientes === 0">
+                {{ dossier.pendientes }}
+              </span>
+              <span class="text-[10px] font-bold text-text-secondary uppercase">En Auditoría</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-court-card text-center border border-white/5">
+              <span
+                class="block text-lg font-black num-tabular"
+                [class.text-secondary]="dossier.sancionesActivas > 0"
+                [class.text-text-muted]="dossier.sancionesActivas === 0">
+                {{ dossier.sancionesActivas }}
+              </span>
+              <span class="text-[10px] font-bold text-text-secondary uppercase">Sanciones</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Otros Expedientes Recientes del Mismo Club -->
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-text-muted">
+            Otros Expedientes del Club
+          </span>
+          @for (other of dossier.otrosTickets; track other.id) {
+          <button
+            type="button"
+            (click)="seleccionarTicket(other)"
+            class="w-full p-2.5 rounded-xl bg-court-surface hover:bg-court-card-hover border border-white/5 flex items-center justify-between gap-2 text-left transition-colors cursor-pointer">
+            <div class="min-w-0">
+              <span class="text-[10px] font-mono font-bold text-primary block">
+                #{{ other.id.substring(0, 6).toUpperCase() }} • {{ other.categoria }}
+              </span>
+              <p class="text-xs font-medium text-text-primary truncate">{{ other.asunto }}</p>
+            </div>
+            <span
+              class="px-2 py-0.5 rounded text-[9px] font-bold uppercase shrink-0"
+              [class.bg-tertiary/15]="other.status === 'Resuelto'"
+              [class.text-tertiary]="other.status === 'Resuelto'"
+              [class.bg-accent-amber/15]="other.status !== 'Resuelto'"
+              [class.text-accent-amber]="other.status !== 'Resuelto'">
+              {{ other.status }}
+            </span>
+          </button>
+          } @empty {
+          <div class="p-3 rounded-xl bg-court-surface/60 border border-white/5 text-[11px] text-text-muted text-center">
+            No registra otros expedientes adicionales.
+          </div>
+          }
+        </div>
+
+        <!-- Acciones Directas sobre el Club -->
+        <div class="pt-2 border-t border-white/5 flex flex-col gap-2">
+          <button
+            type="button"
+            (click)="irAPadronClub(dossier.id)"
+            class="w-full py-2 px-3 rounded-xl bg-court-surface hover:bg-court-card-hover border border-border-subtle text-text-primary text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer">
+            <span class="material-symbols-outlined text-primary text-[17px]">groups</span>
+            <span>Auditar Plantilla del Club</span>
+          </button>
+
+          <button
+            type="button"
+            (click)="irATribunalResoluciones()"
+            class="w-full py-2 px-3 rounded-xl bg-secondary-container/20 hover:bg-secondary-container/35 border border-secondary/30 text-secondary text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer">
+            <span class="material-symbols-outlined text-[17px]">gavel</span>
+            <span>Emitir Resolución / Multa</span>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <div
+        class="bg-court-card border border-border-subtle/50 rounded-2xl p-6 text-center text-text-muted space-y-2">
+        <span class="material-symbols-outlined text-2xl">shield</span>
+        <p class="text-xs font-semibold text-text-secondary">Información Institucional</p>
+        <p class="text-[11px]">
+          Al abrir un expediente se mostrará aquí el resumen de jugadores habilitados, auditorías y antecedentes del club.
+        </p>
+      </div>
+      }
+    </aside>
+  </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- MODAL 1: INICIAR NUEVO EXPEDIENTE / COMUNICADO HACIA UN CLUB (ADMIN)    -->
+<!-- ======================================================================= -->
+@if (showNewTicketModal()) {
+<div
+  class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+  (click)="cerrarModalNuevoTicket()">
+  <div
+    class="w-full max-w-lg bg-court-card border border-border-subtle rounded-2xl shadow-2xl overflow-hidden"
+    (click)="$event.stopPropagation()">
+    <div class="p-5 bg-court-surface border-b border-border-subtle flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-xl bg-primary-container/20 border border-primary/30 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-xl">outgoing_mail</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-extrabold text-white uppercase tracking-tight">
+            Iniciar Expediente Oficial a Club
+          </h3>
+          <p class="text-[11px] text-text-secondary">
+            Comunicación directa hacia la Mesa Digital de la institución
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="cerrarModalNuevoTicket()"
+        class="p-1.5 rounded-lg text-text-muted hover:text-white cursor-pointer">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="p-5 space-y-4">
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+          Club Destinatario *
+        </label>
+        <select
+          [ngModel]="newTicketClubId()"
+          (ngModelChange)="newTicketClubId.set($event)"
+          class="w-full px-3.5 py-2.5 rounded-xl bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none">
+          <option value="" disabled>Seleccione una institución afiliada...</option>
+          @for (c of clubes(); track c.id) {
+          <option [value]="c.id">{{ c.nombre }} ({{ c.siglas }})</option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+          Área / Categoría del Trámite *
+        </label>
+        <select
+          [ngModel]="newTicketCategoria()"
+          (ngModelChange)="newTicketCategoria.set($event)"
+          class="w-full px-3.5 py-2.5 rounded-xl bg-court-surface border border-border-subtle text-xs text-white focus:border-primary outline-none">
+          <option value="Fichajes y Reglamentos">Fichajes y Reglamentos</option>
+          <option value="Tesorería y Aranceles">Tesorería y Aranceles</option>
+          <option value="Competencias y Fixture">Competencias y Fixture</option>
+          <option value="Tribunal de Disciplina">Tribunal de Disciplina</option>
+          <option value="Auditoría Médica">Auditoría Médica</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+          Asunto del Expediente *
+        </label>
+        <input
+          type="text"
+          [ngModel]="newTicketAsunto()"
+          (ngModelChange)="newTicketAsunto.set($event)"
+          placeholder="Ej: Intimación de presentación de aptos médicos Categoría Mayores"
+          class="w-full px-3.5 py-2.5 rounded-xl bg-court-surface border border-border-subtle text-xs text-white placeholder:text-text-muted focus:border-primary outline-none" />
+      </div>
+
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+          Mensaje Oficial Inicial *
+        </label>
+        <textarea
+          rows="4"
+          [ngModel]="newTicketDescripcion()"
+          (ngModelChange)="newTicketDescripcion.set($event)"
+          placeholder="Redacte el requerimiento o notificación oficial..."
+          class="w-full px-3.5 py-2.5 rounded-xl bg-court-surface border border-border-subtle text-xs text-white placeholder:text-text-muted focus:border-primary outline-none resize-none"></textarea>
+      </div>
+
+      <div>
+        <label
+          class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-court-surface hover:bg-court-card-hover border border-border-subtle text-xs text-text-secondary hover:text-white cursor-pointer transition-colors">
+          <span class="material-symbols-outlined text-primary text-[18px]">attach_file</span>
+          <span>
+            {{
+              newTicketFiles().length > 0
+                ? newTicketFiles().length + ' archivo(s) adjunto(s)'
+                : 'Adjuntar documentación respaldatoria (Opcional)'
+            }}
+          </span>
+          <input type="file" multiple (change)="onNewTicketFilesSelected($event)" class="hidden" />
+        </label>
+      </div>
+    </div>
+
+    <div class="p-4 bg-court-surface border-t border-border-subtle flex items-center justify-end gap-2.5">
+      <button
+        type="button"
+        (click)="cerrarModalNuevoTicket()"
+        class="px-4 py-2 rounded-xl bg-court-card text-text-secondary hover:text-white text-xs font-bold cursor-pointer">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        (click)="crearNuevoExpedienteAdmin()"
+        [disabled]="isCreatingTicket()"
+        class="px-5 py-2 rounded-xl bg-primary-container text-on-primary-container text-xs font-bold shadow-md hover:brightness-110 flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
+        @if (isCreatingTicket()) {
+        <span class="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+        <span>Emitiendo...</span>
+        } @else {
+        <span class="material-symbols-outlined text-[16px]">send</span>
+        <span>Emitir Expediente</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- ======================================================================= -->
+<!-- MODAL 2: CONFIRMAR ELIMINACIÓN DE EXPEDIENTE                            -->
+<!-- ======================================================================= -->
+@if (ticketToDelete(); as target) {
+<div
+  class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+  (click)="cancelarEliminarTicket()">
+  <div
+    class="w-full max-w-md bg-court-card border border-border-subtle rounded-2xl p-6 shadow-2xl space-y-4"
+    (click)="$event.stopPropagation()">
+    <div class="flex items-center gap-3">
+      <div
+        class="w-11 h-11 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+        <span class="material-symbols-outlined text-2xl">delete_forever</span>
+      </div>
+      <div>
+        <h3 class="text-sm font-extrabold text-white">Eliminar Expediente #{{ target.id.substring(0, 6).toUpperCase() }}</h3>
+        <p class="text-xs text-text-secondary">{{ getClubName(target) }}</p>
+      </div>
+    </div>
+
+    <p class="text-xs text-text-secondary leading-relaxed">
+      ¿Confirma la eliminación definitiva del expediente <strong>"{{ target.asunto }}"</strong> y todo su historial de mensajes? Esta acción no se puede deshacer.
+    </p>
+
+    <div class="flex items-center justify-end gap-2.5 pt-2">
+      <button
+        type="button"
+        (click)="cancelarEliminarTicket()"
+        class="px-4 py-2 rounded-xl bg-court-surface text-text-secondary hover:text-white text-xs font-bold cursor-pointer">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        (click)="ejecutarEliminarTicket()"
+        [disabled]="isDeleting()"
+        class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-md flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
+        @if (isDeleting()) {
+        <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+        }
+        <span>Eliminar Definitivamente</span>
+      </button>
+    </div>
+  </div>
+</div>
+}

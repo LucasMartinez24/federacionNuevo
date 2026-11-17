@@ -58,7 +58,23 @@ export class FederationLayoutComponent {
   });
 
   // Notificaciones reactivas y contador no leídas
-  protected readonly notifications = computed(() => this.sidebarStateService.notifications());
+  protected readonly notifications = computed<AdminNotification[]>(() => {
+    if (this.userRole() === 'CM') {
+      return [
+        {
+          id: 'notif-cm-gallery',
+          type: 'tournament',
+          title: 'Prensa & Galería FJH',
+          message: 'Módulo de carga y gestión de álbumes fotográficos activo.',
+          time: 'Activo',
+          route: '/admin/galeria',
+          icon: 'photo_library',
+          read: true,
+        },
+      ];
+    }
+    return this.sidebarStateService.notifications();
+  });
   protected readonly unreadNotificationsCount = computed(() =>
     this.notifications().filter((n) => !n.read).length
   );
@@ -101,7 +117,7 @@ export class FederationLayoutComponent {
         ? `${state.activeResolutions} vigentes`
         : undefined;
     }
-    if (route === '/soporte') {
+    if (route === '/soporte' || route === '/admin/soporte') {
       return state.pendingFiles !== null && state.pendingFiles > 0
         ? `${state.pendingFiles} pend.`
         : undefined;
@@ -120,7 +136,7 @@ export class FederationLayoutComponent {
     if (route === '/admin/jugadores' && state.pendingAthletes && state.pendingAthletes > 0) {
       return 'warning';
     }
-    if (route === '/soporte' && state.pendingFiles && state.pendingFiles > 0) {
+    if ((route === '/soporte' || route === '/admin/soporte') && state.pendingFiles && state.pendingFiles > 0) {
       return 'warning';
     }
     return undefined;

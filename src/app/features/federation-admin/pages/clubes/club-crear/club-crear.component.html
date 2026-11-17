@@ -8,7 +8,7 @@
 <!-- Toast Feedback Notification -->
 @if (feedbackMensaje()) {
 <div
-  class="fixed top-6 right-6 z-50 px-5 py-4 rounded-2xl shadow-2xl border backdrop-blur-xl flex items-center gap-3.5 animate-fade-in transition-all"
+  class="fixed top-6 right-6 z-[9999] px-5 py-4 rounded-2xl shadow-2xl border backdrop-blur-xl flex items-center gap-3.5 animate-fade-in transition-all pointer-events-auto"
   [class.bg-court-card]="true"
   [class.border-tertiary/60]="feedbackTipo() === 'success'"
   [class.shadow-tertiary/10]="feedbackTipo() === 'success'"
@@ -585,8 +585,8 @@
 
   <!-- Bottom Institutional Footer Info -->
   <footer class="text-center pb-8 text-xs text-text-muted flex flex-col items-center gap-1">
-    <p>© 2026 Federación Jujeña de Handball (FJH) • Afiliada a la Confederación Argentina de Handball (CAH)</p>
-    <p class="text-[11px] text-text-muted/70">Sistema Oficial de Gestión Deportiva e Institucional</p>
+    <p>© 2026 Federación Jujeña de Handball (FJH) • Desarrollado por <strong class="text-primary">REC Technologies</strong></p>
+    <p class="text-[11px] text-text-muted/70">Sistema Oficial de Gestión Deportiva e Institucional • CAH</p>
   </footer>
 
 </main>

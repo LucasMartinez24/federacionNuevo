@@ -48,19 +48,22 @@ export class ResolucionesClubComponent implements OnInit {
   protected readonly filteredSanciones = computed(() => {
     const list = this.misSanciones();
     const f = this.filterType();
+    const esMulta = (s: SancionDisciplinaria) => s.totales === 0 || (s.fallo || '').toLowerCase().includes('multa');
 
     if (f === 'activas') {
-      return list.filter((s) => s.cumplidas < s.totales);
+      return list.filter((s) => esMulta(s) || s.cumplidas < s.totales);
     }
     if (f === 'cumplidas') {
-      return list.filter((s) => s.cumplidas >= s.totales);
+      return list.filter((s) => !esMulta(s) && s.cumplidas >= s.totales);
     }
     return list;
   });
 
-  // Conteo de casos activos que afectan la plantilla
+  // Conteo de casos activos que afectan la plantilla o club
   protected readonly activeSanctionsCount = computed(() => {
-    return this.misSanciones().filter((s) => s.cumplidas < s.totales).length;
+    return this.misSanciones().filter(
+      (s) => s.totales === 0 || (s.fallo || '').toLowerCase().includes('multa') || s.cumplidas < s.totales
+    ).length;
   });
 
   ngOnInit(): void {

@@ -1,7 +1,7 @@
 <div class="flex flex-col w-full font-sans max-w-[1320px] mx-auto py-2 gap-4">
   <!-- Toast Notification Feedback -->
   @if (actionMessage()) {
-  <div class="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl bg-court-card border border-primary/40 text-text-primary shadow-2xl animate-fade-in">
+  <div class="fixed bottom-6 right-6 z-[9999] flex items-center gap-2 px-4 py-3 rounded-xl bg-court-card border border-primary/40 text-text-primary shadow-2xl animate-fade-in pointer-events-auto">
     <span class="material-symbols-outlined text-primary text-xl">info</span>
     <span class="text-xs font-semibold">{{ actionMessage() }}</span>
   </div>

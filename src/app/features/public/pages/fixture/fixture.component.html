@@ -42,6 +42,10 @@
           class="px-3 py-1.5 rounded-xl text-xs font-bold text-primary bg-primary/10 border border-primary/30 transition-all">
           Fixture & Planillas
         </a>
+        <a routerLink="/calendario" 
+          class="px-3 py-1.5 rounded-xl text-xs font-medium text-text-muted hover:text-white hover:bg-white/5 transition-all">
+          Calendario
+        </a>
         <a routerLink="/galeria" 
           class="px-3 py-1.5 rounded-xl text-xs font-medium text-text-muted hover:text-white hover:bg-white/5 transition-all">
           Galería
@@ -115,7 +119,7 @@
   <!-- TOAST DE FEEDBACK -->
   @if (feedback(); as fb) {
   <div
-    class="fixed top-24 right-5 z-[80] flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-xl animate-in fade-in duration-200"
+    class="fixed top-24 right-5 z-[9999] flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-xl animate-in fade-in duration-200 pointer-events-auto"
     [class.bg-emerald-950/90]="fb.type === 'success'" [class.border-emerald-500/50]="fb.type === 'success'"
     [class.text-emerald-200]="fb.type === 'success'" [class.bg-rose-950/90]="fb.type === 'error'"
     [class.border-rose-500/50]="fb.type === 'error'" [class.text-rose-200]="fb.type === 'error'">
@@ -1178,6 +1182,12 @@
     }
   </section>
   }
+
+  <!-- FOOTER INSTITUCIONAL -->
+  <footer class="max-w-7xl mx-auto px-4 lg:px-8 pt-10 mt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-text-muted">
+    <span>© 2026 Federación Jujeña de Handball (FJH). Todos los derechos reservados.</span>
+    <span>Desarrollado por <strong class="text-primary font-bold">REC Technologies</strong></span>
+  </footer>
 
   <!-- ===================================================================== -->
   <!-- MODAL MESA DE CONTROL EN VIVO & VISOR DE ACTA OFICIAL HOMOLOGADA      -->

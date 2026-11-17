@@ -25,8 +25,12 @@ import { FotoGaleria, GaleriaService } from '../../../../core/services/galeria.s
             <span>Inicio</span>
           </a>
           <a routerLink="/fixture" class="gallery-back">
-            <span class="material-symbols-outlined">calendar_month</span>
+            <span class="material-symbols-outlined">sports_handball</span>
             <span>Fixture</span>
+          </a>
+          <a routerLink="/calendario" class="gallery-back">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <span>Calendario</span>
           </a>
           <a routerLink="/login" class="login-chip">
             <span class="material-symbols-outlined">sports_handball</span>
@@ -100,6 +104,12 @@ import { FotoGaleria, GaleriaService } from '../../../../core/services/galeria.s
           </div>
         </div>
       }
+
+      <!-- Footer Institucional -->
+      <footer class="w-full max-w-7xl mx-auto px-6 py-6 mt-12 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
+        <span>© 2026 Federación Jujeña de Handball (FJH). Todos los derechos reservados.</span>
+        <span>Desarrollado por <strong class="text-sky-400">REC Technologies</strong></span>
+      </footer>
     </div>
   `,
   styleUrl: './galeria.component.css',
