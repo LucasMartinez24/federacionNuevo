@@ -1,181 +1,423 @@
 <div class="public-site">
   <header class="public-header">
     <div class="header-inner">
-      <a class="brand" href="#inicio" aria-label="Federación Jujeña de Handball">
-        <img
-          src="https://lh3.googleusercontent.com/aida/AEtjO1UMUHTR4BEASnggXG7cmc_oVX5trlx3oewmdFmOb3bIVlHb25wLtYeQPIaJWZgmtb5gsh1q5jejUXvKuFZx6Lb2nX9U7L4uujgFAwpT5jm4b4eSZpGLTn8dVlYoMtlYCXp9F_9YFfh8pwyLhtmF8bA87mT4qqcbTb10zY_ec8nW2S_kjFUSa5R_WECJ1cqLKe8opkqlLhJ2o42b9TbdJOz5SNuCUAZKjCuhWHf6nu9aJzn6uZURQ1_RqoJJLUsL4izc1AjpqYMkQ7g"
-          alt="FJH" />
+      <a class="brand" routerLink="/" aria-label="Federación Jujeña de Handball">
+        <img src="img/logo.png" alt="FJH" />
         <span><strong>Federación Jujeña de Handball</strong><small><i></i> FJH · Afiliada a la CAH</small></span>
       </a>
       <nav class="desktop-nav" aria-label="Navegación pública">
-        <a class="active" href="#inicio">Inicio</a><a href="#competencias">Torneos & Competencias</a><a
-          href="#fixture">Fixtures & Resultados</a><a href="#goleadores">Posiciones & Goleadores</a><a
-          href="#galeria">Galería</a>
+        <a class="active" routerLink="/">Inicio</a>
+        <a href="#competencias">Torneos & Competencias</a>
+        <a routerLink="/fixture">Fixtures & Resultados</a>
+        <a href="#goleadores">Posiciones & Goleadores</a>
+        <a routerLink="/galeria">Galería</a>
       </nav>
       <div class="header-actions">
         <a class="referee-portal" routerLink="/login">
-          <span class="material-symbols-outlined">sports_handball</span>Panel administrativo
+          <span class="material-symbols-outlined">sports_handball</span>Panel institucional
         </a>
       </div>
     </div>
     @if (menuOpen()) {
-    <nav class="mobile-nav" aria-label="Menú móvil"><a href="#inicio" (click)="toggleMenu()">Inicio</a><a
-        href="#competencias" (click)="toggleMenu()">Torneos & Competencias</a><a href="#fixture"
-        (click)="toggleMenu()">Fixtures & Resultados</a><a href="#goleadores" (click)="toggleMenu()">Posiciones &
-        Goleadores</a><a href="#galeria" (click)="toggleMenu()">Galería</a><a routerLink="/login"
-        (click)="toggleMenu()">Panel administrativo</a></nav>
+    <nav class="mobile-nav" aria-label="Menú móvil">
+      <a routerLink="/" (click)="toggleMenu()">Inicio</a>
+      <a href="#competencias" (click)="toggleMenu()">Torneos & Competencias</a>
+      <a routerLink="/fixture" (click)="toggleMenu()">Fixtures & Resultados</a>
+      <a href="#goleadores" (click)="toggleMenu()">Posiciones & Goleadores</a>
+      <a routerLink="/galeria" (click)="toggleMenu()">Galería</a>
+      <a routerLink="/login" (click)="toggleMenu()">Panel institucional</a>
+    </nav>
     }
   </header>
 
   <main id="inicio">
+    <!-- Live Ticker dinámico -->
     <section class="live-ticker">
-      <div class="wide-container ticker-inner"><span class="live-pill"><i></i> En Vivo</span>
-        <div class="ticker-track"><span><b>EN JUEGO (2T 18'):</b> Minas Handball <strong>24 - 22</strong> CIAF Jujuy ·
-            Polideportivo Gorriti</span><span class="ticker-separator">/</span><span><b>FINAL:</b> San Salvador HC
-            <strong>28 - 25</strong> Club Lavalle</span><span class="ticker-separator">/</span><span><b
-              class="amber">HOY 20:30:</b> Altos Hornos Zapla vs Defensores de Belgrano · Club Cuyaya</span></div><a
-          href="#fixture">Todos los marcadores <span class="material-symbols-outlined">chevron_right</span></a>
+      <div class="wide-container ticker-inner">
+        @if (liveMatches().length > 0) {
+        <span class="live-pill"><i></i> En Vivo</span>
+        <div class="ticker-track">
+          @for (live of liveMatches(); track live.id) {
+          <span>
+            <b>EN JUEGO:</b> {{ live.home }} <strong>{{ live.score }}</strong> {{ live.away }} · {{ live.venue }}
+          </span>
+          <span class="ticker-separator">/</span>
+          }
+        </div>
+        } @else if (scheduledMatches().length > 0) {
+        <span class="live-pill"
+          style="color: #38bdf8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.4);">
+          <span class="material-symbols-outlined" style="font-size: 13px;">schedule</span> Próximos
+        </span>
+        <div class="ticker-track">
+          @for (proximo of scheduledMatches().slice(0, 3); track proximo.id) {
+          <span>
+            <b class="amber">{{ proximo.detail }}:</b> {{ proximo.home }} vs {{ proximo.away }} · {{ proximo.venue }}
+          </span>
+          <span class="ticker-separator">/</span>
+          }
+        </div>
+        } @else {
+        <span class="live-pill"
+          style="color: #10b981; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.4);">
+          <span class="material-symbols-outlined" style="font-size: 13px;">sports_score</span> FJH Oficial
+        </span>
+        <div class="ticker-track">
+          <span><b>TEMPORADA 2026:</b> Torneos Apertura y Clausura de la Federación Jujeña de Handball</span>
+        </div>
+        }
+        <a routerLink="/fixture">Ver todos los marcadores <span
+            class="material-symbols-outlined">chevron_right</span></a>
       </div>
     </section>
 
+    <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-glow hero-glow-blue"></div>
       <div class="hero-glow hero-glow-red"></div>
       <div class="wide-container hero-grid">
-        <div class="hero-copy"><span class="season-pill"><span class="material-symbols-outlined">verified</span>
-            Temporada Oficial 2025 · Torneo Apertura</span>
+        <div class="hero-copy">
+          <span class="season-pill">
+            <span class="material-symbols-outlined">verified</span>
+            @if (activeTorneo()) {
+            Temporada Oficial {{ activeTorneo()?.temporada || '2026' }} · {{ activeTorneo()?.nombre }}
+            } @else {
+            Temporada Oficial 2026 · Torneo Apertura
+            }
+          </span>
           <h1>El Handball Jujeño<br /><em>en un Solo Lugar</em></h1>
           <p>Seguí en tiempo real los torneos Apertura y Clausura, fixtures oficiales, tablas de posiciones y planillas
             digitales avaladas por la Federación Jujeña de Handball y la CAH.</p>
-          <div class="hero-actions"><a class="button button-red" href="#fixture"><span
-                class="material-symbols-outlined">calendar_month</span> Ver Fixture Completo</a><a
-              class="button button-dark" href="#goleadores"><span class="material-symbols-outlined">table_chart</span>
-              Tabla de Posiciones</a><a class="text-action" routerLink="/login"><span
-                class="material-symbols-outlined">description</span> Planilla IHF Digital</a></div>
+          <div class="hero-actions">
+            <a class="button button-red" routerLink="/fixture">
+              <span class="material-symbols-outlined">calendar_month</span> Ver Fixture Completo
+            </a>
+            <a class="text-action" routerLink="/fixture">
+              <span class="material-symbols-outlined">description</span> Planilla Digital
+            </a>
+          </div>
           <div class="quick-metrics">
-            <div><strong>+14</strong><span>Clubes Afiliados</span></div>
-            <div><strong>+120</strong><span>Partidos al Año</span></div>
+            <div><strong>+{{ totalClubesCount() }}</strong><span>Clubes Afiliados</span></div>
+            <div><strong>{{ allMatches().length > 0 ? '+' + allMatches().length : '+120' }}</strong><span>Partidos
+                Programados</span></div>
             <div><strong>6 Cat.</strong><span>Mayores & Base</span></div>
           </div>
         </div>
         <div class="hero-identity">
           <div class="identity-card">
-            <div class="crest-frame"><img src="/img/logo.png" alt="Escudo Federación Jujeña de Handball" /></div><span
-              class="official-label"><span class="material-symbols-outlined">sports_score</span> Órgano Oficial del
+            <div class="crest-frame"><img src="/img/logo.png" alt="Escudo Federación Jujeña de Handball" /></div>
+            <span class="official-label"><span class="material-symbols-outlined">sports_score</span> Órgano Oficial del
               Deporte Provincial</span>
             <h2>Federación Jujeña de Handball</h2>
-            <p>Promoviendo la disciplina, juego limpio y alto rendimiento federado en San Salvador, Palpalá, San Pedro y
-              La Quiaca.</p>
-            <div class="classification"><span
-                class="material-symbols-outlined">emoji_events</span><span><small>Clasificatorio 2025</small><b>Nacional
-                  de Clubes "C"</b></span><strong>CAH</strong></div>
+            <p>Promoviendo la disciplina, juego limpio y alto rendimiento federado en todo Jujuy.</p>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- Partidos Destacados & En Directo -->
     <section class="section wide-container" id="competencias">
       <div class="section-heading">
-        <div><span class="section-kicker"><span class="material-symbols-outlined">scoreboard</span> Match Center
+        <div>
+          <span class="section-kicker"><span class="material-symbols-outlined">scoreboard</span> Match Center
             Provincial</span>
-          <h2>Partidos Destacados & En Directo</h2>
+          <h2>Partidos Destacados &amp; En Directo</h2>
         </div>
-        <div class="filter-pills">@for (filter of ['Primera Masc', 'Primera Fem', 'Juveniles', 'Cadetes']; track filter)
-          {<button [class.active]="activeFilter() === filter" (click)="selectFilter(filter)">{{ filter }}</button>}
+
+        <!-- Filtros Optimizados de 2 Niveles: Categoría + Rama -->
+        <div class="match-center-filters">
+          <!-- Selector de Categorías -->
+          <div class="filter-pills category-pills">
+            @for (cat of matchCategories; track cat.value) {
+            <button [class.active]="matchCategory() === cat.value" (click)="selectMatchCategory(cat.value)">
+              {{ cat.label }}
+            </button>
+            }
+          </div>
+
+          <!-- Selector de Rama / Género -->
+          <div class="date-tabs gender-pills">
+            <button [class.active]="matchGender() === 'Ambas'" (click)="selectMatchGender('Ambas')">Ambas Ramas</button>
+            <button [class.active]="matchGender() === 'Masc'" (click)="selectMatchGender('Masc')">Masculino</button>
+            <button [class.active]="matchGender() === 'Fem'" (click)="selectMatchGender('Fem')">Femenino</button>
+          </div>
         </div>
       </div>
-      <div class="match-grid">@for (match of matches; track match.home + match.away) {<article class="match-card"
-          [class.match-live]="match.statusTone === 'live'">
-          <div class="match-top"><span>{{ match.competition }}</span><b
-              [class]="'status status-' + match.statusTone">@if (match.statusTone === 'live') {<i></i>} {{ match.status
-              }}</b></div>
-          <div class="scoreboard">
-            <div class="team"><span>{{ match.homeInitial }}</span><b>{{ match.home }}</b><small>Local</small></div>
-            <div class="score"><strong>{{ match.score }}</strong><small>{{ match.statusTone === 'live' ? 'En Juego' :
-                match.statusTone === 'scheduled' ? 'Fecha 5' : 'Ayer' }}</small></div>
-            <div class="team"><span class="away">{{ match.awayInitial }}</span><b>{{ match.away
-                }}</b><small>Visita</small></div>
+
+      <div class="match-grid">
+        @for (match of filteredMatches(); track match.id) {
+        <article class="match-card" [class.match-live]="match.statusTone === 'live'">
+          <div class="match-top">
+            <span>{{ match.competition }}</span>
+            <b [class]="'status status-' + match.statusTone">
+              @if (match.statusTone === 'live') {<i></i>} {{ match.status }}
+            </b>
           </div>
-          <div class="match-footer"><span><span class="material-symbols-outlined">stadium</span>{{ match.venue
-              }}</span><span>{{ match.detail }}</span></div>
-        </article>}</div><a class="center-link" href="#fixture">Ver todos los resultados y planillas oficiales de la
-        fecha <span class="material-symbols-outlined">arrow_forward</span></a>
+          <div class="scoreboard">
+            <div class="team">
+              <span>
+                @if (match.homeLogo) {
+                <img [src]="getClubLogoUrl(match.homeLogo)" [alt]="match.home" class="team-logo-img" />
+                } @else {
+                <b class="team-initials-fallback">{{ getInitials(match.home, match.homeSiglas) }}</b>
+                }
+              </span>
+              <b>{{ match.home }}</b>
+              <small>Local</small>
+            </div>
+
+            <div class="score">
+              <strong>{{ match.score }}</strong>
+              <small>{{ match.statusTone === 'live' ? 'En Juego' : match.statusTone === 'scheduled' ? (match.detail) :
+                'Final' }}</small>
+            </div>
+
+            <div class="team">
+              <span class="away">
+                @if (match.awayLogo) {
+                <img [src]="getClubLogoUrl(match.awayLogo)" [alt]="match.away" class="team-logo-img" />
+                } @else {
+                <b class="team-initials-fallback">{{ getInitials(match.away, match.awaySiglas) }}</b>
+                }
+              </span>
+              <b>{{ match.away }}</b>
+              <small>Visita</small>
+            </div>
+          </div>
+          <div class="match-footer">
+            <span><span class="material-symbols-outlined">stadium</span>{{ match.venue }}</span>
+            <a [routerLink]="['/fixture']" [queryParams]="{ torneoId: match.torneoId }"
+              style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+              Planilla <span class="material-symbols-outlined" style="font-size: 15px;">open_in_new</span>
+            </a>
+          </div>
+        </article>
+        } @empty {
+        <div class="empty-state" style="grid-column: 1 / -1; padding: 40px; text-align: center; color: var(--muted);">
+          <span class="material-symbols-outlined"
+            style="font-size: 40px; color: var(--dim); display: block; margin-bottom: 8px;">sports_handball</span>
+          No hay partidos disponibles para la categoría seleccionada.
+        </div>
+        }
+      </div>
+      <a class="center-link" routerLink="/fixture">Ver todos los resultados y planillas oficiales de la fecha <span
+          class="material-symbols-outlined">arrow_forward</span></a>
     </section>
 
+    <!-- Fixture Programado & Goleadores -->
     <section class="split-section" id="fixture">
       <div class="wide-container split-grid">
+        <!-- Columna Izquierda: Próximos partidos del Fixture -->
         <div class="fixture-column">
           <div class="section-heading compact">
-            <div><span class="section-kicker blue"><span class="material-symbols-outlined">calendar_view_week</span>
+            <div>
+              <span class="section-kicker blue"><span class="material-symbols-outlined">calendar_month</span>
                 Programación Oficial</span>
-              <h2>Fixture · Torneo Apertura 2025</h2>
+              <h2>Próximos Partidos</h2>
             </div>
-            <div class="date-tabs"><button>F4</button><button class="active">Fecha 5</button><button>F6</button></div>
+            <a class="center-link" routerLink="/fixture">Ver fixture completo <span
+                class="material-symbols-outlined">arrow_forward</span></a>
           </div>
-          <div class="fixture-list">@for (game of [{day:'SÁB 24',time:'18:00',category:'Mayores Masculino · Cancha
-            1',teams:'Club Atlético Cuyaya vs CIAF B',place:'Polideportivo Cuyaya',tag:'Designado'},{day:'SÁB
-            24',time:'19:45',category:'Mayores Femenino · Cancha 1',teams:'Minas Handball vs Lavalle
-            HC',place:'Polideportivo Gorriti',tag:'Televisado'},{day:'DOM 25',time:'10:30',category:'Juveniles Masculino
-            · Cancha 2',teams:'Tiro y Gimnasia vs Zapla Handball',place:'Estadio San Pedro',tag:'Designado'}]; track
-            game.time) {<div class="fixture-row">
-              <div class="fixture-time"><b>{{ game.day }}</b><strong>{{ game.time }}</strong></div>
-              <div><small>{{ game.category }}</small><b>{{ game.teams }}</b><span><span
-                    class="material-symbols-outlined">location_on</span>{{ game.place }}</span></div><em>{{ game.tag
-                }}</em>
-            </div>}</div>
-          <div class="download-bar"><span><span class="material-symbols-outlined">picture_as_pdf</span> Boletín Oficial
-              de Competencias FJH N° 12/2025</span><a href="#">Descargar PDF <span
-                class="material-symbols-outlined">download</span></a></div>
+
+          <div class="fixture-list">
+            @for (game of upcomingFixture(); track game.id) {
+            <div class="fixture-row">
+              <div class="fixture-time">
+                <span class="material-symbols-outlined fixture-time-icon">schedule</span>
+                <strong>{{ game.hora || 'A confirmar' }}</strong>
+                <b>{{ game.date || 'Próx.' }}</b>
+              </div>
+              <div class="fixture-main-info">
+                <div class="fixture-meta">
+                  <span class="fixture-comp">{{ game.competition }} · J{{ game.jornada || 1 }}</span>
+                  <span class="fixture-status-pill" [class]="'status-' + game.statusTone">{{ game.status }}</span>
+                </div>
+                <div class="fixture-matchup">
+                  <div class="matchup-team home">
+                    <span class="team-badge-mini">
+                      @if (game.homeLogo) {
+                      <img [src]="getClubLogoUrl(game.homeLogo)" [alt]="game.home" />
+                      } @else {
+                      <b class="team-initials-fallback text-[11px] font-black">{{ getInitials(game.home,
+                        game.homeSiglas) }}</b>
+                      }
+                    </span>
+                    <strong class="team-name">{{ game.home }}</strong>
+                  </div>
+                  <span class="matchup-vs">VS</span>
+                  <div class="matchup-team away">
+                    <span class="team-badge-mini away">
+                      @if (game.awayLogo) {
+                      <img [src]="getClubLogoUrl(game.awayLogo)" [alt]="game.away" />
+                      } @else {
+                      <b class="team-initials-fallback text-[11px] font-black">{{ getInitials(game.away,
+                        game.awaySiglas) }}</b>
+                      }
+                    </span>
+                    <strong class="team-name">{{ game.away }}</strong>
+                  </div>
+                </div>
+                <div class="fixture-venue">
+                  <span class="material-symbols-outlined">location_on</span>
+                  <span>{{ game.venue || 'Cancha a designar' }}</span>
+                </div>
+              </div>
+            </div>
+            } @empty {
+            <div class="empty-state-card">
+              <span class="material-symbols-outlined">event_busy</span>
+              <p>No hay partidos programados pendientes para mostrar.</p>
+              <small>Consulta el fixture para ver el calendario completo del torneo.</small>
+            </div>
+            }
+          </div>
+
+          <div class="download-bar">
+            <span><span class="material-symbols-outlined">description</span> Boletín Oficial de Competencias FJH</span>
+            <a routerLink="/fixture">Consultar fixture <span class="material-symbols-outlined">arrow_forward</span></a>
+          </div>
         </div>
+
+        <!-- Columna Derecha: Top Goleadores -->
         <div class="scorers-column" id="goleadores">
-          <div class="section-heading compact">
-            <div><span class="section-kicker red"><span class="material-symbols-outlined">military_tech</span>
-                Estadísticas Oficiales</span>
+          <div class="section-heading compact scorers-header" id="posiciones">
+            <div>
+              <span class="section-kicker red"><span class="material-symbols-outlined">military_tech</span> Estadísticas
+                Oficiales</span>
               <h2>Top Goleadores</h2>
             </div>
-            <div class="date-tabs"><button [class.active]="activeGender() === 'Masc'"
-                (click)="selectGender('Masc')">Masc</button><button [class.active]="activeGender() === 'Fem'"
-                (click)="selectGender('Fem')">Fem</button></div>
+            <div class="scorer-filters-container">
+              <!-- Filtro de Rama / Género -->
+              <div class="filter-pills-row">
+                <div class="date-tabs gender-tabs">
+                  <button [class.active]="activeGender() === 'Masc'" (click)="selectGender('Masc')">Masc</button>
+                  <button [class.active]="activeGender() === 'Fem'" (click)="selectGender('Fem')">Fem</button>
+                </div>
+              </div>
+              <!-- Filtro de Categoría -->
+              <div class="filter-pills-row">
+                <div class="date-tabs category-tabs">
+                  @for (cat of scorerCategories; track cat.value) {
+                  <button [class.active]="activeScorerCategory() === cat.value"
+                    (click)="selectScorerCategory(cat.value)">
+                    {{ cat.label }}
+                  </button>
+                  }
+                </div>
+              </div>
+            </div>
           </div>
+
+          <!-- Top Scorer #1 Card -->
+          @if (topScorer(); as leader) {
           <div class="top-scorer">
-            <div class="player-avatar">F</div>
-            <div><span>Líder del Torneo</span>
-              <h3>Facundo Morales</h3><small>Minas Handball Club</small>
-            </div><strong>48<small>Goles Totales</small></strong>
+            <div class="player-avatar">
+              @if (leader.clubLogo) {
+              <img [src]="getClubLogoUrl(leader.clubLogo)" [alt]="leader.club" />
+              } @else {
+              <span class="material-symbols-outlined">sports_handball</span>
+              }
+            </div>
+            <div class="top-scorer-details">
+              <div class="leader-badge">
+                <span class="material-symbols-outlined">workspace_premium</span>
+                <span>Líder de Goleo</span>
+              </div>
+              <h3>{{ leader.nombre }}</h3>
+              <small>{{ leader.club }}</small>
+            </div>
+            <div class="top-scorer-stat">
+              <strong>{{ leader.goles }}</strong>
+              <small>Goles ({{ leader.pj }} PJ)</small>
+            </div>
           </div>
+          } @else {
+          <div class="top-scorer top-scorer-empty">
+            <div class="player-avatar empty">
+              <span class="material-symbols-outlined">sports_handball</span>
+            </div>
+            <div class="top-scorer-details">
+              <div class="leader-badge empty">
+                <span class="material-symbols-outlined">info</span>
+                <span>Estadística Oficial</span>
+              </div>
+              <h3>Sin registros de goles aún</h3>
+              <small>Los datos se actualizarán con las planillas oficiales</small>
+            </div>
+            <div class="top-scorer-stat">
+              <strong>0</strong>
+              <small>Goles</small>
+            </div>
+          </div>
+          }
+
+          <!-- Ranking Lista -->
           <div class="ranking">
-            <div class="ranking-head"><span>Pos</span><span>Jugador / Club</span><span>PJ</span><span>Goles</span></div>
-            @for (player of [{pos:2,name:'Matías Albarracín',club:'San Salvador HC',games:5,goals:42},{pos:3,name:'Tomás
-            Gutiérrez',club:'CIAF Handball',games:5,goals:37},{pos:4,name:'Joaquín Farfán',club:'Lavalle
-            HC',games:4,goals:31},{pos:5,name:'Lucas Quispe',club:'Defensores de Belgrano',games:5,goals:29}]; track
-            player.pos) {<div class="ranking-row"><b>{{ player.pos }}</b><span><strong>{{ player.name
-                  }}</strong><small>{{ player.club }}</small></span><span>{{ player.games }}</span><strong>{{
-                player.goals }}</strong></div>}<a href="#goleadores">Ver ranking completo <span
+            <div class="ranking-head">
+              <span>Pos</span>
+              <span>Jugador / Club</span>
+              <span style="text-align: center;">PJ</span>
+              <span style="text-align: right;">Goles</span>
+            </div>
+            @for (player of runnersUpScorers(); track player.pos) {
+            <div class="ranking-row">
+              <b class="pos-badge">{{ player.pos }}</b>
+              <span class="player-info">
+                <strong>{{ player.nombre }}</strong>
+                <small>{{ player.club }}</small>
+              </span>
+              <span class="pj-stat">{{ player.pj }}</span>
+              <strong class="goles-stat">{{ player.goles }}</strong>
+            </div>
+            } @empty {
+            @if (topScorer()) {
+            <div class="ranking-empty-msg">
+              No hay más goleadores registrados en esta categoría aún.
+            </div>
+            } @else {
+            <div class="ranking-empty-msg">
+              A la espera del cierre de planillas oficiales.
+            </div>
+            }
+            }
+            <a routerLink="/fixture" class="ranking-footer-link">Ver planillas completas <span
                 class="material-symbols-outlined">chevron_right</span></a>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- Galería FJH -->
     <section class="gallery-section" id="galeria">
       <div class="wide-container">
         <div class="section-heading">
-          <div><span class="section-kicker red"><span class="material-symbols-outlined">photo_library</span> Actualidad
+          <div>
+            <span class="section-kicker red"><span class="material-symbols-outlined">photo_library</span> Actualidad
               Visual</span>
             <h2>Galería & Momentos FJH</h2>
             <p>Viví los mejores momentos de nuestros torneos, clubes y selecciones.</p>
-          </div><a class="center-link" href="#galeria">Ver galería completa <span
+          </div>
+          <a class="center-link" routerLink="/galeria">Ver galería completa <span
               class="material-symbols-outlined">arrow_forward</span></a>
         </div>
-        <div class="gallery-grid">@for (item of galleryItems; track item.label) {<article class="gallery-card"><img
-              [src]="item.image" [alt]="item.label" />
-            <div><span><span class="material-symbols-outlined">event</span>{{ item.date }}</span>
-              <h3>{{ item.label }}</h3><a href="#galeria">Explorar álbum <span
-                  class="material-symbols-outlined">arrow_forward</span></a>
+        <div class="gallery-grid">
+          @for (item of galleryItems(); track item.id) {
+          <article class="gallery-card">
+            <img [src]="photoUrl(item)" [alt]="item.titulo || 'Foto FJH'" />
+            <div>
+              <span><span class="material-symbols-outlined">event</span>{{ item.categoria || 'General' }}</span>
+              <h3>{{ item.titulo || 'Jornada FJH' }}</h3>
+              <a routerLink="/galeria">Explorar álbum <span class="material-symbols-outlined">arrow_forward</span></a>
             </div>
-          </article>}</div>
+          </article>
+          } @empty {
+          <div class="empty-state">Cargando momentos destacados de la Federación...</div>
+          }
+        </div>
       </div>
     </section>
+
+    <!-- Sponsors Oficiales -->
     <section class="sponsors-section">
       <div class="wide-container">
         <div class="sponsors-heading">
@@ -186,24 +428,26 @@
         </div>
         <div class="sponsors-grid">
           @for (sponsor of sponsors; track sponsor.name) {
-          <a class="sponsor-card" [class.sponsor-light]="sponsor.light" routerLink="/login" [attr.aria-label]="sponsor.name">
+          <div class="sponsor-card" [class.sponsor-light]="sponsor.light" [attr.aria-label]="sponsor.name">
             <img [src]="sponsor.image" [alt]="sponsor.name" />
             <span>{{ sponsor.name }}</span>
-          </a>
+          </div>
           }
         </div>
       </div>
     </section>
   </main>
 
+  <!-- Navegación móvil inferior -->
   <nav class="bottom-nav">
-    <a class="active" href="#inicio"><span class="material-symbols-outlined">home</span>Inicio</a>
-    <a href="#fixture"><span class="material-symbols-outlined">calendar_month</span>Fixture</a>
-    <a href="#goleadores"><span class="material-symbols-outlined">leaderboard</span>Posiciones</a>
-    <a href="#galeria"><span class="material-symbols-outlined">photo_library</span>Galería</a>
-    <a routerLink="/login"><span class="material-symbols-outlined">sports_handball</span>Panel administrativo</a>
+    <a class="active" routerLink="/"><span class="material-symbols-outlined">home</span>Inicio</a>
+    <a routerLink="/fixture"><span class="material-symbols-outlined">calendar_month</span>Fixture</a>
+    <a href="#posiciones"><span class="material-symbols-outlined">leaderboard</span>Posiciones</a>
+    <a routerLink="/galeria"><span class="material-symbols-outlined">photo_library</span>Galería</a>
+    <a routerLink="/login"><span class="material-symbols-outlined">sports_handball</span>Panel institucional</a>
   </nav>
 
+  <!-- Footer -->
   <footer class="public-footer">
     <div class="wide-container footer-grid">
       <div>
@@ -219,8 +463,11 @@
         </div>
       </div>
       <div>
-        <h3>Competiciones & Fix</h3><a href="#competencias">Torneo Apertura & Clausura</a><a href="#fixture">Fixtures de
-          la Fecha</a><a href="#goleadores">Tabla de Posiciones</a><a href="#goleadores">Goleadores & Sanciones</a>
+        <h3>Competiciones & Fix</h3>
+        <a href="#competencias">Torneo Apertura & Clausura</a>
+        <a routerLink="/fixture">Fixtures de la Fecha</a>
+        <a href="#posiciones">Tabla de Posiciones</a>
+        <a href="#goleadores">Goleadores Oficiales</a>
       </div>
       <div>
         <h3>Sponsors Oficiales</h3>
@@ -235,7 +482,9 @@
         </div>
       </div>
     </div>
-    <div class="copyright wide-container">© 2025 Federación Jujeña de Handball (FJH). Todos los derechos
-      reservados.<span>Desarrollo Institucional & Deportivo Jujuy</span></div>
+    <div class="copyright wide-container">
+      © 2026 Federación Jujeña de Handball (FJH). Todos los derechos reservados.
+      <span>Desarrollo Institucional & Deportivo Jujuy</span>
+    </div>
   </footer>
 </div>

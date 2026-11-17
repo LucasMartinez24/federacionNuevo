@@ -1,0 +1,320 @@
+<div class="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto flex flex-col gap-6">
+
+  <!-- FEEDBACK TOAST -->
+  @if (feedback(); as fb) {
+  <div
+    class="fixed top-20 sm:top-24 right-4 sm:right-6 z-[100] max-w-sm sm:max-w-md flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md border animate-in slide-in-from-top-4 duration-300"
+    [ngClass]="fb.type === 'success' ? 'bg-emerald-950/95 border-emerald-500/70 text-emerald-200' : 'bg-rose-950/95 border-rose-500/70 text-rose-200'">
+    <span class="material-symbols-outlined text-[20px] shrink-0">
+      {{ fb.type === 'success' ? 'check_circle' : 'error' }}
+    </span>
+    <span class="text-xs sm:text-sm font-medium min-w-0 flex-1">{{ fb.message }}</span>
+    <button (click)="feedback.set(null)" class="p-1 hover:bg-white/10 rounded-lg transition-colors ml-2 shrink-0">
+      <span class="material-symbols-outlined text-[16px]">close</span>
+    </button>
+  </div>
+  }
+
+  <!-- Header Institucional & Acciones Prensa / CM -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-court-card/90 backdrop-blur-md p-5 sm:p-6 rounded-2xl border border-border-glass shadow-xl relative overflow-hidden">
+    <div class="absolute -top-24 -left-24 w-72 h-72 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="flex items-center gap-4 min-w-0 relative z-10">
+      <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-accent-cyan-deep to-primary text-court-base flex items-center justify-center font-bold shadow-lg shrink-0">
+        <span class="material-symbols-outlined text-[28px] sm:text-[32px]">photo_library</span>
+      </div>
+      <div class="flex flex-col gap-0.5 min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="font-label-caps text-[10px] px-2.5 py-0.5 rounded-full bg-primary/20 text-primary font-bold uppercase tracking-wider">
+            Prensa &amp; Difusión FJH
+          </span>
+          <span class="text-text-muted text-xs">•</span>
+          <span class="font-stat-label text-[10px] text-text-secondary uppercase">
+            {{ photos().length }} Fotos en Archivo
+          </span>
+        </div>
+        <h1 class="font-headline-lg text-lg sm:text-2xl text-white font-bold tracking-tight truncate uppercase">
+          Galería Multimedia Institucional
+        </h1>
+        <p class="font-body-base text-xs text-text-secondary truncate">
+          Cargá, organizá y gestioná las imágenes oficiales de torneos, selecciones y clínicas.
+        </p>
+      </div>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0 relative z-10">
+      <a routerLink="/galeria" target="_blank"
+        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-court-surface hover:bg-court-card-hover border border-white/10 text-text-secondary hover:text-white text-xs font-body-bold transition-all cursor-pointer">
+        <span class="material-symbols-outlined text-[16px]">visibility</span>
+        <span class="hidden sm:inline">Ver Vista Pública</span>
+      </a>
+
+      <button type="button" (click)="abrirUploadModal()"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-accent-cyan-deep to-primary text-court-base font-body-bold text-xs shadow-lg hover:shadow-primary/30 transition-all active:scale-95 cursor-pointer">
+        <span class="material-symbols-outlined text-[18px]">add_a_photo</span>
+        <span>Subir Nuevas Fotos</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Barra de Filtros y Búsqueda -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-court-surface p-3 sm:p-4 rounded-xl border border-white/5">
+    
+    <!-- Píldoras de Categoría -->
+    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 custom-scrollbar">
+      @for (cat of categories(); track cat) {
+      <button type="button" (click)="selectedCategory.set(cat)"
+        [class]="selectedCategory() === cat ? 'bg-primary text-court-base font-body-bold shadow-md' : 'bg-court-card text-text-secondary hover:text-white font-body-medium border border-white/5'"
+        class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer whitespace-nowrap">
+        {{ cat }}
+      </button>
+      }
+    </div>
+
+    <!-- Buscador -->
+    <div class="relative w-full md:w-64 shrink-0">
+      <span class="material-symbols-outlined text-[17px] text-text-muted absolute left-3 top-1/2 -translate-y-1/2">search</span>
+      <input type="text" [(ngModel)]="searchQuery" placeholder="Buscar por título o evento..."
+        class="w-full pl-9 pr-3 py-1.5 bg-court-card border border-white/10 rounded-xl text-xs text-white placeholder-text-muted focus:border-primary outline-none" />
+    </div>
+  </div>
+
+  <!-- Grilla de Fotos -->
+  @if (loading()) {
+  <div class="py-16 text-center flex flex-col items-center justify-center gap-3 text-text-muted">
+    <div class="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+    <span class="text-xs font-bold uppercase tracking-wider">Sincronizando archivo multimedia...</span>
+  </div>
+  } @else if (filteredPhotos().length === 0) {
+  <div class="py-16 text-center bg-court-card rounded-2xl border border-dashed border-white/10 flex flex-col items-center justify-center gap-3">
+    <span class="material-symbols-outlined text-text-muted text-[48px]">no_photography</span>
+    <h3 class="text-sm font-bold text-white">No se encontraron fotos en esta sección</h3>
+    <p class="text-xs text-text-secondary">Subí nuevas imágenes para documentar la jornada deportiva.</p>
+    <button type="button" (click)="abrirUploadModal()"
+      class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-court-base font-bold text-xs shadow hover:bg-accent-cyan-deep transition-all cursor-pointer">
+      <span class="material-symbols-outlined text-[16px]">add_a_photo</span>
+      <span>Cargar fotografía</span>
+    </button>
+  </div>
+  } @else {
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+    @for (photo of filteredPhotos(); track photo.id) {
+    <div class="gallery-admin-card group relative bg-court-card rounded-2xl overflow-hidden border border-border-glass shadow-lg flex flex-col justify-between">
+      
+      <!-- Contenedor Imagen -->
+      <div class="relative aspect-video sm:aspect-square overflow-hidden bg-black/40 cursor-pointer" (click)="abrirLightbox(photo)">
+        <img [src]="photoUrl(photo)" [alt]="photo.titulo || 'Foto FJH'"
+          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+        
+        <!-- Badge de Categoría Flotante -->
+        <span class="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-primary font-stat-label text-[9px] font-bold uppercase tracking-wider border border-white/10">
+          {{ photo.categoria || 'General' }}
+        </span>
+
+        <!-- Overlay con Lupa y Acciones Rápidas -->
+        <div class="gallery-overlay opacity-0 transition-opacity duration-200 absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-center justify-center gap-3">
+          <button type="button" (click)="$event.stopPropagation(); abrirLightbox(photo)"
+            class="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md text-white flex items-center justify-center transition-transform hover:scale-110"
+            title="Ampliar fotografía">
+            <span class="material-symbols-outlined text-[20px]">zoom_in</span>
+          </button>
+          <button type="button" (click)="$event.stopPropagation(); confirmarEliminacion(photo)"
+            class="w-10 h-10 rounded-full bg-rose-600/80 hover:bg-rose-600 backdrop-blur-md text-white flex items-center justify-center transition-transform hover:scale-110 shadow-lg"
+            title="Eliminar foto">
+            <span class="material-symbols-outlined text-[18px]">delete</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pie de Foto y Metadatos -->
+      <div class="p-3 bg-court-surface flex items-center justify-between gap-2 border-t border-white/5">
+        <div class="min-w-0">
+          <h4 class="text-xs font-bold text-white truncate">{{ photo.titulo || 'Jornada FJH' }}</h4>
+          <span class="text-[9px] text-text-muted uppercase font-bold tracking-wider">
+            {{ photo.createdAt ? (photo.createdAt | date:'dd/MM/yyyy') : 'Oficial FJH' }}
+          </span>
+        </div>
+        <button type="button" (click)="confirmarEliminacion(photo)"
+          class="p-1.5 text-text-muted hover:text-rose-400 hover:bg-white/5 rounded-lg transition-colors shrink-0"
+          title="Eliminar de la galería">
+          <span class="material-symbols-outlined text-[17px]">delete</span>
+        </button>
+      </div>
+
+    </div>
+    }
+  </div>
+  }
+
+  <!-- ============================================== -->
+  <!-- MODAL: SUBIR FOTOS (DRAG & DROP / MULTI-UPLOAD)-->
+  <!-- ============================================== -->
+  @if (showUploadModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 overflow-y-auto">
+    <div class="bg-[#0d1524] border border-white/10 rounded-2xl sm:rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col gap-4 p-5 sm:p-6 animate-in zoom-in-95 duration-200">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold">
+            <span class="material-symbols-outlined text-[20px]">add_photo_alternate</span>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-white uppercase">Carga de Fotografías Oficiales</h3>
+            <p class="text-[10px] text-text-secondary">Prensa y Comunicación Oficial FJH</p>
+          </div>
+        </div>
+        <button (click)="cerrarUploadModal()" class="text-text-muted hover:text-white p-1 rounded-lg">
+          <span class="material-symbols-outlined text-[22px]">close</span>
+        </button>
+      </div>
+
+      <!-- Formulario -->
+      <div class="flex flex-col gap-3">
+        
+        <!-- Título -->
+        <div class="flex flex-col gap-1">
+          <label class="text-[10px] font-bold text-text-secondary uppercase">Título o Evento</label>
+          <input type="text" [(ngModel)]="uploadTitulo" placeholder="Ej: Final Apertura Masculino - Minas vs CIAF"
+            class="bg-court-surface border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-primary" />
+        </div>
+
+        <!-- Categoría -->
+        <div class="flex flex-col gap-1">
+          <label class="text-[10px] font-bold text-text-secondary uppercase">Categoría / Sección</label>
+          <select [(ngModel)]="uploadCategoria"
+            class="bg-court-surface border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-primary cursor-pointer">
+            @for (cat of standardCategories; track cat) {
+            <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Selector de Archivos (Multi-Upload) -->
+        <div class="flex flex-col gap-1.5 mt-1">
+          <label class="text-[10px] font-bold text-text-secondary uppercase">Imágenes (JPG, PNG, WEBP)</label>
+          
+          <label class="border-2 border-dashed border-white/15 hover:border-primary/50 bg-court-surface/60 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors group">
+            <input type="file" multiple accept="image/*" (change)="onFilesSelected($event)" class="hidden" />
+            <div class="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-[26px]">upload</span>
+            </div>
+            <span class="text-xs font-bold text-white">Haz clic o arrastra fotos aquí</span>
+            <span class="text-[10px] text-text-muted">Podés subir hasta 10 fotos en simultáneo</span>
+          </label>
+        </div>
+
+        <!-- Previsualización de Fotos Seleccionadas -->
+        @if (filePreviews.length > 0) {
+        <div class="flex flex-col gap-1.5">
+          <span class="text-[10px] font-bold text-text-muted uppercase">
+            Seleccionadas ({{ filePreviews.length }})
+          </span>
+          <div class="grid grid-cols-4 gap-2 max-h-36 overflow-y-auto custom-scrollbar p-1 bg-court-surface rounded-xl border border-white/5">
+            @for (prev of filePreviews; track $index; let idx = $index) {
+            <div class="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
+              <img [src]="prev" class="w-full h-full object-cover" />
+              <button type="button" (click)="removeSelectedFile(idx)"
+                class="absolute top-1 right-1 w-5 h-5 bg-rose-600/90 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                title="Quitar">
+                <span class="material-symbols-outlined text-[13px]">close</span>
+              </button>
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+      </div>
+
+      <!-- Footer Modal -->
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
+        <button type="button" (click)="cerrarUploadModal()" [disabled]="uploading()"
+          class="px-4 py-2 rounded-xl bg-court-surface hover:bg-court-card text-text-muted hover:text-white text-xs font-bold transition-colors cursor-pointer">
+          Cancelar
+        </button>
+        <button type="button" (click)="subirFotos()" [disabled]="uploading() || selectedFiles.length === 0"
+          class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary text-court-base font-bold text-xs shadow-lg hover:bg-accent-cyan-deep hover:text-white transition-all cursor-pointer disabled:opacity-50">
+          @if (uploading()) {
+          <div class="w-3.5 h-3.5 border-2 border-court-base border-t-transparent rounded-full animate-spin"></div>
+          <span>Subiendo...</span>
+          } @else {
+          <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
+          <span>Publicar Fotografías</span>
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+  }
+
+  <!-- ============================================== -->
+  <!-- MODAL: LIGHTBOX VISTA PREVIA (ZOOM)            -->
+  <!-- ============================================== -->
+  @if (previewPhoto(); as p) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-lg p-3 sm:p-6" (click)="cerrarLightbox()">
+    <div class="relative max-w-4xl max-h-[90vh] flex flex-col items-center gap-3" (click)="$event.stopPropagation()">
+      <button type="button" (click)="cerrarLightbox()"
+        class="absolute -top-10 right-0 text-white hover:text-primary transition-colors flex items-center gap-1 text-xs font-bold">
+        <span>Cerrar</span>
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+
+      <img [src]="photoUrl(p)" [alt]="p.titulo || 'Foto FJH'"
+        class="max-h-[75vh] w-auto max-w-full rounded-2xl object-contain shadow-2xl border border-white/10" />
+
+      <div class="w-full text-center p-3 bg-court-surface/80 backdrop-blur-md rounded-xl border border-white/10 flex items-center justify-between gap-3">
+        <div class="text-left">
+          <span class="text-primary text-[10px] font-bold uppercase tracking-wider block">{{ p.categoria || 'General' }}</span>
+          <h4 class="text-sm font-bold text-white">{{ p.titulo || 'Jornada FJH' }}</h4>
+        </div>
+        <button type="button" (click)="confirmarEliminacion(p); cerrarLightbox()"
+          class="px-3 py-1.5 rounded-lg bg-rose-600/20 hover:bg-rose-600 border border-rose-500/40 text-rose-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+          <span class="material-symbols-outlined text-[16px]">delete</span>
+          <span>Eliminar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- ============================================== -->
+  <!-- MODAL: CONFIRMAR ELIMINACIÓN                   -->
+  <!-- ============================================== -->
+  @if (photoToDelete(); as del) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+    <div class="bg-court-card border border-rose-500/40 rounded-2xl max-w-sm w-full p-5 shadow-2xl flex flex-col gap-4 animate-in zoom-in-95 duration-150">
+      <div class="flex items-center gap-3 text-rose-400">
+        <div class="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center">
+          <span class="material-symbols-outlined text-[22px]">warning</span>
+        </div>
+        <h4 class="text-sm font-bold text-white uppercase">Eliminar Fotografía</h4>
+      </div>
+      <p class="text-xs text-text-secondary">
+        ¿Estás seguro de que deseas eliminar permanentemente esta foto del archivo oficial?
+      </p>
+      <div class="p-2 bg-court-surface rounded-xl border border-white/5 flex items-center gap-3">
+        <img [src]="photoUrl(del)" class="w-12 h-12 rounded-lg object-cover" />
+        <div class="min-w-0">
+          <span class="text-xs font-bold text-white block truncate">{{ del.titulo || 'Foto FJH' }}</span>
+          <span class="text-[9px] text-text-muted uppercase">{{ del.categoria }}</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-white/5">
+        <button type="button" (click)="cancelarEliminacion()" [disabled]="isDeleting()"
+          class="px-3 py-1.5 text-xs text-text-muted hover:text-white">
+          Cancelar
+        </button>
+        <button type="button" (click)="ejecutarEliminacion()" [disabled]="isDeleting()"
+          class="px-4 py-1.5 rounded-lg bg-rose-600 text-white font-bold text-xs shadow hover:bg-rose-700 transition-all cursor-pointer">
+          {{ isDeleting() ? 'Eliminando...' : 'Sí, Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+</div>
+

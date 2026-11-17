@@ -28,13 +28,47 @@ export const routes: Routes = [
   },
   {
     path: 'fixture/gestion',
-    redirectTo: 'fixture',
+    redirectTo: 'admin/fixture',
     pathMatch: 'full',
   },
   {
     path: 'fixtures-y-resultados',
     redirectTo: 'fixture',
     pathMatch: 'full',
+  },
+  {
+    path: 'calendario',
+    loadComponent: () =>
+      import('./features/public/pages/not-found/not-found.component').then((m) => m.NotFoundComponent),
+    title: 'FJH - Página no disponible',
+  },
+  {
+    path: 'boletin-resoluciones',
+    redirectTo: 'admin/boletin-resoluciones',
+    pathMatch: 'full',
+  },
+  {
+    path: 'galeria',
+    loadComponent: () =>
+      import('./features/public/pages/galeria/galeria.component').then((m) => m.GaleriaComponent),
+    title: 'FJH - Galería',
+  },
+  {
+    path: 'galeria/admin',
+    redirectTo: 'admin/galeria',
+    pathMatch: 'full',
+  },
+  {
+    path: 'tabla-goleadores',
+    loadComponent: () =>
+      import('./features/public/pages/not-found/not-found.component').then((m) => m.NotFoundComponent),
+    title: 'FJH - Página no disponible',
+  },
+  {
+    path: 'soporte',
+    loadComponent: () =>
+      import('./features/public/pages/not-found/not-found.component').then((m) => m.NotFoundComponent),
+    title: 'FJH - Página no disponible',
   },
 
   // Rutas protegidas de la Federación con Sidebar (FederationLayout)
@@ -124,9 +158,85 @@ export const routes: Routes = [
         title: 'FJH - Gestión Operativa de Torneo',
       },
       {
+        path: 'galeria',
+        loadComponent: () =>
+          import(
+            './features/federation-admin/pages/galeria/galeria-admin.component'
+          ).then((m) => m.GaleriaAdminComponent),
+        title: 'FJH - Galería Multimedia & Prensa',
+      },
+      {
+        path: 'galeria/admin',
+        redirectTo: 'galeria',
+        pathMatch: 'full',
+      },
+      {
+        path: 'fixture',
+        loadComponent: () =>
+          import('./features/public/pages/fixture/fixture.component').then(
+            (m) => m.FixtureComponent,
+          ),
+        title: 'FJH - Fixture & Planilla en Vivo',
+      },
+      {
+        path: 'boletin-resoluciones',
+        loadComponent: () =>
+          import(
+            './features/federation-admin/pages/boletin-resoluciones/boletin-resoluciones.component'
+          ).then((m) => m.BoletinResolucionesComponent),
+        title: 'FJH - Boletín Oficial & Resoluciones',
+      },
+      {
         path: 'dashboard',
         redirectTo: 'jugadores',
         pathMatch: 'full',
+      },
+    ],
+  },
+
+  // Rutas de Portal de Club (ClubLayout)
+  {
+    path: 'club',
+    loadComponent: () =>
+      import('./layouts/club-layout/club-layout.component').then((m) => m.ClubLayoutComponent),
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        redirectTo: 'fixture',
+        pathMatch: 'full',
+      },
+      {
+        path: 'fixture',
+        loadComponent: () =>
+          import(
+            './features/club-admin/pages/partidos-posiciones/partidos-posiciones.component'
+          ).then((m) => m.PartidosPosicionesComponent),
+        title: 'FJH - Agenda, Partidos & Posiciones del Club',
+      },
+      {
+        path: 'jugadores',
+        loadComponent: () =>
+          import(
+            './features/club-admin/pages/jugadores-plantilla/jugadores-plantilla.component'
+          ).then((m) => m.JugadoresPlantillaComponent),
+        title: 'FJH - Gestión de Plantilla del Club',
+      },
+      {
+        path: 'resoluciones',
+        loadComponent: () =>
+          import(
+            './features/club-admin/pages/resoluciones-club/resoluciones-club.component'
+          ).then((m) => m.ResolucionesClubComponent),
+        title: 'FJH - Resoluciones del Tribunal de Penas',
+      },
+      {
+        path: 'mesa-ayuda',
+        loadComponent: () =>
+          import(
+            './features/club-admin/pages/mesa-ayuda-club/mesa-ayuda-club.component'
+          ).then((m) => m.MesaAyudaClubComponent),
+        title: 'FJH - Mesa de Entradas & Soporte de Club',
       },
     ],
   },
@@ -183,5 +293,11 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
 
-  { path: '**', redirectTo: '' },
+  {
+    path: '404',
+    loadComponent: () =>
+      import('./features/public/pages/not-found/not-found.component').then((m) => m.NotFoundComponent),
+    title: 'FJH - Página no encontrada',
+  },
+  { path: '**', redirectTo: '404' },
 ];

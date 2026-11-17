@@ -22,6 +22,8 @@ export interface PartidoItem {
   cronometrista?: string | null;
   observaciones?: string | null;
   showDesignaciones?: boolean;
+  golesLocal?: number | null;
+  golesVisitante?: number | null;
 }
 
 export interface JornadaItem {
@@ -157,9 +159,27 @@ export class PartidosService {
     return this.http.get<any[]>(`${this.apiUrl}/partidos/torneo/${torneoId}/jornada/${jornadaNum}`);
   }
 
-  getTablaPosiciones(torneoId: string, grupo?: string): Observable<any[]> {
+  getActasRecientes(limit: number = 20): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/partidos/actas/recientes?limit=${limit}`);
+  }
+
+  getTablaPosiciones(torneoId: string, grupo?: string, categoria?: string, rama?: string): Observable<any[]> {
     let url = `${this.apiUrl}/posiciones/torneo/${torneoId}`;
-    if (grupo) url += `?grupo=${encodeURIComponent(grupo)}`;
+    const params: string[] = [];
+    if (grupo) params.push(`grupo=${encodeURIComponent(grupo)}`);
+    if (categoria && categoria !== 'TODAS') params.push(`categoria=${encodeURIComponent(categoria)}`);
+    if (rama && rama !== 'TODAS') params.push(`rama=${encodeURIComponent(rama)}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return this.http.get<any[]>(url);
+  }
+
+  getGoleadores(torneoId?: string, genero?: string, categoria?: string): Observable<any[]> {
+    let url = `${this.apiUrl}/posiciones/goleadores`;
+    const params: string[] = [];
+    if (torneoId) params.push(`torneoId=${encodeURIComponent(torneoId)}`);
+    if (genero) params.push(`genero=${encodeURIComponent(genero)}`);
+    if (categoria) params.push(`categoria=${encodeURIComponent(categoria)}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
     return this.http.get<any[]>(url);
   }
 
@@ -171,8 +191,15 @@ export class PartidosService {
     return this.http.post(`${this.apiUrl}/partidos/partido`, payload);
   }
 
-  saveFixture(torneoId: string, jornadas: JornadaItem[]): Observable<any> {
-    return this.http.post(`${this.apiUrl}/partidos/torneo/${torneoId}/fixture`, { jornadas });
+  sincronizarPlayoffs(
+    torneoId: string,
+    payload: { faseInicial?: string; regenerarNoJugados?: boolean } = {},
+  ): Observable<any> {
+    return this.http.post(`${this.apiUrl}/partidos/torneo/${torneoId}/sincronizar-playoffs`, payload);
+  }
+
+  saveFixture(torneoId: string, jornadas: JornadaItem[], clubesIds?: string[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/partidos/torneo/${torneoId}/fixture`, { jornadas, clubesIds });
   }
 
   updatePartido(partidoId: string, data: Partial<PartidoItem>): Observable<any> {
@@ -183,4 +210,3 @@ export class PartidosService {
     return this.http.delete(`${this.apiUrl}/partidos/${partidoId}`);
   }
 }
-

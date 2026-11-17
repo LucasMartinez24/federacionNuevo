@@ -1,347 +1,524 @@
 <!-- Ambient Handball Court Lighting Backdrops -->
 <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
-  <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[850px] h-[360px] bg-sky-600/10 blur-[130px] rounded-full"></div>
-  <div class="absolute top-[40%] -left-32 w-[420px] h-[420px] bg-tertiary/5 blur-[120px] rounded-full"></div>
-  <div class="absolute bottom-10 -right-20 w-[450px] h-[450px] bg-primary/5 blur-[140px] rounded-full"></div>
+  <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[380px] bg-sky-600/10 blur-[140px] rounded-full"></div>
+  <div class="absolute top-[35%] -left-36 w-[450px] h-[450px] bg-tertiary/5 blur-[130px] rounded-full"></div>
+  <div class="absolute bottom-10 -right-24 w-[480px] h-[480px] bg-primary/5 blur-[150px] rounded-full"></div>
 </div>
 
 <!-- Toast Feedback Notification -->
 @if (feedbackMensaje()) {
 <div
-  class="fixed top-5 right-5 z-50 px-5 py-3.5 rounded-xl shadow-2xl border flex items-center gap-3 animate-fade-in"
+  class="fixed top-6 right-6 z-50 px-5 py-4 rounded-2xl shadow-2xl border backdrop-blur-xl flex items-center gap-3.5 animate-fade-in transition-all"
   [class.bg-court-card]="true"
-  [class.border-tertiary]="feedbackTipo() === 'success'"
-  [class.text-tertiary]="feedbackTipo() === 'success'"
-  [class.border-accent-crimson-deep]="feedbackTipo() === 'error'"
-  [class.text-accent-crimson-deep]="feedbackTipo() === 'error'">
-  <span class="material-symbols-outlined text-[22px]">
-    {{ feedbackTipo() === 'success' ? 'check_circle' : 'error' }}
-  </span>
-  <span class="text-sm font-body-bold text-text-primary">{{ feedbackMensaje() }}</span>
+  [class.border-tertiary/60]="feedbackTipo() === 'success'"
+  [class.shadow-tertiary/10]="feedbackTipo() === 'success'"
+  [class.border-accent-crimson-deep/60]="feedbackTipo() === 'error'"
+  [class.shadow-rose-900/20]="feedbackTipo() === 'error'">
+  <div
+    class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+    [class.bg-tertiary/15]="feedbackTipo() === 'success'"
+    [class.text-tertiary]="feedbackTipo() === 'success'"
+    [class.bg-accent-crimson-deep/15]="feedbackTipo() === 'error'"
+    [class.text-accent-crimson-deep]="feedbackTipo() === 'error'">
+    <span class="material-symbols-outlined text-[20px]">
+      {{ feedbackTipo() === 'success' ? 'check_circle' : 'error' }}
+    </span>
+  </div>
+  <div class="flex flex-col">
+    <span class="text-xs font-bold text-text-primary leading-tight">{{ feedbackMensaje() }}</span>
+    <span class="text-[10px] text-text-muted mt-0.5 font-medium">Sistema Oficial FJH</span>
+  </div>
 </div>
 }
 
-<main class="relative z-10 w-full max-w-4xl mx-auto px-4 py-8 md:py-12 flex flex-col gap-8 text-on-surface">
-  
-  <!-- Top Breadcrumb & Task Navigation -->
+<main class="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col gap-8 text-on-surface">
+
+  <!-- 1. Top Breadcrumb & Task Navigation -->
   <header class="flex flex-col gap-4">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <!-- Back Navigation Pill -->
       <a
         routerLink="/admin/jugadores"
-        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-surface-container-high/80 hover:bg-court-card-hover border border-border-subtle text-text-secondary hover:text-white transition-all text-xs font-semibold uppercase tracking-wider group cursor-pointer">
-        <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
-        <span>Volver al Panel</span>
+        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-court-surface/80 hover:bg-court-card border border-border-subtle/80 text-text-secondary hover:text-white transition-all text-xs font-semibold tracking-wide group cursor-pointer shadow-sm hover:border-primary/40">
+        <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform text-primary">arrow_back</span>
+        <span>Volver al Padrón Institucional</span>
       </a>
 
-      <!-- Homologation Pill Badge -->
-      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-court-surface/90 border border-primary/20 shadow-sm">
-        <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
-        <span class="text-[11px] font-bold tracking-widest text-primary-fixed uppercase">Temporada Oficial 2026 • FJH Homologado</span>
+      <!-- Federation Homologation Live Pill -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-court-surface/90 border border-primary/20 shadow-sm">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
+        </span>
+        <span class="text-[10px] sm:text-[11px] font-bold tracking-widest text-primary-fixed uppercase">
+          Temporada 2026 • CAH / FJH Homologado
+        </span>
       </div>
     </div>
 
-    <!-- Main Header Block with Federation Crest Icon -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-court-surface/80 rounded-2xl border border-border-subtle backdrop-blur-md">
-      <div class="flex items-center gap-4">
-        <div class="w-14 h-14 rounded-2xl bg-[#0B3C5D]/80 border border-primary-container/40 flex items-center justify-center text-primary-container shadow-lg shadow-sky-950/50 shrink-0">
-          <span class="material-symbols-outlined text-3xl">shield</span>
-        </div>
-        <div>
-          <h1 class="text-white font-extrabold text-2xl sm:text-3xl tracking-wide uppercase">
-            {{ isEditMode() ? 'Editar Institución' : 'Nuevo Club / Invitado' }}
-          </h1>
-          <p class="text-text-secondary text-xs sm:text-sm mt-0.5 font-normal">
-            Registro Oficial de Entidades Deportivas • Federación Jujeña de Handball (FJH)
-          </p>
-        </div>
+    <!-- Main Header Card: Elevated Glass Deck -->
+    <div class="relative overflow-hidden p-6 sm:p-8 bg-gradient-to-br from-court-card/90 via-court-surface/95 to-court-base/90 rounded-3xl border border-border-subtle/80 shadow-2xl backdrop-blur-xl">
+      <!-- Background Ambient Watermark -->
+      <div class="absolute -right-8 -bottom-10 opacity-5 pointer-events-none select-none">
+        <span class="material-symbols-outlined text-[200px] text-primary">shield</span>
       </div>
-      <div class="flex items-center gap-2 self-start sm:self-center">
-        <span class="text-xs font-semibold text-text-muted bg-surface-container-low px-3 py-1 rounded-md border border-border-subtle">
-          Código FJH: <strong class="text-primary font-mono font-bold tracking-wider">REG-2026-{{ siglasPreview() }}</strong>
-        </span>
+
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="flex items-start sm:items-center gap-4 sm:gap-5">
+          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-sky-500/20 to-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-lg shadow-sky-950/40 shrink-0">
+            <span class="material-symbols-outlined text-3xl sm:text-4xl">domain_add</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-0.5 rounded-md border border-primary/20">
+                {{ isEditMode() ? 'ACTUALIZACIÓN DE ENTIDAD' : 'NUEVO REGISTRO FEDERATIVO' }}
+              </span>
+              <span class="text-[10px] font-bold text-text-muted bg-white/5 px-2 py-0.5 rounded border border-white/5 font-mono">
+                DIVISIÓN COMPETITIVA
+              </span>
+            </div>
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight uppercase">
+              {{ isEditMode() ? 'Editar Institución Deportiva' : 'Alta de Institución Deportiva' }}
+            </h1>
+            <p class="text-xs sm:text-sm text-text-secondary max-w-xl font-normal leading-relaxed">
+              Inscripción en el padrón federado de la Federación Jujeña de Handball para conformar fixtures, habilitar delegados y registrar planillas oficiales.
+            </p>
+          </div>
+        </div>
+
+        <!-- Dynamic Registry Code Box -->
+        <div class="flex flex-col items-start md:items-end justify-center shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-white/5">
+          <span class="text-[10px] uppercase font-bold tracking-wider text-text-muted mb-1">Identificador Único FJH</span>
+          <div class="inline-flex items-center gap-2 bg-court-base/90 border border-primary/30 px-3.5 py-1.5 rounded-xl shadow-inner">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            <span class="font-mono text-xs sm:text-sm font-extrabold text-white tracking-wider">
+              REG-2026-<strong class="text-primary">{{ siglasPreview() }}</strong>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Main Registration Form Container -->
-  <form [formGroup]="clubForm" (ngSubmit)="onSubmit()" class="bg-court-card/70 backdrop-blur-2xl border border-border-subtle/80 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-10">
+  <!-- 2. Main Registration Form Container -->
+  <form
+    [formGroup]="clubForm"
+    (ngSubmit)="onSubmit()"
+    class="flex flex-col gap-8 bg-court-card/60 backdrop-blur-2xl border border-border-subtle/80 rounded-3xl p-6 sm:p-10 shadow-2xl">
 
-    <!-- SECTION 1: Identidad Institucional & Escudo -->
-    <section class="space-y-6">
-      <div class="flex items-center gap-3 border-b border-border-subtle/80 pb-3">
-        <span class="material-symbols-outlined text-primary-container text-[22px]">sports_handball</span>
-        <h2 class="text-white text-lg sm:text-xl font-bold tracking-tight">1. Identidad Institucional & Escudo</h2>
+    <!-- ======================================================== -->
+    <!-- SECTION 1: Identidad Institucional, Escudo & Afiliación   -->
+    <!-- ======================================================== -->
+    <section class="flex flex-col gap-6">
+      <!-- Section Title Header -->
+      <div class="flex items-center justify-between border-b border-border-subtle/70 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-[18px]">sports_handball</span>
+          </div>
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-white tracking-tight">1. Identidad Institucional & Escudo</h2>
+            <p class="text-[11px] text-text-muted">Nombre formal, acrónimo de competencia y gráficos oficiales de la entidad.</p>
+          </div>
+        </div>
+        <span class="text-[10px] uppercase font-bold tracking-widest text-text-muted bg-court-surface px-2.5 py-1 rounded-md border border-white/5 hidden sm:inline-block">
+          PASO 1 DE 2
+        </span>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        <!-- Left Column: Interactive Crest Uploader & Match Center Micro-Preview -->
-        <div class="lg:col-span-5 flex flex-col items-center gap-5">
+      <!-- Core Identity Grid: Crest Uploader (Left) + Text Inputs (Right) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        
+        <!-- Left: Crest Upload Station & Visual Preview -->
+        <div class="lg:col-span-4 flex flex-col items-center gap-4">
           <div class="w-full">
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 text-center lg:text-left">
-              Escudo Oficial (logoUrl)
-            </label>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[15px] text-primary">image</span>
+                <span>Escudo Oficial</span>
+              </label>
+              <span class="text-[10px] font-bold text-text-muted uppercase">JPG / PNG / SVG</span>
+            </div>
 
-            <!-- Upload Container -->
-            <div class="relative w-full aspect-square max-w-[240px] mx-auto rounded-3xl border-2 border-dashed border-primary-container/40 bg-court-base/90 p-5 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-primary transition-all shadow-inner">
-              <!-- Real File Input -->
+            <!-- Upload Interactive Drop Container -->
+            <div class="relative w-full aspect-square max-w-[220px] mx-auto rounded-3xl border-2 border-dashed border-border-subtle hover:border-primary/60 bg-court-base/80 p-4 flex flex-col items-center justify-center text-center group cursor-pointer transition-all duration-300 shadow-inner overflow-hidden">
+              <!-- Real HTML File Input -->
               <input
                 aria-label="Subir escudo oficial del club"
-                class="absolute inset-0 opacity-0 cursor-pointer z-20"
+                class="absolute inset-0 opacity-0 cursor-pointer z-30 w-full h-full"
                 type="file"
                 accept="image/*"
-                (change)="onFileSelected($event)">
+                (change)="onFileSelected($event)" />
 
-              <!-- Crest Preview Graphic / Placeholder -->
-              <div class="relative w-28 h-28 rounded-2xl bg-surface-container-high/60 border border-border-subtle p-3 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+              <!-- Crest Preview Visual -->
+              <div class="relative w-28 h-28 rounded-2xl bg-court-surface/90 border border-border-subtle/80 p-2.5 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300 overflow-hidden shadow-md">
                 @if (logoPreview()) {
-                <img [src]="logoPreview()" alt="Escudo preview" class="w-full h-full object-contain" />
+                <img [src]="logoPreview()" alt="Escudo preview" class="w-full h-full object-contain drop-shadow-md" />
                 } @else {
-                <div class="w-full h-full rounded-xl flex flex-col items-center justify-center">
-                  <span class="material-symbols-outlined text-5xl text-primary/70 group-hover:text-primary transition-colors">add_photo_alternate</span>
+                <div class="w-full h-full flex flex-col items-center justify-center text-text-muted group-hover:text-primary transition-colors">
+                  <span class="material-symbols-outlined text-4xl mb-1 text-primary/60 group-hover:text-primary transition-colors">shield</span>
+                  <span class="text-[9px] font-bold uppercase tracking-wider text-text-muted">Sin Escudo</span>
                 </div>
                 }
               </div>
 
-              <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-primary text-[11px] font-bold tracking-wide border border-border-subtle group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
+              <!-- Upload Button Pill -->
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-court-surface text-primary text-[11px] font-bold tracking-wide border border-primary/20 group-hover:bg-primary group-hover:text-on-primary transition-colors duration-200 shadow-sm">
                 <span class="material-symbols-outlined text-[14px]">cloud_upload</span>
                 <span>{{ logoPreview() ? 'Cambiar Escudo' : 'Examinar Archivo' }}</span>
               </div>
-              <p class="text-[11px] text-text-muted mt-2 font-light">PNG/SVG/JPG • Máx 5MB</p>
+              <p class="text-[10px] text-text-muted mt-2 font-medium">Recomendado formato PNG transparente (Máx. 5 MB)</p>
 
-              <!-- Edit Action Pill -->
+              <!-- Success Check Pill if Loaded -->
               @if (logoPreview()) {
-              <div class="absolute top-3 right-3 flex items-center gap-1 z-10">
-                <div class="w-7 h-7 rounded-lg bg-surface-container-high/90 border border-border-subtle text-primary flex items-center justify-center shadow-md">
-                  <span class="material-symbols-outlined text-[15px]">check</span>
+              <div class="absolute top-3 right-3 flex items-center gap-1 z-20">
+                <div class="w-6 h-6 rounded-full bg-tertiary/20 border border-tertiary text-tertiary flex items-center justify-center shadow-md">
+                  <span class="material-symbols-outlined text-[14px]">check</span>
                 </div>
               </div>
               }
             </div>
           </div>
-
-          <!-- Micro-Preview: Live Match Center Scoreboard Demo -->
-          <div class="w-full max-w-[280px] bg-court-base/90 border border-border-subtle rounded-xl p-3.5 shadow-md">
-            <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-white/5">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-text-muted flex items-center gap-1">
-                <span class="material-symbols-outlined text-[12px] text-tertiary">visibility</span>
-                Match Center Preview
-              </span>
-              <span class="text-[9px] font-bold text-accent-amber uppercase px-1.5 py-0.5 rounded bg-accent-amber/10 border border-accent-amber/20">En Vivo</span>
-            </div>
-
-            <!-- Mini Live Score Chip -->
-            <div class="flex items-center justify-between bg-surface-container-low px-3 py-2 rounded-lg border border-border-subtle/50">
-              <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-md bg-sky-900/60 border border-primary/30 flex items-center justify-center text-[10px] font-black text-primary overflow-hidden">
-                  @if (logoPreview()) {
-                  <img [src]="logoPreview()" class="w-full h-full object-contain p-0.5" />
-                  } @else {
-                  {{ siglasPreview().slice(0, 3) }}
-                  }
-                </div>
-                <span class="font-bold text-xs text-white tracking-tight">{{ siglasPreview() }}</span>
-              </div>
-              <div class="flex items-center gap-1.5 font-mono">
-                <span class="text-sm font-black text-white">24</span>
-                <span class="text-xs text-text-muted font-bold">-</span>
-                <span class="text-sm font-black text-text-secondary">22</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-xs text-text-secondary tracking-tight">CIAF</span>
-                <div class="w-6 h-6 rounded-md bg-secondary-container/40 border border-secondary/30 flex items-center justify-center text-[10px] font-black text-secondary">
-                  CIAF
-                </div>
-              </div>
-            </div>
-            <p class="text-[10px] text-center text-text-muted mt-2">Aspecto proporcional en marcadores oficiales FJH</p>
-          </div>
         </div>
 
-        <!-- Right Column: Institutional Identity Fields -->
-        <div class="lg:col-span-7 space-y-5">
-          <!-- Nombre de la Institución (nombre) -->
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-1.5" for="nombre">
-              Nombre Oficial de la Institución <span class="text-accent-crimson-deep">*</span>
-            </label>
+        <!-- Right: Institutional Identity Inputs -->
+        <div class="lg:col-span-8 flex flex-col gap-5">
+          <!-- 1. Nombre Oficial de la Institución -->
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center gap-1" for="nombre">
+                <span>Nombre Oficial de la Institución</span>
+                <span class="text-accent-crimson-deep font-black">*</span>
+              </label>
+              <span class="text-[10px] text-text-muted">Nombre legal completo</span>
+            </div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-text-muted">
-                <span class="material-symbols-outlined text-[20px]">domain</span>
+                <span class="material-symbols-outlined text-[19px]">domain</span>
               </div>
               <input
                 id="nombre"
                 type="text"
                 formControlName="nombre"
                 placeholder="Ej: Club Atlético Gorriti"
-                class="w-full pl-11 pr-4 py-3 bg-court-base border border-border-subtle rounded-xl text-white placeholder-text-muted/60 text-sm font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" />
+                class="w-full pl-11 pr-4 py-3 bg-court-base/90 border border-border-subtle rounded-xl text-white placeholder-text-muted/50 text-sm font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-inner" />
             </div>
             @if (clubForm.get('nombre')?.touched && clubForm.get('nombre')?.invalid) {
-            <p class="text-[11px] text-accent-crimson-deep mt-1 font-body-bold">El nombre oficial de la institución es obligatorio.</p>
+            <p class="text-[11px] text-accent-crimson-deep font-semibold flex items-center gap-1 mt-0.5 animate-fade-in">
+              <span class="material-symbols-outlined text-[14px]">error</span>
+              <span>El nombre oficial de la institución es obligatorio (mínimo 2 letras).</span>
+            </p>
             }
           </div>
 
-          <!-- Siglas Oficiales (siglas) -->
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-1.5" for="siglas">
-              Siglas Oficiales <span class="text-accent-crimson-deep">*</span>
-            </label>
-            <input
-              id="siglas"
-              type="text"
-              maxlength="5"
-              formControlName="siglas"
-              placeholder="CAG"
-              class="w-full text-center py-3 bg-court-base border border-border-subtle rounded-xl text-primary font-bold text-lg tracking-widest placeholder-text-muted/40 uppercase focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" />
+          <!-- 2. Siglas Oficiales (Acrónimo para Tablas y Planillas) -->
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center gap-1" for="siglas">
+                <span>Siglas Oficiales de Juego</span>
+                <span class="text-accent-crimson-deep font-black">*</span>
+              </label>
+              <span class="text-[10px] text-text-muted">Máx. 5 letras alfanuméricas</span>
+            </div>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-text-muted">
+                <span class="material-symbols-outlined text-[19px]">badge</span>
+              </div>
+              <input
+                id="siglas"
+                type="text"
+                maxlength="5"
+                formControlName="siglas"
+                placeholder="CAG"
+                class="w-full pl-11 pr-4 py-3 bg-court-base/90 border border-border-subtle rounded-xl text-primary font-mono font-bold text-base tracking-widest placeholder-text-muted/40 uppercase focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-inner" />
+            </div>
             @if (clubForm.get('siglas')?.touched && clubForm.get('siglas')?.invalid) {
-            <p class="text-[11px] text-accent-crimson-deep mt-1 text-center font-body-bold">Siglas requeridas (máximo 5 caracteres alfanuméricos).</p>
+            <p class="text-[11px] text-accent-crimson-deep font-semibold flex items-center gap-1 mt-0.5 animate-fade-in">
+              <span class="material-symbols-outlined text-[14px]">error</span>
+              <span>Siglas requeridas (1 a 5 caracteres alfanuméricos, sin espacios).</span>
+            </p>
             } @else {
-            <p class="text-[11px] text-text-muted mt-1 text-center">Máximo 4 o 5 caracteres para tablas y marcadores.</p>
+            <p class="text-[10px] text-text-muted mt-0.5">
+              Utilizadas en la tabla de posiciones, planilla de arbitraje y cronómetro de mesa.
+            </p>
             }
           </div>
 
-          <!-- Tipo de Afiliación (esInvitado) -->
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2">
-              Categoría Institucional (esInvitado) <span class="text-accent-crimson-deep">*</span>
-            </label>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <!-- Option: Afiliado Pleno (esInvitado: false) -->
-              <div
-                (click)="setEsInvitado(false)"
-                class="relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all"
-                [class.border-tertiary]="!clubForm.get('esInvitado')?.value"
-                [class.bg-court-base]="!clubForm.get('esInvitado')?.value"
-                [class.shadow-lg]="!clubForm.get('esInvitado')?.value"
-                [class.shadow-tertiary-10]="!clubForm.get('esInvitado')?.value"
-                [class.border-border-subtle]="clubForm.get('esInvitado')?.value"
-                [class.bg-court-base-40]="clubForm.get('esInvitado')?.value">
-                <div class="flex items-center justify-between mb-2">
-                  <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-tertiary text-xl">verified</span>
-                    <span class="font-bold text-white text-sm">Club Afiliado Pleno</span>
-                  </div>
-                  <span
-                    class="w-3.5 h-3.5 rounded-full transition-all"
-                    [class.bg-tertiary]="!clubForm.get('esInvitado')?.value"
-                    [class.border]="clubForm.get('esInvitado')?.value"
-                    [class.border-border-subtle]="clubForm.get('esInvitado')?.value"></span>
+          <!-- 3. Previsualización en Vivo: Live Match Center Demo Card -->
+          <div class="mt-1 p-3.5 bg-court-base/80 border border-border-subtle/80 rounded-2xl shadow-inner flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-text-muted flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[14px] text-tertiary">sports_score</span>
+                <span>Previsualización en Marcador Oficial en Vivo</span>
+              </span>
+              <span class="text-[9px] font-bold text-accent-amber uppercase px-2 py-0.5 rounded-full bg-accent-amber/10 border border-accent-amber/20 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-accent-amber animate-pulse"></span>
+                <span>MATCH CENTER</span>
+              </span>
+            </div>
+
+            <!-- Scoreboard Pill -->
+            <div class="flex items-center justify-between bg-court-surface px-4 py-2.5 rounded-xl border border-white/5">
+              <!-- Team Preview (Local) -->
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-7 h-7 rounded-lg bg-sky-950/60 border border-primary/30 flex items-center justify-center text-[10px] font-black text-primary overflow-hidden shrink-0">
+                  @if (logoPreview()) {
+                  <img [src]="logoPreview()" alt="Logo preview" class="w-full h-full object-contain p-0.5" />
+                  } @else {
+                  <span>{{ siglasPreview().slice(0, 3) }}</span>
+                  }
                 </div>
-                <span class="inline-block px-2 py-0.5 rounded bg-tertiary/15 text-tertiary text-[10px] font-bold w-fit mb-1 border border-tertiary/30">
-                  esInvitado: false
-                </span>
-                <p class="text-[11px] text-text-secondary leading-relaxed">
-                  Club federado regular con delegado, autogestión de fichajes y participación en torneos oficiales.
-                </p>
+                <div class="flex flex-col min-w-0">
+                  <span class="font-extrabold text-xs text-white tracking-tight truncate">
+                    {{ clubForm.get('nombre')?.value || 'Club Registrado' }}
+                  </span>
+                  <span class="text-[9px] font-bold text-primary font-mono">{{ siglasPreview() }}</span>
+                </div>
               </div>
 
-              <!-- Option: Equipo Invitado (esInvitado: true) -->
-              <div
-                (click)="setEsInvitado(true)"
-                class="relative flex flex-col p-4 rounded-xl border cursor-pointer transition-all"
-                [class.border-accent-amber]="clubForm.get('esInvitado')?.value"
-                [class.bg-court-base]="clubForm.get('esInvitado')?.value"
-                [class.shadow-lg]="clubForm.get('esInvitado')?.value"
-                [class.shadow-amber-500-10]="clubForm.get('esInvitado')?.value"
-                [class.border-border-subtle]="!clubForm.get('esInvitado')?.value"
-                [class.bg-court-base-40]="!clubForm.get('esInvitado')?.value">
-                <div class="flex items-center justify-between mb-2">
-                  <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-accent-amber text-xl">stars</span>
-                    <span class="font-bold text-text-secondary text-sm">Equipo Invitado</span>
-                  </div>
-                  <span
-                    class="w-3.5 h-3.5 rounded-full transition-all"
-                    [class.bg-accent-amber]="clubForm.get('esInvitado')?.value"
-                    [class.border]="!clubForm.get('esInvitado')?.value"
-                    [class.border-border-subtle]="!clubForm.get('esInvitado')?.value"></span>
-                </div>
-                <span class="inline-block px-2 py-0.5 rounded bg-accent-amber/10 text-accent-amber text-[10px] font-bold w-fit mb-1 border border-accent-amber/30">
-                  esInvitado: true
-                </span>
-                <p class="text-[11px] text-text-muted leading-relaxed">
-                  Equipo o municipio invitado por torneo/temporada. No requiere login obligatorio.
-                </p>
+              <!-- Score Simulation -->
+              <div class="flex items-center gap-2 font-mono px-3 shrink-0">
+                <span class="text-base font-black text-white">26</span>
+                <span class="text-xs text-text-muted font-bold">:</span>
+                <span class="text-base font-black text-text-secondary">24</span>
               </div>
+
+              <!-- Rival Demonstration -->
+              <div class="flex items-center gap-2.5 shrink-0">
+                <div class="flex flex-col text-right">
+                  <span class="font-extrabold text-xs text-text-secondary">CIAF</span>
+                  <span class="text-[9px] font-bold text-text-muted font-mono">VISITA</span>
+                </div>
+                <div class="w-7 h-7 rounded-lg bg-secondary-container/40 border border-secondary/30 flex items-center justify-center text-[10px] font-black text-secondary shrink-0">
+                  CIAF
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Tipo de Afiliación Institucional (esInvitado Selector) -->
+      <div class="flex flex-col gap-3 pt-3 border-t border-border-subtle/50">
+        <div>
+          <label class="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center gap-1">
+            <span>Categoría Institucional / Modalidad de Afiliación</span>
+            <span class="text-accent-crimson-deep font-black">*</span>
+          </label>
+          <p class="text-[11px] text-text-muted mt-0.5">
+            Seleccione el régimen de afiliación para determinar los derechos competitivos y de gestión de la entidad.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Option 1: Afiliado Pleno (esInvitado: false) -->
+          <div
+            (click)="setEsInvitado(false)"
+            class="relative flex flex-col p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 select-none group"
+            [class.border-tertiary]="!clubForm.get('esInvitado')?.value"
+            [class.bg-court-base]="!clubForm.get('esInvitado')?.value"
+            [class.shadow-xl]="!clubForm.get('esInvitado')?.value"
+            [class.border-border-subtle]="clubForm.get('esInvitado')?.value"
+            [class.bg-court-base/40]="clubForm.get('esInvitado')?.value"
+            [class.hover:border-border-subtle/80]="clubForm.get('esInvitado')?.value">
+            
+            <div class="flex items-start justify-between gap-3 mb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div
+                  class="w-8 h-8 rounded-xl flex items-center justify-center transition-colors"
+                  [class.bg-tertiary/20]="!clubForm.get('esInvitado')?.value"
+                  [class.text-tertiary]="!clubForm.get('esInvitado')?.value"
+                  [class.bg-white/5]="clubForm.get('esInvitado')?.value"
+                  [class.text-text-muted]="clubForm.get('esInvitado')?.value">
+                  <span class="material-symbols-outlined text-[20px]">verified</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-extrabold text-sm text-white tracking-tight">Club Afiliado Pleno</span>
+                  <span class="text-[10px] font-bold text-tertiary uppercase">Afiliación Regular FJH</span>
+                </div>
+              </div>
+
+              <!-- Radio Indicator Checkbox -->
+              <div
+                class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0 mt-0.5"
+                [class.border-tertiary]="!clubForm.get('esInvitado')?.value"
+                [class.bg-tertiary]="!clubForm.get('esInvitado')?.value"
+                [class.border-border-subtle]="clubForm.get('esInvitado')?.value">
+                @if (!clubForm.get('esInvitado')?.value) {
+                <span class="w-2 h-2 rounded-full bg-court-base"></span>
+                }
+              </div>
+            </div>
+
+            <p class="text-xs text-text-secondary leading-relaxed mb-3">
+              Entidad federada de pleno derecho. Cuenta con usuario delegado propio, autogestión de listas de buena fe, pases interclubes y acceso al campeonato anual.
+            </p>
+
+            <div class="mt-auto pt-2.5 border-t border-white/5 flex items-center justify-between text-[10px]">
+              <span class="text-tertiary font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-[13px]">check_circle</span>
+                <span>Login obligatorio de delegado</span>
+              </span>
+              <span class="text-text-muted font-mono font-semibold">esInvitado: false</span>
+            </div>
+          </div>
+
+          <!-- Option 2: Equipo Invitado (esInvitado: true) -->
+          <div
+            (click)="setEsInvitado(true)"
+            class="relative flex flex-col p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 select-none group"
+            [class.border-accent-amber]="clubForm.get('esInvitado')?.value"
+            [class.bg-court-base]="clubForm.get('esInvitado')?.value"
+            [class.shadow-xl]="clubForm.get('esInvitado')?.value"
+            [class.border-border-subtle]="!clubForm.get('esInvitado')?.value"
+            [class.bg-court-base/40]="!clubForm.get('esInvitado')?.value"
+            [class.hover:border-border-subtle/80]="!clubForm.get('esInvitado')?.value">
+            
+            <div class="flex items-start justify-between gap-3 mb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div
+                  class="w-8 h-8 rounded-xl flex items-center justify-center transition-colors"
+                  [class.bg-accent-amber/20]="clubForm.get('esInvitado')?.value"
+                  [class.text-accent-amber]="clubForm.get('esInvitado')?.value"
+                  [class.bg-white/5]="!clubForm.get('esInvitado')?.value"
+                  [class.text-text-muted]="!clubForm.get('esInvitado')?.value">
+                  <span class="material-symbols-outlined text-[20px]">stars</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-extrabold text-sm text-white tracking-tight">Equipo Invitado</span>
+                  <span class="text-[10px] font-bold text-accent-amber uppercase">Invitación por Torneo</span>
+                </div>
+              </div>
+
+              <!-- Radio Indicator Checkbox -->
+              <div
+                class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0 mt-0.5"
+                [class.border-accent-amber]="clubForm.get('esInvitado')?.value"
+                [class.bg-accent-amber]="clubForm.get('esInvitado')?.value"
+                [class.border-border-subtle]="!clubForm.get('esInvitado')?.value">
+                @if (clubForm.get('esInvitado')?.value) {
+                <span class="w-2 h-2 rounded-full bg-court-base"></span>
+                }
+              </div>
+            </div>
+
+            <p class="text-xs text-text-secondary leading-relaxed mb-3">
+              Equipo municipal, escolar o interprovincial invitado para competir en copas especiales. No requiere cuota federativa anual ni credenciales de autogestión.
+            </p>
+
+            <div class="mt-auto pt-2.5 border-t border-white/5 flex items-center justify-between text-[10px]">
+              <span class="text-accent-amber font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-[13px]">info</span>
+                <span>Credenciales opcionales</span>
+              </span>
+              <span class="text-text-muted font-mono font-semibold">esInvitado: true</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 2: Credenciales de Acceso para Delegados (username & password) -->
-    <section class="space-y-4 pt-2">
-      <div class="flex items-center gap-3 border-b border-border-subtle/80 pb-3">
-        <span class="material-symbols-outlined text-primary-container text-[22px]">badge</span>
-        <h2 class="text-white text-lg sm:text-xl font-bold tracking-tight">2. Credenciales de Acceso (Delegado)</h2>
+    <!-- ======================================================== -->
+    <!-- SECTION 2: Credenciales de Acceso para Delegados          -->
+    <!-- ======================================================== -->
+    <section class="flex flex-col gap-6 pt-4">
+      <!-- Section Title Header -->
+      <div class="flex items-center justify-between border-b border-border-subtle/70 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-[18px]">badge</span>
+          </div>
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-white tracking-tight">2. Credenciales de Acceso (Delegado)</h2>
+            <p class="text-[11px] text-text-muted">Cuenta oficial para el portal de autogestión y mesa de control.</p>
+          </div>
+        </div>
+
         @if (esInvitado()) {
-        <span class="px-2.5 py-0.5 rounded-full bg-accent-amber/20 text-accent-amber text-[10px] font-bold uppercase tracking-wider ml-auto">
-          Opcional para Invitados
+        <span class="px-3 py-1 rounded-full bg-accent-amber/15 text-accent-amber text-[10px] font-extrabold uppercase tracking-wider border border-accent-amber/30">
+          OPCIONAL PARA INVITADOS
+        </span>
+        } @else {
+        <span class="px-3 py-1 rounded-full bg-primary/15 text-primary text-[10px] font-extrabold uppercase tracking-wider border border-primary/30">
+          OBLIGATORIO PARA AFILIADOS
         </span>
         }
       </div>
 
-      <div class="bg-court-base/90 border border-border-subtle rounded-2xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
-        <!-- Subtle Accent Stripe -->
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 via-tertiary to-sky-600"></div>
+      <!-- Credential Card Container -->
+      <div class="relative overflow-hidden bg-court-base/80 border border-border-subtle/90 rounded-2xl p-6 sm:p-8 flex flex-col gap-6 shadow-inner">
+        <!-- Top Accent Subtle Glow Line -->
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 via-primary to-blue-600"></div>
 
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h3 class="text-white font-bold text-base flex items-center gap-2">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex flex-col gap-0.5">
+            <h3 class="text-white font-extrabold text-sm sm:text-base flex items-center gap-2">
               <span class="material-symbols-outlined text-primary text-[20px]">lock</span>
-              Portal de Autogestión Institucional FJH
+              <span>Portal de Autogestión Institucional FJH</span>
             </h3>
-            <p class="text-text-muted text-xs">
-              {{ esInvitado() ? 'Credenciales opcionales si el equipo invitado requiere autogestión.' : 'Cuenta para que el cuerpo dirigencial gestione planillas y fichajes.' }}
+            <p class="text-xs text-text-muted">
+              {{ esInvitado() ? 'Credenciales opcionales. Complete estos campos solo si el equipo invitado gestionará atletas en el sistema.' : 'Permite al cuerpo dirigencial del club inscribir jugadores, cargar aptos médicos y consultar el estado del padrón.' }}
             </p>
           </div>
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold">
-            <span class="material-symbols-outlined text-[14px]">verified</span>
-            Acceso Seguro
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold shrink-0 self-start sm:self-center">
+            <span class="material-symbols-outlined text-[14px]">shield</span>
+            <span>Acceso Seguro Encriptado</span>
           </span>
         </div>
 
         <!-- Credential Fields Grid: username & password -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <!-- Usuario / Delegado (username) -->
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-1.5" for="username">
-              Usuario Delegado (username) @if (!esInvitado()) { <span class="text-accent-crimson-deep">*</span> }
-            </label>
+          <!-- 1. Usuario Delegado (username) -->
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center gap-1" for="username">
+                <span>Usuario Delegado (username)</span>
+                @if (!esInvitado()) { <span class="text-accent-crimson-deep font-black">*</span> }
+              </label>
+              <span class="text-[10px] text-text-muted">Formato login</span>
+            </div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-text-muted">
-                <span class="material-symbols-outlined text-[20px]">person</span>
+                <span class="material-symbols-outlined text-[19px]">person</span>
               </div>
               <input
                 id="username"
                 type="text"
                 formControlName="username"
                 placeholder="delegado_gorriti"
-                class="w-full pl-11 pr-4 py-3 bg-surface-container-low border border-border-subtle rounded-xl text-white placeholder-text-muted/60 text-sm font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono" />
+                class="w-full pl-11 pr-4 py-3 bg-court-surface/90 border border-border-subtle rounded-xl text-white placeholder-text-muted/50 text-sm font-mono font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-inner" />
             </div>
             @if (clubForm.get('username')?.touched && clubForm.get('username')?.invalid && !esInvitado()) {
-            <p class="text-[11px] text-accent-crimson-deep mt-1 font-body-bold">El nombre de usuario es obligatorio (mínimo 3 caracteres).</p>
+            <p class="text-[11px] text-accent-crimson-deep font-semibold flex items-center gap-1 mt-0.5 animate-fade-in">
+              <span class="material-symbols-outlined text-[14px]">error</span>
+              <span>El nombre de usuario es obligatorio (mínimo 3 caracteres).</span>
+            </p>
             }
           </div>
 
-          <!-- Contraseña de Acceso (password) -->
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-1.5" for="password">
-              Contraseña de Acceso (password) @if (!esInvitado() && !isEditMode()) { <span class="text-accent-crimson-deep">*</span> }
-            </label>
+          <!-- 2. Contraseña de Acceso (password) -->
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center gap-1" for="password">
+                <span>Contraseña de Acceso (password)</span>
+                @if (!esInvitado() && !isEditMode()) { <span class="text-accent-crimson-deep font-black">*</span> }
+              </label>
+              <span class="text-[10px] text-text-muted">{{ isEditMode() ? 'Opcional en edición' : 'Mín. 6 caracteres' }}</span>
+            </div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-text-muted">
-                <span class="material-symbols-outlined text-[20px]">lock</span>
+                <span class="material-symbols-outlined text-[19px]">key</span>
               </div>
               <input
                 id="password"
                 [type]="showPassword() ? 'text' : 'password'"
                 formControlName="password"
                 placeholder="••••••••••••"
-                class="w-full pl-11 pr-12 py-3 bg-surface-container-low border border-border-subtle rounded-xl text-white placeholder-text-muted/60 text-sm font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" />
+                class="w-full pl-11 pr-12 py-3 bg-court-surface/90 border border-border-subtle rounded-xl text-white placeholder-text-muted/50 text-sm font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-inner" />
               <button
                 (click)="togglePassword()"
                 type="button"
-                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-text-muted hover:text-white transition-colors cursor-pointer"
+                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-text-muted hover:text-white transition-colors cursor-pointer active:scale-95"
                 title="Mostrar/Ocultar Contraseña">
                 <span class="material-symbols-outlined text-[20px]">
                   {{ showPassword() ? 'visibility_off' : 'visibility' }}
@@ -349,44 +526,53 @@
               </button>
             </div>
             @if (clubForm.get('password')?.touched && clubForm.get('password')?.invalid && !esInvitado() && !isEditMode()) {
-            <p class="text-[11px] text-accent-crimson-deep mt-1 font-body-bold">La contraseña es obligatoria (mínimo 6 caracteres).</p>
+            <p class="text-[11px] text-accent-crimson-deep font-semibold flex items-center gap-1 mt-0.5 animate-fade-in">
+              <span class="material-symbols-outlined text-[14px]">error</span>
+              <span>La contraseña es obligatoria (mínimo 6 caracteres).</span>
+            </p>
             } @else if (isEditMode()) {
-            <p class="text-[11px] text-text-muted mt-1">Dejar en blanco para conservar la contraseña actual.</p>
+            <p class="text-[10px] text-text-muted mt-0.5">
+              Dejar este campo en blanco para conservar la contraseña actual sin modificaciones.
+            </p>
             }
           </div>
         </div>
 
-        <!-- Tip / Guidance Banner -->
+        <!-- Tip / Security Guidance Banner -->
         <div class="bg-primary/10 border border-primary/20 rounded-xl p-3.5 flex items-start sm:items-center gap-3 text-xs text-primary-fixed">
           <span class="material-symbols-outlined text-[20px] text-primary shrink-0 mt-0.5 sm:mt-0">info</span>
           <p class="leading-relaxed">
-            Las credenciales permiten al delegado iniciar sesión en el portal para presentar listas de buena fe y gestionar transferencias federativas.
+            Las credenciales de acceso institucional permiten ingresar al portal de delegados (<strong class="text-white">/club/jugadores</strong>) para inscribir deportistas y presentar listas de buena fe en cada torneo.
           </p>
         </div>
       </div>
     </section>
 
-    <!-- Action Footer -->
+    <!-- ======================================================== -->
+    <!-- Action Deck & Footer                                      -->
+    <!-- ======================================================== -->
     <footer class="pt-6 border-t border-border-subtle/80 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-2 text-text-muted text-xs text-center sm:text-left">
-        <span class="text-accent-crimson-deep font-bold text-sm">*</span>
-        <span>Campos obligatorios según el modelo institucional FJH / CAH.</span>
+        <span class="text-accent-crimson-deep font-black text-sm">*</span>
+        <span>Campos obligatorios requeridos según las normativas vigentes FJH / CAH.</span>
       </div>
 
       <div class="flex items-center gap-3 w-full sm:w-auto">
+        <!-- Cancel Action -->
         <a
           routerLink="/admin/jugadores"
-          class="flex-1 sm:flex-none px-6 py-3 rounded-xl border border-border-subtle text-text-secondary hover:text-white hover:bg-surface-container transition-all font-semibold text-sm text-center cursor-pointer">
+          class="flex-1 sm:flex-none px-6 py-3 rounded-xl border border-border-subtle/80 text-text-secondary hover:text-white hover:bg-court-card hover:border-white/20 transition-all font-bold text-xs uppercase tracking-wider text-center cursor-pointer shadow-sm active:scale-95">
           Cancelar
         </a>
 
+        <!-- Submit Primary Action -->
         <button
           type="submit"
           [disabled]="loading()"
-          class="flex-1 sm:flex-none px-8 py-3 rounded-xl bg-accent-cyan-deep hover:bg-sky-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-sky-600/30 hover:shadow-sky-500/50 transition-all cursor-pointer disabled:opacity-50">
+          class="flex-1 sm:flex-none px-8 py-3 rounded-xl bg-gradient-to-r from-sky-500 via-primary-container to-blue-600 hover:brightness-110 text-on-primary-container font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-sky-600/30 hover:shadow-sky-500/50 transition-all cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
           @if (loading()) {
           <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          <span>Guardando...</span>
+          <span>Guardando Registro...</span>
           } @else {
           <span class="material-symbols-outlined text-[18px]">cloud_upload</span>
           <span>{{ isEditMode() ? 'Actualizar Institución' : 'Guardar Institución' }}</span>
@@ -398,9 +584,9 @@
   </form>
 
   <!-- Bottom Institutional Footer Info -->
-  <footer class="text-center pb-6 text-xs text-text-muted">
+  <footer class="text-center pb-8 text-xs text-text-muted flex flex-col items-center gap-1">
     <p>© 2026 Federación Jujeña de Handball (FJH) • Afiliada a la Confederación Argentina de Handball (CAH)</p>
-    <p class="mt-1 text-[11px]">Sistema Oficial de Gestión Deportiva</p>
+    <p class="text-[11px] text-text-muted/70">Sistema Oficial de Gestión Deportiva e Institucional</p>
   </footer>
 
 </main>

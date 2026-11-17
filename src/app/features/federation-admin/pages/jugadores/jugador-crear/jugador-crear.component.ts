@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { environment } from '../../../../../../environments/environment';
 import { Club, ClubesService } from '../../../../../core/services/clubes.service';
 import { Jugador, JugadoresService } from '../../../../../core/services/jugadores.service';
 import { AuthService } from '../../../../../core/services/auth.service';
@@ -32,6 +33,8 @@ export class JugadorCrearComponent implements OnInit {
   jugadorId: string | null = null;
   errorMessage = '';
   isAdmin = true;
+  isClub = false;
+  userClubId: string | null = null;
   saving = false;
   loading = false;
   intentoGuardar = false;
@@ -94,6 +97,17 @@ export class JugadorCrearComponent implements OnInit {
 
   ngOnInit() {
     this.isAdmin = this.auth.isAdmin ? this.auth.isAdmin() : true;
+    this.isClub = this.auth.isClub ? this.auth.isClub() : false;
+    const currentUser = this.auth.currentUser();
+    this.userClubId = currentUser?.id || null;
+
+    // Si es un Club o Delegado Oficial, asignar forzadamente su propio club
+    if (this.isClub && this.userClubId) {
+      this.jugadorData.clubId = this.userClubId;
+      if (currentUser?.nombre) {
+        this.clubNombre = currentUser.nombre;
+      }
+    }
 
     this.jugadorId =
       this.route.snapshot.paramMap.get('id') ||
@@ -111,7 +125,7 @@ export class JugadorCrearComponent implements OnInit {
 
     this.sub.add(
       this.route.queryParams.subscribe((params) => {
-        if (params['clubId'] && !this.jugadorData.clubId) {
+        if (!this.isClub && params['clubId'] && !this.jugadorData.clubId) {
           this.jugadorData.clubId = params['clubId'];
           this.buscarNombreClub(params['clubId']);
         }
@@ -232,6 +246,7 @@ export class JugadorCrearComponent implements OnInit {
 
   onClubChange(id: string) {
     this.jugadorData.clubId = id;
+    this.clubLogoFailed = false;
     this.buscarNombreClub(id);
   }
 
@@ -621,6 +636,10 @@ export class JugadorCrearComponent implements OnInit {
       return;
     }
 
+    if (this.isClub && this.userClubId) {
+      this.jugadorData.clubId = this.userClubId;
+    }
+
     if (!this.jugadorData.clubId) {
       this.errorMessage = 'Debe seleccionar un club o equipo asignado.';
       this.mostrarToast(this.errorMessage, 'error');
@@ -702,7 +721,8 @@ export class JugadorCrearComponent implements OnInit {
           this.isEditMode ? '¡Expediente del atleta actualizado con éxito!' : '¡Atleta registrado con éxito en el padrón federativo!',
           'success',
         );
-        setTimeout(() => this.router.navigate(['/admin/jugadores']), 1200);
+        const destination = this.isClub ? '/club/jugadores' : '/admin/jugadores';
+        setTimeout(() => this.router.navigate([destination]), 1200);
       },
       error: (err) => {
         this.saving = false;
@@ -734,6 +754,26 @@ export class JugadorCrearComponent implements OnInit {
     if (!c) return 'FJH';
     if (c.siglas) return c.siglas;
     return c.nombre.slice(0, 3).toUpperCase();
+  }
+
+  getClubLogoUrl(logoUrl?: string | null): string {
+    if (!logoUrl) return '';
+    if (logoUrl.startsWith('http://') || logoUrl.startsWith('https://')) {
+      return logoUrl;
+    }
+    return `${environment.serverUrl}${logoUrl.startsWith('/') ? '' : '/'}${logoUrl}`;
+  }
+
+  hasValidLogo(c?: Club | null): boolean {
+    if (!c || !c.logoUrl) return false;
+    return !this.clubLogoFailed;
+  }
+
+  clubLogoFailed = false;
+
+  onClubLogoError(): void {
+    this.clubLogoFailed = true;
+    this.cdr.detectChanges();
   }
 
   ngOnDestroy() {

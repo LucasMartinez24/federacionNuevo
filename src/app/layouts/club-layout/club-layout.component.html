@@ -1,0 +1,238 @@
+<div class="min-h-screen flex bg-court-base text-on-surface font-body-base antialiased">
+  <!-- Backdrop móvil -->
+  @if (sidebarOpen()) {
+  <div (click)="closeSidebar()" class="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden transition-opacity">
+  </div>
+  }
+
+  <!-- SIDEBAR (Barra Lateral Portal Club Afiliado) -->
+  <aside
+    class="fixed top-0 bottom-0 left-0 z-50 w-72 bg-court-surface border-r border-border-subtle/60 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0"
+    [class.-translate-x-full]="!sidebarOpen()" [class.translate-x-0]="sidebarOpen()">
+
+    <!-- Top Brand & Club Ident -->
+    <div class="flex flex-col">
+      <div class="h-20 px-6 flex items-center justify-between border-b border-border-subtle/50 bg-court-card/40">
+        <a routerLink="/club/fixture" class="flex items-center gap-3 group">
+          <img src="/img/logo.png" alt="FJH Logo"
+            class="h-10 w-auto object-contain drop-shadow-[0_0_12px_rgba(56,189,248,0.3)] transform transition-transform group-hover:scale-105" />
+          <div class="flex flex-col">
+            <span class="font-title-sm text-[13px] text-text-primary font-extrabold tracking-tight leading-tight">
+              FEDERACIÓN JUJEÑA
+            </span>
+            <span class="font-stat-label text-[9px] text-primary uppercase tracking-widest">
+              PORTAL DE CLUB • FJH
+            </span>
+          </div>
+        </a>
+
+        <!-- Botón de cierre móvil -->
+        <button (click)="closeSidebar()"
+          class="lg:hidden p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-court-card transition-colors"
+          type="button">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <!-- Tarjeta distintiva del Club / Credencial Activa -->
+      <div
+        class="p-4 mx-4 mt-4 rounded-xl bg-gradient-to-br from-court-card/80 to-surface-container-high/60 border border-primary/20 shadow-lg relative overflow-hidden group">
+        <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-primary/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="flex items-center gap-3 relative z-10">
+          @if (hasValidLogo(currentUser())) {
+          <img [src]="getClubLogoUrl(clubLogo())" [alt]="currentUser()?.nombre || clubName()"
+            (error)="onClubLogoError(currentUser()?.id)"
+            class="w-10 h-10 rounded-xl object-contain bg-court-base/80 p-1 border border-white/10 shrink-0 group-hover:scale-105 transition-transform shadow-md" />
+          } @else {
+          <div
+            class="w-10 h-10 rounded-xl bg-court-card-active border border-primary/25 text-primary flex items-center justify-center font-stat-label text-xs font-extrabold shrink-0 shadow-sm tracking-wide">
+            {{ getClubInitials(currentUser()) }}
+          </div>
+          }
+
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5">
+              <span class="relative flex h-2 w-2">
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
+              </span>
+              <span class="text-[9px] font-black uppercase tracking-widest text-tertiary">
+                Licencia Activa
+              </span>
+            </div>
+            <h2 class="text-sm font-extrabold text-white truncate leading-tight mt-0.5">
+              {{ clubName() }}
+            </h2>
+            <p class="text-[10px] text-text-muted font-medium truncate">
+              Afiliado Oficial 2026
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Menus Container -->
+      <nav class="p-4 flex flex-col gap-5 overflow-y-auto max-h-[calc(100vh-280px)] custom-scrollbar">
+        @for (group of navGroups; track group.label) {
+        <div class="flex flex-col gap-1">
+          <span class="px-3 text-[10px] font-stat-label text-text-muted uppercase tracking-widest">
+            {{ group.label }}
+          </span>
+
+          <div class="flex flex-col gap-0.5 mt-1">
+            @for (item of group.items; track item.label) {
+            <a [routerLink]="item.route" (click)="closeSidebar()"
+              routerLinkActive="bg-primary-container/15 text-primary border-l-2 border-primary shadow-[0_0_15px_rgba(56,189,248,0.15)] font-body-bold"
+              [routerLinkActiveOptions]="{ exact: false }"
+              class="flex items-center justify-between px-3 py-2.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-court-card font-body-medium text-[13px] transition-all group">
+              <div class="flex items-center gap-3 min-w-0">
+                <span
+                  class="material-symbols-outlined text-[20px] text-text-muted group-hover:text-primary transition-colors">
+                  {{ item.icon }}
+                </span>
+                <span class="truncate">{{ item.label }}</span>
+              </div>
+
+              @if (item.badge) {
+              <span
+                class="px-2 py-0.5 rounded-full text-[10px] font-stat-label font-bold uppercase tracking-wider shrink-0 transition-transform group-hover:scale-105"
+                [class.bg-accent-amber]="item.badgeTone === 'warning'"
+                [class.text-court-base]="item.badgeTone === 'warning'" [class.bg-rose-600]="item.badgeTone === 'live'"
+                [class.text-white]="item.badgeTone === 'live'" [class.animate-pulse]="item.badgeTone === 'live'"
+                [class.bg-primary/20]="item.badgeTone === 'info' || !item.badgeTone"
+                [class.text-primary]="item.badgeTone === 'info' || !item.badgeTone">
+                {{ item.badge }}
+              </span>
+              }
+            </a>
+            }
+          </div>
+        </div>
+        }
+      </nav>
+    </div>
+
+    <!-- User Profile & Session Footer -->
+    <div class="p-4 border-t border-border-subtle/50 bg-court-base/40">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div
+            class="size-9 rounded-full bg-gradient-to-tr from-sky-600 to-indigo-700 flex items-center justify-center font-bold text-xs text-white shadow-inner shrink-0 border border-white/10">
+            <span class="material-symbols-outlined text-base">person</span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="text-xs font-bold text-white truncate leading-tight">
+              {{ delegateName() }}
+            </span>
+            <span class="text-[10px] text-text-secondary font-medium truncate">
+              Delegado Oficial
+            </span>
+          </div>
+        </div>
+
+        <!-- Botón Salir -->
+        <button (click)="logout()" title="Cerrar Sesión de Club"
+          class="p-2 rounded-lg text-text-muted hover:text-rose-400 hover:bg-rose-500/10 transition-colors shrink-0"
+          type="button">
+          <span class="material-symbols-outlined text-[18px]">logout</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL CON OFFSET DE SIDEBAR -->
+  <div class="flex-1 flex flex-col min-h-screen lg:pl-72 w-full">
+    <!-- Header Superior Bar -->
+    <header
+      class="h-16 sticky top-0 z-30 bg-court-surface/85 backdrop-blur-md border-b border-border-subtle/60 px-4 md:px-8 flex items-center justify-between transition-all">
+      <div class="flex items-center gap-3">
+        <!-- Botón Toggle Menú Móvil -->
+        <button (click)="toggleSidebar()"
+          class="lg:hidden p-2 rounded-lg text-text-secondary hover:text-white hover:bg-court-card transition-colors"
+          type="button">
+          <span class="material-symbols-outlined text-[22px]">menu</span>
+        </button>
+
+        <!-- Breadcrumbs / Título Contextual -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-black tracking-widest text-primary uppercase hidden sm:inline">
+            FJH CLUB
+          </span>
+          <span class="text-text-muted hidden sm:inline">•</span>
+          <span class="text-xs font-semibold text-text-secondary">
+            Panel de Gestión & Competencias
+          </span>
+        </div>
+      </div>
+
+      <!-- Acciones Rápidas en Header -->
+      <div class="flex items-center gap-3">
+        <!-- Enlace al Portal Público -->
+        <a routerLink="/" target="_blank" title="Ver Sitio Público de la Federación"
+          class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border-subtle/60 bg-court-card/60 text-text-secondary hover:text-primary hover:border-primary/40 text-xs font-medium transition-all">
+          <span class="material-symbols-outlined text-sm">open_in_new</span>
+          <span>Web Oficial FJH</span>
+        </a>
+
+        <!-- Notificaciones de Mesa/Sanciones -->
+        <div class="relative">
+          <button (click)="toggleNotifications()"
+            class="relative p-2 rounded-lg text-text-secondary hover:text-white hover:bg-court-card transition-colors"
+            title="Notificaciones de Federación" type="button">
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+            <span class="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary ring-2 ring-court-surface"></span>
+          </button>
+
+          <!-- Dropdown Notificaciones -->
+          @if (notificationsOpen()) {
+          <div (click)="closeNotifications()" class="fixed inset-0 z-40 bg-transparent"></div>
+          <div
+            class="absolute right-0 mt-2 w-80 rounded-2xl bg-court-card border border-border-subtle shadow-2xl z-50 p-3 flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div class="flex items-center justify-between pb-2 border-b border-border-subtle/50 px-1">
+              <span class="text-xs font-extrabold text-white uppercase tracking-wider">Avisos de Federación</span>
+              <span class="text-[10px] text-primary font-bold">Oficial 2026</span>
+            </div>
+            <div class="py-2 text-center text-xs text-text-secondary">
+              <p class="font-medium text-slate-300">Sin notificaciones urgentes pendientes.</p>
+              <p class="text-[10px] text-text-muted mt-1">Todas las resoluciones y actas están al día.</p>
+            </div>
+            <a routerLink="/club/mesa-ayuda" (click)="closeNotifications()"
+              class="w-full text-center py-1.5 text-xs font-bold text-primary hover:bg-court-surface rounded-lg transition-colors">
+              Ir a Mesa de Entradas
+            </a>
+          </div>
+          }
+        </div>
+
+        <!-- Indicador Club en Header -->
+        <div class="flex items-center gap-2 pl-2 border-l border-border-subtle/60">
+          @if (hasValidLogo(currentUser())) {
+          <img [src]="getClubLogoUrl(clubLogo())" [alt]="currentUser()?.nombre || clubName()"
+            (error)="onClubLogoError(currentUser()?.id)"
+            class="w-8 h-8 rounded-lg object-contain bg-court-base/80 p-0.5 border border-white/10 shrink-0 shadow-sm" />
+          } @else {
+          <div
+            class="w-8 h-8 rounded-lg bg-court-card-active border border-primary/25 text-primary flex items-center justify-center font-stat-label text-[10px] font-extrabold shrink-0 shadow-sm tracking-wide">
+            {{ getClubInitials(currentUser()) }}
+          </div>
+          }
+          <span class="text-xs font-bold text-white hidden md:inline max-w-[120px] truncate">
+            {{ clubName() }}
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ÁREA DE VISTAS (ROUTER OUTLET) -->
+    <main class="flex-1 w-full bg-court-base relative overflow-x-hidden p-4 sm:p-6 lg:p-8">
+      <!-- Fondo sutil de ambient glow idéntico al portal federación -->
+      <div
+        class="absolute -top-36 left-1/4 w-[500px] h-[300px] bg-sky-500/5 rounded-full blur-[140px] pointer-events-none">
+      </div>
+
+      <div class="relative z-10 w-full max-w-7xl mx-auto min-h-[calc(100vh-120px)]">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>

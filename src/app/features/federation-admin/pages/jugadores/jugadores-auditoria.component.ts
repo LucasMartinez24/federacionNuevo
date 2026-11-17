@@ -6,17 +6,22 @@ import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { Club, ClubesService } from '../../../../core/services/clubes.service';
 import { Jugador, JugadoresService } from '../../../../core/services/jugadores.service';
+import { PartidosService } from '../../../../core/services/partidos.service';
 import { SancionDisciplinaria, SancionesService } from '../../../../core/services/sanciones.service';
 
 export type { SancionDisciplinaria };
 
 export interface ActaPendiente {
   id: string;
+  partidoId?: string;
+  torneoId?: string;
   partido: string;
   fechaTorneo: string;
   sede: string;
   estado: string;
   mesa: string;
+  golesLocal?: number;
+  golesVisitante?: number;
 }
 
 @Component({
@@ -32,6 +37,7 @@ export class JugadoresAuditoriaComponent implements OnInit {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly router = inject(Router);
   private readonly sancionesService = inject(SancionesService);
+  private readonly partidosService = inject(PartidosService);
 
   // URL sanitizada para el visor de PDFs
   protected readonly safeDocUrl = computed<SafeResourceUrl | null>(() => {
@@ -119,32 +125,7 @@ export class JugadoresAuditoriaComponent implements OnInit {
   protected readonly sanciones = signal<SancionDisciplinaria[]>([]);
 
   // Actas Digitales en Revisión
-  protected readonly actasPendientes = signal<ActaPendiente[]>([
-    {
-      id: 'ACTA-01',
-      partido: 'CIAF Jujuy vs C.A. Gorriti',
-      fechaTorneo: 'Fecha 4 • Apertura 2026',
-      sede: 'Polideportivo Cuyaya',
-      estado: 'Planilla en Revisión Arbitral',
-      mesa: 'Juez: Ramos / Crono: Farfán',
-    },
-    {
-      id: 'ACTA-02',
-      partido: 'Minas Handball vs San Salvador HC',
-      fechaTorneo: 'Fecha 4 • Apertura 2026',
-      sede: 'Polideportivo San Pedro',
-      estado: 'Firma de Capitanes Pendiente',
-      mesa: 'Juez: Vilca / Crono: Benítez',
-    },
-    {
-      id: 'ACTA-03',
-      partido: 'Tiro y Gimnasia vs Defensores de Palpalá',
-      fechaTorneo: 'Fecha 4 • Apertura 2026',
-      sede: 'Estadio Federación',
-      estado: 'Informe de Tarjeta Azul Adjunto',
-      mesa: 'Juez: Tolaba / Crono: Silvetti',
-    },
-  ]);
+  protected readonly actasPendientes = signal<ActaPendiente[]>([]);
 
   // Club actualmente seleccionado
   protected readonly activeClub = computed(() => {
@@ -300,6 +281,38 @@ export class JugadoresAuditoriaComponent implements OnInit {
           error: (err: any) => console.error('Error al cargar sanciones:', err),
         });
 
+        // Cargar actas / partidos oficiales desde el backend
+        this.partidosService.getActasRecientes(20).subscribe({
+          next: (partidos) => {
+            const items: ActaPendiente[] = (partidos || []).map((p: any) => {
+              const torneoNom = p.torneo?.nombre || 'Torneo Oficial';
+              const jornadaStr = p.jornada ? `Fecha ${p.jornada}` : 'Fecha a definir';
+              const mesaInfo = [
+                p.arbitro1 ? `Juez 1: ${p.arbitro1}` : null,
+                p.arbitro2 ? `Juez 2: ${p.arbitro2}` : null,
+                p.cronometrista ? `Crono: ${p.cronometrista}` : null,
+              ].filter(Boolean).join(' • ') || 'Designación arbitral pendiente';
+
+              return {
+                id: p.id,
+                partidoId: p.id,
+                torneoId: p.torneoId,
+                partido: `${p.local?.nombre || 'Local'} vs ${p.visitante?.nombre || 'Visitante'}`,
+                fechaTorneo: `${jornadaStr} • ${torneoNom}`,
+                sede: p.lugar || 'Sede oficial a confirmar',
+                estado: p.estado || 'Programado',
+                mesa: mesaInfo,
+                golesLocal: p.golesLocal ?? 0,
+                golesVisitante: p.golesVisitante ?? 0,
+              };
+            });
+            this.actasPendientes.set(items);
+          },
+          error: (err) => {
+            console.error('Error al cargar actas:', err);
+          },
+        });
+
         // Cargar jugadores
         this.jugadoresService.getJugadores().subscribe({
           next: (jugadores) => {
@@ -339,6 +352,14 @@ export class JugadoresAuditoriaComponent implements OnInit {
   filtrarPorUrgencia(tipo: string): void {
     if (tipo === 'arbitral') {
       this.selectedStatusFilter.set('Pendientes de Auditoría');
+    }
+  }
+
+  auditarActa(acta: ActaPendiente): void {
+    if (acta.torneoId) {
+      this.router.navigate(['/admin/torneos/gestionar', acta.torneoId]);
+    } else {
+      this.router.navigate(['/admin/fixture']);
     }
   }
 

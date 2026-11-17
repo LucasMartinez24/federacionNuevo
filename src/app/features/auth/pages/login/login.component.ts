@@ -113,8 +113,8 @@ export class LoginComponent {
 
         // Redirección según rol
         if (user.role === 'user') {
-          // Club
-          this.router.navigate(['/']);
+          // Club: Redirigir directamente al panel unificado de club
+          this.router.navigate(['/club/fixture']);
         } else {
           // Staff (Admin, Rep Federación, Oficial de Mesa, Árbitros, CM)
           this.router.navigate(['/admin/jugadores']);

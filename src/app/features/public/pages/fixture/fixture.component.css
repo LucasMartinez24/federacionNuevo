@@ -19,3 +19,36 @@
   background: rgba(56, 189, 248, 0.5);
 }
 
+/* Glassmorphism & Card Glows */
+.court-card-glow {
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.court-card-glow:hover {
+  transform: translateY(-2px);
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5), 0 0 16px -2px rgba(56, 189, 248, 0.15);
+}
+
+/* Table mobile horizontal indicator */
+.table-responsive-wrapper {
+  position: relative;
+}
+
+.table-responsive-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 24px;
+  background: linear-gradient(to right, transparent, rgba(13, 21, 36, 0.8));
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  .table-responsive-wrapper::after {
+    display: none;
+  }
+}

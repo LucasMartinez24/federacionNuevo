@@ -80,12 +80,13 @@
 
               @if (item.badge) {
               <span
-                class="px-2 py-0.5 rounded-full text-[10px] font-stat-label font-bold uppercase tracking-wider shrink-0"
+                class="px-2 py-0.5 rounded-full text-[10px] font-stat-label font-bold uppercase tracking-wider shrink-0 transition-transform group-hover:scale-105"
                 [class.bg-accent-amber]="item.badgeTone === 'warning'"
                 [class.text-court-base]="item.badgeTone === 'warning'"
-                [class.bg-accent-crimson-deep]="item.badgeTone === 'live'"
-                [class.text-text-primary]="item.badgeTone === 'live'"
-                [class.bg-primary-container-20]="item.badgeTone === 'info' || !item.badgeTone"
+                [class.bg-rose-600]="item.badgeTone === 'live'"
+                [class.text-white]="item.badgeTone === 'live'"
+                [class.animate-pulse]="item.badgeTone === 'live'"
+                [class.bg-primary/20]="item.badgeTone === 'info' || !item.badgeTone"
                 [class.text-primary]="item.badgeTone === 'info' || !item.badgeTone">
                 {{ item.badge }}
               </span>
@@ -131,26 +132,26 @@
   <div class="flex-1 flex flex-col min-h-screen lg:pl-72 w-full">
     <!-- Top Telemetry Header Bar -->
     <header class="sticky top-0 z-30 h-16 w-full bg-court-surface/95 backdrop-blur-md border-b border-border-subtle/60 px-4 sm:px-6 flex items-center justify-between shadow-sm">
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 min-w-0">
         <!-- Botón toggle de sidebar en móvil -->
         <button
           (click)="toggleSidebar()"
           type="button"
-          class="lg:hidden p-2 rounded-lg bg-court-card text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
+          class="lg:hidden p-2 rounded-lg bg-court-card text-text-secondary hover:text-text-primary transition-colors cursor-pointer shrink-0"
           aria-label="Abrir menú">
           <span class="material-symbols-outlined text-[22px]">menu</span>
         </button>
 
         <!-- Titular / Módulo actual -->
-        <div class="flex items-center gap-2 text-text-secondary font-body-medium text-[13px]">
-          <span class="hidden sm:inline font-stat-label text-text-muted uppercase">PANEL EJECUTIVO</span>
+        <div class="flex items-center gap-2 text-text-secondary font-body-medium text-[13px] min-w-0">
+          <span class="hidden sm:inline font-stat-label text-text-muted uppercase shrink-0">PANEL OFICIAL</span>
           <span class="hidden sm:inline text-text-muted">•</span>
-          <span class="text-text-primary font-body-bold text-[14px]">Auditoría & Padrón Federativo</span>
+          <span class="text-text-primary font-body-bold text-[13px] sm:text-[14px] truncate">Sistema Integral FJH</span>
         </div>
       </div>
 
       <!-- Quick Executive Status Tools -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
         <a
           routerLink="/"
           class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-court-card hover:bg-court-card-hover text-text-secondary hover:text-text-primary text-[12px] font-body-bold transition-colors">
@@ -158,12 +159,86 @@
           <span>Sitio Público</span>
         </a>
 
-        <!-- Campana de Notificaciones -->
-        <div class="relative flex items-center justify-center p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-court-card transition-colors cursor-pointer">
-          <span class="material-symbols-outlined text-[20px]">notifications</span>
-          <span class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent-crimson-deep font-stat-label text-[9px] font-bold text-text-primary shadow-[0_0_8px_rgba(244,63,94,0.6)]">
-            2
-          </span>
+        <!-- Botón y Menú Desplegable de Notificaciones -->
+        <div class="relative">
+          <button
+            type="button"
+            (click)="toggleNotifications()"
+            class="relative flex items-center justify-center p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-court-card transition-colors cursor-pointer"
+            title="Notificaciones y avisos">
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+            @if (unreadNotificationsCount() > 0) {
+            <span class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-600 font-stat-label text-[9px] font-bold text-white shadow-[0_0_8px_rgba(244,63,94,0.6)] animate-pulse">
+              {{ unreadNotificationsCount() }}
+            </span>
+            }
+          </button>
+
+          <!-- Dropdown Notificaciones -->
+          @if (notificationsOpen()) {
+          <div
+            class="fixed inset-0 z-40"
+            (click)="closeNotifications()"></div>
+          
+          <div
+            class="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-[#0d1524] border border-white/10 shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+            
+            <div class="p-3.5 bg-[#080e18] border-b border-white/10 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">notifications</span>
+                <span class="text-xs font-bold text-white uppercase tracking-wider">Centro de Notificaciones</span>
+              </div>
+              @if (unreadNotificationsCount() > 0) {
+              <button
+                type="button"
+                (click)="markAllNotificationsRead()"
+                class="text-[10px] text-primary hover:underline font-bold cursor-pointer">
+                Marcar todas leídas
+              </button>
+              }
+            </div>
+
+            <div class="max-h-80 overflow-y-auto divide-y divide-white/5 custom-scrollbar">
+              @for (n of notifications(); track n.id) {
+              <div
+                (click)="markNotificationAsRead(n)"
+                class="p-3.5 hover:bg-court-card/60 transition-colors flex items-start gap-3 cursor-pointer"
+                [class.bg-court-card-hover]="!n.read">
+                <div
+                  class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                  [ngClass]="{
+                    'bg-rose-500/20 text-rose-400': n.type === 'live',
+                    'bg-amber-500/20 text-amber-300': n.type === 'athlete',
+                    'bg-blue-500/20 text-blue-300': n.type === 'resolution',
+                    'bg-emerald-500/20 text-emerald-400': n.type === 'tournament'
+                  }">
+                  <span class="material-symbols-outlined text-[17px]">{{ n.icon }}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2">
+                    <h5 class="text-xs font-bold text-white truncate">{{ n.title }}</h5>
+                    <span class="text-[9px] text-text-muted uppercase font-bold shrink-0">{{ n.time }}</span>
+                  </div>
+                  <p class="text-[11px] text-text-secondary line-clamp-2 mt-0.5">{{ n.message }}</p>
+                </div>
+                @if (!n.read) {
+                <span class="w-2 h-2 rounded-full bg-primary shrink-0 mt-1.5 shadow-[0_0_6px_rgba(56,189,248,0.8)]"></span>
+                }
+              </div>
+              } @empty {
+              <div class="p-6 text-center text-xs text-text-muted">
+                No hay notificaciones pendientes.
+              </div>
+              }
+            </div>
+
+            <div class="p-2 bg-[#080e18] border-t border-white/10 text-center">
+              <span class="text-[10px] text-text-muted">
+                Actualizaciones automáticas del sistema FJH
+              </span>
+            </div>
+          </div>
+          }
         </div>
 
         <!-- Perfil Chip -->

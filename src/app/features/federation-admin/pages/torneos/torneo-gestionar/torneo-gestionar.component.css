@@ -1,2 +1,55 @@
-/* Torneo Gestionar Component Styles */
+/* Torneo Gestionar Component Styles — Engineered Operate Surface */
+:host {
+  --ease-out-expo: cubic-bezier(0.23, 1, 0.32, 1);
+  display: block;
+}
 
+.material-symbols-outlined.hidden {
+  display: none !important;
+}
+
+.match-row-card {
+  transition:
+    background-color 180ms var(--ease-out-expo),
+    border-color 180ms var(--ease-out-expo),
+    box-shadow 180ms var(--ease-out-expo);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .match-row-card:hover {
+    border-color: rgba(56, 189, 248, 0.25);
+    background-color: rgba(26, 35, 50, 0.95);
+  }
+}
+
+.btn-press {
+  transition:
+    transform 150ms var(--ease-out-expo),
+    background-color 150ms var(--ease-out-expo),
+    color 150ms var(--ease-out-expo),
+    border-color 150ms var(--ease-out-expo);
+}
+
+.btn-press:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Elimina bordes y recuadros nativos del navegador en selects e inputs dentro de píldoras */
+.clean-select {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color-scheme: dark;
+}
+
+.clean-date-input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color-scheme: dark;
+}

@@ -29,6 +29,14 @@ export class ClubesService {
     return this.http.get<Club>(`${this.apiUrl}/${id}`);
   }
 
+  getClub(id: string): Observable<Club> {
+    return this.http.get<Club>(`${this.apiUrl}/${id}`);
+  }
+
+  getAgendaCompleta(id: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${id}/agenda-completa`);
+  }
+
   createClub(formData: FormData | any): Observable<Club> {
     return this.http.post<Club>(this.apiUrl, formData);
   }

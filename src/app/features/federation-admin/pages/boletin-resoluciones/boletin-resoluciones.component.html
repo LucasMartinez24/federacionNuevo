@@ -1,0 +1,1283 @@
+<!-- Ambient Court Lighting Backdrops -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden z-0 no-print">
+  <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[360px] bg-sky-600/8 blur-[140px] rounded-full">
+  </div>
+  <div class="absolute top-[40%] -left-36 w-[420px] h-[420px] bg-tertiary/5 blur-[130px] rounded-full"></div>
+  <div class="absolute bottom-10 -right-24 w-[460px] h-[460px] bg-accent-crimson-deep/5 blur-[150px] rounded-full">
+  </div>
+</div>
+
+<!-- Toast Notification Feedback -->
+@if (toastMessage()) {
+<div
+  class="fixed top-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-2xl border backdrop-blur-xl flex items-center gap-3.5 animate-fade-in transition-all no-print"
+  [class.bg-court-card]="true" [class.border-tertiary/50]="toastType() === 'success'"
+  [class.border-accent-crimson-deep/50]="toastType() === 'error'" [class.border-primary/50]="toastType() === 'info'">
+  <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+    [class.bg-tertiary/15]="toastType() === 'success'" [class.text-tertiary]="toastType() === 'success'"
+    [class.bg-accent-crimson-deep/15]="toastType() === 'error'"
+    [class.text-accent-crimson-deep]="toastType() === 'error'" [class.bg-primary/15]="toastType() === 'info'"
+    [class.text-primary]="toastType() === 'info'">
+    <span class="material-symbols-outlined text-[20px]">
+      {{ toastType() === 'success' ? 'check_circle' : toastType() === 'error' ? 'error' : 'campaign' }}
+    </span>
+  </div>
+  <div class="flex flex-col">
+    <span class="text-xs font-bold text-text-primary leading-tight">{{ toastMessage() }}</span>
+    <span class="text-[10px] text-text-muted mt-0.5">Boletín Oficial &amp; Tribunal FJH</span>
+  </div>
+</div>
+}
+
+<!-- MAIN VIEW CONTENT CONTAINER -->
+<div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-8 text-on-surface">
+
+  <!-- ======================================================== -->
+  <!-- 1. EXECUTIVE HERO HEADER & COMMAND TOOLBAR               -->
+  <!-- ======================================================== -->
+  <section class="space-y-6">
+    <!-- Top Institutional Breadcrumb & Status Pill -->
+    <div class="flex flex-wrap items-center justify-between gap-3 no-print">
+      <nav aria-label="Navegación institucional" class="flex items-center gap-2 text-xs text-text-secondary">
+        <a routerLink="/admin/jugadores"
+          class="hover:text-primary transition-colors flex items-center gap-1.5 font-medium">
+          <span class="material-symbols-outlined text-base text-primary">shield</span>
+          <span> Administración FJH</span>
+        </a>
+        <span class="material-symbols-outlined text-sm text-text-muted">chevron_right</span>
+        <span class="text-text-primary font-bold">Boletín Oficial &amp; Resoluciones</span>
+      </nav>
+
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-court-surface/90 border border-primary/25 shadow-sm">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
+        </span>
+        <span class="text-[10px] sm:text-[11px] font-bold tracking-widest text-primary-fixed uppercase">
+          Vigencia Oficial 2026 • Sello Criptográfico CAH
+        </span>
+      </div>
+    </div>
+
+    <!-- Main Hero Banner Card -->
+    <div
+      class="relative overflow-hidden p-6 sm:p-8 bg-gradient-to-br from-court-card/90 via-court-surface/95 to-court-base/95 rounded-3xl border border-border-subtle/80 shadow-2xl backdrop-blur-xl">
+      <!-- Subtle Background Watermark -->
+      <div class="absolute -right-8 -bottom-10 opacity-5 pointer-events-none select-none">
+        <span class="material-symbols-outlined text-[210px] text-primary">gavel</span>
+      </div>
+
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="space-y-2.5 max-w-3xl">
+          <div class="flex items-center gap-3.5">
+            <div
+              class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-500/20 to-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-lg shadow-sky-950/50 shrink-0">
+              <span class="material-symbols-outlined text-3xl">campaign</span>
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center gap-2 mb-1">
+                <span
+                  class="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-0.5 rounded-md border border-primary/20">
+                  ÓRGANO DE DIFUSIÓN VINCULANTE
+                </span>
+                <span
+                  class="text-[10px] font-bold text-text-muted bg-white/5 px-2 py-0.5 rounded border border-white/5 font-mono">
+                  CONSEJO DIRECTIVO &amp; TRIBUNAL DE PENAS
+                </span>
+              </div>
+              <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black text-text-primary tracking-tight uppercase">
+                BOLETÍN OFICIAL &amp; RESOLUCIONES
+              </h1>
+            </div>
+          </div>
+          <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">
+            Comunicaciones oficiales con fuerza ejecutoria, dictámenes reglamentarios, cuadros arancelarios y fallos
+            disciplinarios del Tribunal de Penas de la Federación Jujeña de Handball para todas las instituciones
+            afiliadas.
+          </p>
+        </div>
+
+        <!-- Admin & Quick Action Deck -->
+        <div class="flex flex-wrap items-center gap-2.5 shrink-0 no-print">
+          @if (isAdmin()) {
+          <button type="button" (click)="abrirModalNuevaResolucion('tribunal')"
+            class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-sky-500 via-primary-container to-blue-600 hover:brightness-110 text-on-primary-container text-xs font-black uppercase tracking-wider shadow-lg shadow-sky-500/25 transition-all active:scale-95 cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">post_add</span>
+            <span>+ Emitir Resolución / Circular</span>
+          </button>
+          }
+
+          <a href="/docs/Formulario-Fichaje-FJH.pdf" download="Compendio-Boletin-Oficial-FJH-2026.pdf" target="_blank"
+            class="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-court-card hover:bg-court-card-hover border border-border-subtle hover:border-primary/40 text-text-primary text-xs font-bold tracking-wide transition-all shadow-md active:scale-95 cursor-pointer">
+            <span class="material-symbols-outlined text-primary text-[18px]">picture_as_pdf</span>
+            <span>Compendio PDF</span>
+          </a>
+
+          <button type="button" (click)="imprimirBoletin()"
+            class="inline-flex items-center gap-1.5 px-3.5 py-3 rounded-xl bg-court-surface hover:bg-court-card border border-border-subtle text-text-secondary hover:text-white transition-colors text-xs font-semibold active:scale-95 cursor-pointer"
+            title="Imprimir Boletín Oficial">
+            <span class="material-symbols-outlined text-[18px]">print</span>
+            <span class="hidden sm:inline">Imprimir</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 2. TELEMETRY KPI CARDS STRIP                             -->
+    <!-- ======================================================== -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- KPI 1: Circulares Vigentes -->
+      <div (click)="setCategory('ALL')"
+        class="bg-court-surface/90 border border-border-subtle p-5 rounded-2xl shadow-lg relative overflow-hidden group hover:border-primary/40 transition-all cursor-pointer">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Circulares &amp; Actas
+            Vigentes</span>
+          <div
+            class="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-[18px]">assignment</span>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2.5">
+          <span class="text-3xl font-black text-text-primary num-tabular">{{ vigentesCount() }}</span>
+          <span class="text-xs font-bold text-tertiary flex items-center gap-0.5">
+            <span class="material-symbols-outlined text-sm">trending_up</span>
+            <span>{{ totalCount() }} registradas</span>
+          </span>
+        </div>
+        <div class="w-full bg-court-card h-1.5 rounded-full mt-3.5 overflow-hidden">
+          <div class="bg-primary h-full rounded-full transition-all duration-500" style="width: 82%"></div>
+        </div>
+      </div>
+
+      <!-- KPI 2: Fallos Disciplinarios -->
+      <div (click)="setCategory('tribunal')"
+        class="bg-court-surface/90 border border-border-subtle p-5 rounded-2xl shadow-lg relative overflow-hidden group hover:border-accent-crimson-deep/40 transition-all cursor-pointer">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Fallos Disciplinarios</span>
+          <div
+            class="w-8 h-8 rounded-xl bg-accent-crimson-deep/15 border border-accent-crimson-deep/30 flex items-center justify-center text-secondary">
+            <span class="material-symbols-outlined text-[18px]">gavel</span>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2.5">
+          <span class="text-3xl font-black text-text-primary num-tabular">{{ tribunalCount() }}</span>
+          <span class="text-xs font-bold text-accent-amber flex items-center gap-1">
+            <span>Tribunal de Penas</span>
+          </span>
+        </div>
+        <div class="w-full bg-court-card h-1.5 rounded-full mt-3.5 overflow-hidden">
+          <div class="bg-accent-crimson-deep h-full rounded-full transition-all duration-500" style="width: 45%"></div>
+        </div>
+      </div>
+
+      <!-- KPI 3: Firma Digital Homologada -->
+      <div
+        class="bg-court-surface/90 border border-border-subtle p-5 rounded-2xl shadow-lg relative overflow-hidden group hover:border-tertiary/40 transition-all">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Firma Digital
+            Homologada</span>
+          <div
+            class="w-8 h-8 rounded-xl bg-tertiary/15 border border-tertiary/30 flex items-center justify-center text-tertiary">
+            <span class="material-symbols-outlined text-[18px]">verified</span>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2.5">
+          <span class="text-3xl font-black text-text-primary num-tabular">100%</span>
+          <span class="text-xs font-bold text-tertiary">CAH Certificada</span>
+        </div>
+        <div class="w-full bg-court-card h-1.5 rounded-full mt-3.5 overflow-hidden">
+          <div class="bg-tertiary h-full rounded-full" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <!-- KPI 4: Alerta Perentoria -->
+      <div (click)="setCategory('urgentes')"
+        class="bg-court-card/90 border border-accent-crimson-deep/35 p-5 rounded-2xl shadow-lg relative overflow-hidden group hover:border-accent-crimson-deep/60 transition-all cursor-pointer">
+        <div
+          class="absolute -top-10 -right-10 w-24 h-24 bg-accent-crimson-deep/15 rounded-full blur-xl pointer-events-none">
+        </div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-secondary flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-accent-crimson-deep animate-ping"></span>
+            <span>Alerta Perentoria</span>
+          </span>
+          <div
+            class="w-8 h-8 rounded-xl bg-accent-crimson-deep/20 border border-accent-crimson-deep/30 flex items-center justify-center text-secondary">
+            <span class="material-symbols-outlined text-[18px]">priority_high</span>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-xl font-black text-text-primary">{{ urgentesCount() }} Urgente(s)</span>
+        </div>
+        <p class="text-[11px] text-text-secondary mt-1.5 leading-snug">
+          Descargos habilitados por Mesa de Entradas Digital FJH.
+        </p>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 3. SEARCH & MULTI-FACET FILTER STRIP                     -->
+    <!-- ======================================================== -->
+    <div
+      class="p-4 sm:p-5 rounded-2xl bg-court-surface/85 border border-border-subtle backdrop-blur-xl space-y-4 shadow-xl no-print">
+      <!-- Top Search & Year Switcher Row -->
+      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+        <!-- Search Input -->
+        <div class="relative flex-1">
+          <span
+            class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted text-[20px]">search</span>
+          <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+            placeholder="Buscar por palabra clave, N° de resolución (ej. 042/2026), expediente, club o atleta..."
+            class="w-full h-11 pl-11 pr-10 rounded-xl bg-court-card border border-border-subtle focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs sm:text-sm text-text-primary placeholder:text-text-muted transition-all outline-none" />
+          @if (searchQuery()) {
+          <button type="button" (click)="searchQuery.set('')"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white transition-colors cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+          }
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Status FilterSegmented Control -->
+          <div class="inline-flex p-1 rounded-xl bg-court-card border border-border-subtle">
+            <button type="button" (click)="setStatusFilter('vigente')"
+              [class.bg-court-card-active]="selectedStatus() === 'vigente'"
+              [class.text-primary]="selectedStatus() === 'vigente'" [class.font-bold]="selectedStatus() === 'vigente'"
+              [class.text-text-secondary]="selectedStatus() !== 'vigente'"
+              class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
+              Vigentes
+            </button>
+            <button type="button" (click)="setStatusFilter('archivado')"
+              [class.bg-court-card-active]="selectedStatus() === 'archivado'"
+              [class.text-primary]="selectedStatus() === 'archivado'"
+              [class.font-bold]="selectedStatus() === 'archivado'"
+              [class.text-text-secondary]="selectedStatus() !== 'archivado'"
+              class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
+              Archivadas
+            </button>
+            <button type="button" (click)="setStatusFilter('ALL')"
+              [class.bg-court-card-active]="selectedStatus() === 'ALL'"
+              [class.text-primary]="selectedStatus() === 'ALL'" [class.font-bold]="selectedStatus() === 'ALL'"
+              [class.text-text-secondary]="selectedStatus() !== 'ALL'"
+              class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
+              Todas
+            </button>
+          </div>
+
+          <!-- Year Selector Pill -->
+          <div class="inline-flex p-1 rounded-xl bg-court-card border border-border-subtle">
+            <button type="button" (click)="setYear('2026')" [class.bg-primary]="selectedYear() === '2026'"
+              [class.text-on-primary]="selectedYear() === '2026'" [class.font-bold]="selectedYear() === '2026'"
+              [class.text-text-secondary]="selectedYear() !== '2026'"
+              class="px-3.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
+              Año 2026 (Activo)
+            </button>
+            <button type="button" (click)="setYear('2025')" [class.bg-primary]="selectedYear() === '2025'"
+              [class.text-on-primary]="selectedYear() === '2025'" [class.font-bold]="selectedYear() === '2025'"
+              [class.text-text-secondary]="selectedYear() !== '2025'"
+              class="px-3.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
+              Año 2025
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter Chips Row -->
+      <div class="flex items-center gap-2 overflow-x-auto pt-1 pb-0.5 custom-scrollbar">
+        <span
+          class="text-[11px] font-bold uppercase tracking-wider text-text-muted flex items-center gap-1 mr-1 shrink-0">
+          <span class="material-symbols-outlined text-sm text-primary">filter_alt</span>
+          <span>Categoría:</span>
+        </span>
+
+        <!-- Todas -->
+        <button type="button" (click)="setCategory('ALL')" [class.bg-court-card-active]="selectedCategory() === 'ALL'"
+          [class.text-primary]="selectedCategory() === 'ALL'" [class.border-primary/40]="selectedCategory() === 'ALL'"
+          [class.bg-court-card]="selectedCategory() !== 'ALL'"
+          [class.text-text-secondary]="selectedCategory() !== 'ALL'"
+          [class.border-border-subtle]="selectedCategory() !== 'ALL'"
+          class="px-3.5 py-1.5 rounded-xl text-xs font-bold border flex items-center gap-1.5 shrink-0 transition-all cursor-pointer hover:text-text-primary">
+          <span>Todas las Publicaciones</span>
+          <span class="bg-primary/20 text-primary text-[10px] px-1.5 py-0.5 rounded-full num-tabular">{{ totalCount()
+            }}</span>
+        </button>
+
+        <!-- Tribunal de Penas -->
+        <button type="button" (click)="setCategory('tribunal')"
+          [class.bg-court-card-active]="selectedCategory() === 'tribunal'"
+          [class.text-white]="selectedCategory() === 'tribunal'"
+          [class.border-accent-crimson-deep/60]="selectedCategory() === 'tribunal'"
+          [class.bg-court-card]="selectedCategory() !== 'tribunal'"
+          [class.text-text-secondary]="selectedCategory() !== 'tribunal'"
+          [class.border-border-subtle]="selectedCategory() !== 'tribunal'"
+          class="px-3.5 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1.5 shrink-0 transition-all cursor-pointer hover:border-secondary/40 hover:text-text-primary">
+          <span class="w-2 h-2 rounded-full bg-accent-crimson-deep"></span>
+          <span>Tribunal de Penas</span>
+          <span class="bg-court-base text-text-muted text-[10px] px-1.5 py-0.5 rounded-full num-tabular">{{
+            tribunalCount() }}</span>
+        </button>
+
+        <!-- Reglamento & Fixture -->
+        <button type="button" (click)="setCategory('reglamento')"
+          [class.bg-court-card-active]="selectedCategory() === 'reglamento'"
+          [class.text-white]="selectedCategory() === 'reglamento'"
+          [class.border-tertiary/60]="selectedCategory() === 'reglamento'"
+          [class.bg-court-card]="selectedCategory() !== 'reglamento'"
+          [class.text-text-secondary]="selectedCategory() !== 'reglamento'"
+          [class.border-border-subtle]="selectedCategory() !== 'reglamento'"
+          class="px-3.5 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1.5 shrink-0 transition-all cursor-pointer hover:border-tertiary/40 hover:text-text-primary">
+          <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+          <span>Reglamento &amp; Fixture</span>
+          <span class="bg-court-base text-text-muted text-[10px] px-1.5 py-0.5 rounded-full num-tabular">{{
+            reglamentoCount() }}</span>
+        </button>
+
+        <!-- Tesorería & Aranceles -->
+        <button type="button" (click)="setCategory('tesoreria')"
+          [class.bg-court-card-active]="selectedCategory() === 'tesoreria'"
+          [class.text-white]="selectedCategory() === 'tesoreria'"
+          [class.border-accent-amber/60]="selectedCategory() === 'tesoreria'"
+          [class.bg-court-card]="selectedCategory() !== 'tesoreria'"
+          [class.text-text-secondary]="selectedCategory() !== 'tesoreria'"
+          [class.border-border-subtle]="selectedCategory() !== 'tesoreria'"
+          class="px-3.5 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1.5 shrink-0 transition-all cursor-pointer hover:border-accent-amber/40 hover:text-text-primary">
+          <span class="w-2 h-2 rounded-full bg-accent-amber"></span>
+          <span>Tesorería &amp; Aranceles</span>
+          <span class="bg-court-base text-text-muted text-[10px] px-1.5 py-0.5 rounded-full num-tabular">{{
+            tesoreriaCount() }}</span>
+        </button>
+
+        <!-- Circulares Urgentes -->
+        <button type="button" (click)="setCategory('urgentes')"
+          [class.bg-accent-crimson-deep/20]="selectedCategory() === 'urgentes'"
+          [class.border-accent-crimson-deep]="selectedCategory() === 'urgentes'"
+          [class.bg-court-card]="selectedCategory() !== 'urgentes'"
+          [class.border-border-subtle]="selectedCategory() !== 'urgentes'"
+          class="px-3.5 py-1.5 rounded-xl text-xs font-bold border text-secondary hover:border-secondary flex items-center gap-1.5 shrink-0 transition-all cursor-pointer">
+          <span class="relative flex w-2 h-2">
+            <span
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-crimson-deep opacity-75"></span>
+            <span class="relative inline-flex rounded-full w-2 h-2 bg-accent-crimson-deep"></span>
+          </span>
+          <span>Circulares Urgentes</span>
+          <span class="bg-secondary-container text-white text-[10px] px-1.5 py-0.5 rounded-full num-tabular">{{
+            urgentesCount() }}</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- 4. STREAM OF OFFICIAL FEDERATION COMMUNICATIONS          -->
+  <!-- ======================================================== -->
+  <section class="space-y-6">
+    @for (item of displayedBoletines(); track item.id) {
+    <article
+      class="bg-court-surface/90 backdrop-blur-xl border border-border-subtle rounded-2xl p-6 sm:p-7 shadow-2xl relative overflow-hidden transition-all duration-200"
+      [class.hover:border-accent-crimson-deep/45]="item.categoria === 'tribunal'"
+      [class.hover:border-tertiary/45]="item.categoria === 'reglamento'"
+      [class.hover:border-accent-amber/45]="item.categoria === 'tesoreria'">
+
+      <!-- Left Category Color Accent Bar -->
+      <div class="absolute left-0 top-0 bottom-0 w-1.5" [class.bg-accent-crimson-deep]="item.categoria === 'tribunal'"
+        [class.bg-tertiary]="item.categoria === 'reglamento'" [class.bg-accent-amber]="item.categoria === 'tesoreria'">
+      </div>
+
+      <!-- Letterhead Official Header -->
+      <div
+        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border-subtle/80">
+        <div class="flex items-center gap-3.5">
+          <div
+            class="w-11 h-11 rounded-xl bg-court-card border border-border-glass p-1.5 shrink-0 flex items-center justify-center shadow-inner">
+            <img src="/img/logo.png" alt="Escudo FJH" class="w-full h-full object-contain" />
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xs font-black tracking-widest text-text-primary uppercase">Federación Jujeña de
+                Handball</span>
+              <span class="text-text-muted text-xs">•</span>
+              <span class="text-xs font-semibold text-text-secondary">{{ item.organo }}</span>
+              @if (item.clubAfectado) {
+              <span
+                class="text-[10px] font-bold px-2 py-0.5 rounded bg-court-card text-primary border border-primary/20">
+                {{ item.clubAfectado }}
+              </span>
+              }
+            </div>
+            <p class="text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 mt-0.5"
+              [class.text-secondary]="item.categoria === 'tribunal'"
+              [class.text-tertiary]="item.categoria === 'reglamento'"
+              [class.text-accent-amber]="item.categoria === 'tesoreria'">
+              <span class="material-symbols-outlined text-sm">
+                {{ item.categoria === 'tribunal' ? 'gavel' : item.categoria === 'reglamento' ? 'assignment' :
+                'receipt_long' }}
+              </span>
+              <span>{{ item.suborgano }}</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Status Badges & Admin Quick Toolbar -->
+        <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          @if (item.urgente) {
+          <span
+            class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-accent-crimson-deep/20 text-secondary border border-accent-crimson-deep/40 flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-accent-crimson-deep animate-ping"></span>
+            <span>Urgente • Fallo Oficial</span>
+          </span>
+          }
+
+          @if (item.categoria === 'reglamento') {
+          <span
+            class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-tertiary/15 text-tertiary border border-tertiary/30">
+            Reglamento &amp; Fixture
+          </span>
+          } @else if (item.categoria === 'tesoreria') {
+          <span
+            class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-accent-amber/15 text-accent-amber border border-accent-amber/30">
+            Tesorería &amp; Aranceles
+          </span>
+          }
+
+          <span class="text-xs font-semibold text-text-muted num-tabular hidden md:inline">{{ item.fecha }}</span>
+
+          <!-- Action Icons -->
+          <div class="flex items-center gap-1 ml-1 no-print">
+            <button type="button" (click)="verExpedienteModal(item)"
+              class="p-1.5 rounded-lg text-text-muted hover:text-primary hover:bg-court-card transition-colors cursor-pointer"
+              title="Ver Expediente Oficial Completo">
+              <span class="material-symbols-outlined text-[18px]">visibility</span>
+            </button>
+
+            @if (isAdmin()) {
+            <button type="button" (click)="toggleUrgente(item)"
+              class="p-1.5 rounded-lg hover:bg-court-card transition-colors cursor-pointer"
+              [class.text-accent-crimson-deep]="item.urgente" [class.text-text-muted]="!item.urgente"
+              title="Alternar estado Urgente">
+              <span class="material-symbols-outlined text-[18px]">priority_high</span>
+            </button>
+            <button type="button" (click)="toggleArchivar(item)"
+              class="p-1.5 rounded-lg text-text-muted hover:text-accent-amber hover:bg-court-card transition-colors cursor-pointer"
+              [title]="item.estado === 'vigente' ? 'Archivar Resolución' : 'Restaurar a Vigentes'">
+              <span class="material-symbols-outlined text-[18px]">
+                {{ item.estado === 'vigente' ? 'archive' : 'unarchive' }}
+              </span>
+            </button>
+            <button type="button" (click)="confirmarEliminar(item)"
+              class="p-1.5 rounded-lg text-text-muted hover:text-accent-crimson-deep hover:bg-court-card transition-colors cursor-pointer"
+              title="Eliminar Resolución">
+              <span class="material-symbols-outlined text-[18px]">delete</span>
+            </button>
+            }
+
+            <button type="button" (click)="compartirResolucion(item)"
+              class="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-court-card transition-colors cursor-pointer"
+              title="Copiar referencia oficial">
+              <span class="material-symbols-outlined text-[18px]">share</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body Title & Resolution Legal Content -->
+      <div class="py-5 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xs font-black tracking-widest num-tabular uppercase"
+                [class.text-primary]="item.categoria === 'tribunal'"
+                [class.text-tertiary]="item.categoria === 'reglamento'"
+                [class.text-accent-amber]="item.categoria === 'tesoreria'">
+                {{ item.numero }}
+              </span>
+              @if (item.expediente) {
+              <span
+                class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-court-base text-text-muted border border-white/5">
+                {{ item.expediente }}
+              </span>
+              }
+            </div>
+            <h2 class="text-base sm:text-lg lg:text-xl font-extrabold text-text-primary tracking-tight">
+              {{ item.titulo }}
+            </h2>
+          </div>
+
+          <!-- Admin Live Suspension Counter (If Disciplinary Ruling has Totales) -->
+          @if (item.totales !== undefined && item.totales > 0) {
+          <div
+            class="inline-flex items-center gap-2.5 bg-court-base/90 border border-border-subtle px-3.5 py-2 rounded-xl shrink-0 self-start">
+            <div class="flex flex-col">
+              <span class="text-[9px] font-bold uppercase tracking-wider text-text-muted">Cómputo Sanción</span>
+              <span class="text-xs font-black text-white num-tabular">
+                {{ item.cumplidas ?? 0 }} / {{ item.totales }} Fechas Cumplidas
+              </span>
+            </div>
+            @if (isAdmin() && item.sancionId) {
+            <div class="flex items-center gap-1 pl-2 border-l border-white/10 no-print">
+              <button type="button" (click)="ajustarFechasCumplidas(item, -1)"
+                class="w-6 h-6 rounded-lg bg-court-card hover:bg-court-card-hover text-text-secondary hover:text-white flex items-center justify-center text-xs font-bold cursor-pointer active:scale-95"
+                title="Restar fecha cumplida">
+                -
+              </button>
+              <button type="button" (click)="ajustarFechasCumplidas(item, 1)"
+                class="w-6 h-6 rounded-lg bg-primary/20 hover:bg-primary/30 text-primary flex items-center justify-center text-xs font-bold cursor-pointer active:scale-95"
+                title="Acreditar +1 fecha cumplida">
+                +
+              </button>
+            </div>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Legal Structure Block: VISTO, CONSIDERANDO, RESUELVE -->
+        @if (item.visto || item.considerando || (item.resuelve && item.resuelve.length > 0)) {
+        <div
+          class="space-y-3 text-xs text-text-secondary leading-relaxed bg-court-base/65 p-4 sm:p-5 rounded-xl border border-border-glass">
+          @if (item.visto) {
+          <p>
+            <strong class="text-text-primary font-extrabold tracking-wide">VISTO:</strong>
+            {{ item.visto }}
+          </p>
+          }
+          @if (item.considerando) {
+          <p>
+            <strong class="text-text-primary font-extrabold tracking-wide">CONSIDERANDO:</strong>
+            {{ item.considerando }}
+          </p>
+          }
+          @if (item.resuelve && item.resuelve.length > 0) {
+          <div class="pt-1">
+            <strong class="text-text-primary font-extrabold uppercase tracking-wider block mb-1.5">
+              {{ item.categoria === 'tribunal' ? 'El Tribunal de Penas Resuelve:' : 'La Mesa Directiva Resuelve:' }}
+            </strong>
+            <div class="pl-3.5 border-l-2 space-y-1.5 text-on-surface font-medium"
+              [class.border-accent-crimson-deep]="item.categoria === 'tribunal'"
+              [class.border-tertiary]="item.categoria === 'reglamento'"
+              [class.border-accent-amber]="item.categoria === 'tesoreria'">
+              @for (art of item.resuelve; track art) {
+              <p>{{ art }}</p>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        }
+
+        <!-- Narrative Description (for Circulars) -->
+        @if (item.resumen) {
+        <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">
+          {{ item.resumen }}
+        </p>
+        }
+
+        <!-- Tariff Cards Grid with Tabular Numbers (for Tesorería) -->
+        @if (item.aranceles && item.aranceles.length > 0) {
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+          @for (arancel of item.aranceles; track arancel.concepto) {
+          <div class="p-4 rounded-xl bg-court-base/80 border border-border-glass flex flex-col justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-text-muted block mb-1">
+              {{ arancel.concepto }}
+            </span>
+            <div class="text-xl font-black text-text-primary num-tabular">
+              {{ arancel.monto }} <span class="text-xs font-semibold text-text-muted">{{ arancel.moneda }}</span>
+            </div>
+            <span class="text-[10px] font-semibold mt-1 block" [class.text-tertiary]="arancel.destacado"
+              [class.text-text-secondary]="!arancel.destacado">
+              {{ arancel.detalle }}
+            </span>
+          </div>
+          }
+        </div>
+        }
+
+        <!-- Contextual Callout Banner -->
+        @if (item.alertaTexto) {
+        <div class="rounded-xl p-3.5 border flex items-start gap-3"
+          [class.bg-accent-amber/10]="item.alertaTipo === 'amber'"
+          [class.border-accent-amber/30]="item.alertaTipo === 'amber'"
+          [class.bg-court-card-active/60]="item.alertaTipo === 'primary'"
+          [class.border-primary/30]="item.alertaTipo === 'primary'"
+          [class.bg-tertiary/10]="item.alertaTipo === 'tertiary'"
+          [class.border-tertiary/30]="item.alertaTipo === 'tertiary'">
+          <span class="material-symbols-outlined text-lg mt-0.5 shrink-0"
+            [class.text-accent-amber]="item.alertaTipo === 'amber'" [class.text-primary]="item.alertaTipo === 'primary'"
+            [class.text-tertiary]="item.alertaTipo === 'tertiary'">
+            {{ item.alertaTipo === 'amber' ? 'priority_high' : item.alertaTipo === 'tertiary' ? 'calendar_today' :
+            'verified' }}
+          </span>
+          <div class="text-xs leading-relaxed">
+            @if (item.alertaTitulo) {
+            <span class="font-extrabold uppercase tracking-wider block mb-0.5"
+              [class.text-accent-amber]="item.alertaTipo === 'amber'"
+              [class.text-primary]="item.alertaTipo === 'primary'"
+              [class.text-tertiary]="item.alertaTipo === 'tertiary'">
+              {{ item.alertaTitulo }}
+            </span>
+            }
+            <span class="text-text-primary">{{ item.alertaTexto }}</span>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Footer: Annexed PDFs & Cryptographic Seal -->
+      <div
+        class="pt-4 border-t border-border-subtle/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Attached Documents -->
+        <div class="flex flex-wrap items-center gap-3">
+          @for (adj of item.adjuntos; track adj.nombre) {
+          <div class="flex items-center gap-3 bg-court-base/50 px-3 py-2 rounded-xl border border-border-glass">
+            <div
+              class="w-9 h-9 rounded-lg bg-court-card border border-border-glass flex items-center justify-center shrink-0"
+              [class.text-secondary]="item.categoria === 'tribunal'"
+              [class.text-primary]="item.categoria === 'reglamento'"
+              [class.text-accent-amber]="item.categoria === 'tesoreria'">
+              <span class="material-symbols-outlined">picture_as_pdf</span>
+            </div>
+            <div class="text-xs min-w-0">
+              <p class="font-bold text-text-primary truncate max-w-[220px] sm:max-w-xs">{{ adj.nombre }}</p>
+              <p class="text-[10px] text-text-muted num-tabular">{{ adj.tamano }} • {{ adj.subtitulo }}</p>
+            </div>
+            <a [href]="descargarAdjuntoUrl(adj.url)" [download]="adj.nombre" target="_blank"
+              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-court-card-hover border border-border-subtle text-primary text-xs font-bold hover:border-primary transition-colors ml-1 no-print">
+              <span class="material-symbols-outlined text-sm">download</span>
+              <span>Descargar</span>
+            </a>
+          </div>
+          }
+        </div>
+
+        <!-- Digital Seal Stamp -->
+        <div
+          class="flex items-center gap-2.5 text-right self-end md:self-auto bg-court-base/60 px-3.5 py-2 rounded-xl border border-border-glass">
+          <span class="material-symbols-outlined text-lg shrink-0"
+            [class.text-tertiary]="item.selloColor === 'tertiary'"
+            [class.text-accent-amber]="item.selloColor === 'amber'"
+            [class.text-primary]="item.selloColor === 'primary'">
+            {{ item.selloIcono || 'verified' }}
+          </span>
+          <div class="text-[10px] text-text-muted text-left leading-tight">
+            <span class="font-extrabold block uppercase tracking-wider"
+              [class.text-tertiary]="item.selloColor === 'tertiary'"
+              [class.text-accent-amber]="item.selloColor === 'amber'"
+              [class.text-primary]="item.selloColor === 'primary'">
+              {{ item.selloTitulo }}
+            </span>
+            <span>{{ item.selloAutoridad }}</span>
+          </div>
+        </div>
+      </div>
+    </article>
+    } @empty {
+    <!-- 5. ACCESSIBLE EMPTY STATE FALLBACK -->
+    <div class="bg-court-surface/60 border border-dashed border-border-subtle rounded-3xl p-12 text-center space-y-4">
+      <div
+        class="w-16 h-16 rounded-2xl bg-court-card mx-auto flex items-center justify-center text-primary border border-border-glass shadow-inner">
+        <span class="material-symbols-outlined text-3xl">campaign</span>
+      </div>
+      <div class="space-y-1 max-w-md mx-auto">
+        <h3 class="text-base font-extrabold text-text-primary">
+          @if (unifiedStream().length === 0) {
+          Sin Resoluciones ni Circulares Registradas
+          } @else {
+          No se encontraron resoluciones con los filtros aplicados
+          }
+        </h3>
+        <p class="text-xs text-text-secondary leading-relaxed">
+          @if (unifiedStream().length === 0) {
+          El registro oficial está listo para comenzar. Puede redactar y publicar la primera resolución del Tribunal de
+          Penas, Tesorería o Comisión Técnica.
+          } @else {
+          Intente modificando los términos de búsqueda o seleccionando otra categoría en la barra de herramientas.
+          }
+        </p>
+      </div>
+      <div class="flex items-center justify-center gap-3">
+        @if (unifiedStream().length === 0) {
+        <button type="button" (click)="abrirModalNuevaResolucion('tribunal')"
+          class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-court-base text-xs font-black transition-all cursor-pointer active:scale-95 shadow-lg shadow-primary/20 flex items-center gap-2">
+          <span class="material-symbols-outlined text-base">add_circle</span>
+          <span>+ Emitir Primera Resolución Oficial</span>
+        </button>
+        } @else {
+        <button type="button" (click)="limpiarFiltros()"
+          class="px-5 py-2.5 rounded-xl bg-court-card hover:bg-court-card-hover border border-primary/30 text-xs font-bold text-primary transition-all cursor-pointer active:scale-95">
+          Restablecer Filtros
+        </button>
+        }
+      </div>
+    </div>
+    }
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- 6. FOOTER & PAGINATION                                   -->
+  <!-- ======================================================== -->
+  <div class="pt-4 pb-8 space-y-8 border-t border-border-subtle no-print">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-text-secondary font-medium">
+        Mostrando <span class="font-bold text-text-primary num-tabular">{{ displayedBoletines().length }}</span> de
+        <span class="font-bold text-text-primary num-tabular">{{ filteredBoletines().length }}</span> resoluciones
+        oficiales de la Temporada {{ selectedYear() === 'ALL' ? 'General' : selectedYear() }}
+      </p>
+
+      @if (displayedBoletines().length < filteredBoletines().length) { <button type="button" (click)="cargarMas()"
+        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-court-card hover:bg-court-card-hover border border-border-glass hover:border-primary/40 text-xs font-bold text-text-primary transition-all active:scale-95 shadow-md cursor-pointer">
+        <span>Cargar Más Circulares</span>
+        <span class="material-symbols-outlined text-sm">expand_more</span>
+        </button>
+        }
+    </div>
+
+    <!-- Official Institutional Legal Footer -->
+    <footer
+      class="pt-6 border-t border-border-subtle/40 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left text-xs text-text-muted">
+      <div class="space-y-1">
+        <p class="font-semibold text-text-secondary">
+          © 2026 Federación Jujeña de Handball (FJH) • Afiliada a la Confederación Argentina de Handball (CAH)
+        </p>
+        <p class="text-[11px]">
+          Sistema Oficial de Gestión Federativa, Tribunal de Disciplina &amp; Mesa Electrónica
+        </p>
+      </div>
+      <div class="flex items-center gap-4 text-[11px]">
+        <a routerLink="/admin/torneos" class="hover:text-primary transition-colors">Reglamento &amp; Torneos</a>
+        <span class="text-border-subtle">•</span>
+        <a routerLink="/admin/jugadores" class="hover:text-primary transition-colors">Padrón &amp; Auditoría</a>
+        <span class="text-border-subtle">•</span>
+        <a routerLink="/admin/fixture" class="hover:text-primary transition-colors">Match Center Oficial</a>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- MODAL 1: EMITIR NUEVA RESOLUCIÓN / CIRCULAR OFICIAL (ADMIN)           -->
+<!-- ===================================================================== -->
+@if (showCreateModal()) {
+<div
+  class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-fade-in no-print"
+  (click)="cerrarModalNuevaResolucion()">
+  <div class="w-full max-w-3xl bg-court-surface border border-border-subtle rounded-3xl shadow-2xl overflow-hidden my-8"
+    (click)="$event.stopPropagation()">
+
+    <!-- Modal Header -->
+    <div class="p-6 bg-court-card border-b border-border-subtle flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div
+          class="w-11 h-11 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-2xl">post_add</span>
+        </div>
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-widest text-primary block">
+            DESPACHO OFICIAL FJH • HOMOLOGACIÓN CAH
+          </span>
+          <h3 class="text-lg font-black text-white uppercase tracking-tight">
+            Emitir Nueva Resolución o Circular
+          </h3>
+        </div>
+      </div>
+      <button type="button" (click)="cerrarModalNuevaResolucion()"
+        class="p-2 rounded-xl bg-court-surface text-text-muted hover:text-white transition-colors cursor-pointer">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Modal Form Body -->
+    <div class="p-6 sm:p-8 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
+      <!-- 1. Selector de Órgano / Categoría -->
+      <div class="space-y-2">
+        <label class="text-xs font-bold uppercase tracking-wider text-text-secondary block">
+          1. Órgano Emisor &amp; Categoría del Instrumento *
+        </label>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button type="button" (click)="actualizarValoresPorCategoria('tribunal')"
+            [class.border-accent-crimson-deep]="formCategoria === 'tribunal'"
+            [class.bg-accent-crimson-deep/10]="formCategoria === 'tribunal'"
+            [class.border-border-subtle]="formCategoria !== 'tribunal'"
+            [class.bg-court-base]="formCategoria !== 'tribunal'"
+            class="p-3.5 rounded-2xl border-2 text-left transition-all cursor-pointer flex items-center gap-3">
+            <span class="material-symbols-outlined text-secondary text-2xl">gavel</span>
+            <div>
+              <span class="text-xs font-extrabold text-white block">Tribunal de Penas</span>
+              <span class="text-[10px] text-text-muted">Fallos y Sanciones</span>
+            </div>
+          </button>
+
+          <button type="button" (click)="actualizarValoresPorCategoria('reglamento')"
+            [class.border-tertiary]="formCategoria === 'reglamento'"
+            [class.bg-tertiary/10]="formCategoria === 'reglamento'"
+            [class.border-border-subtle]="formCategoria !== 'reglamento'"
+            [class.bg-court-base]="formCategoria !== 'reglamento'"
+            class="p-3.5 rounded-2xl border-2 text-left transition-all cursor-pointer flex items-center gap-3">
+            <span class="material-symbols-outlined text-tertiary text-2xl">assignment</span>
+            <div>
+              <span class="text-xs font-extrabold text-white block">Reglamento &amp; Fixture</span>
+              <span class="text-[10px] text-text-muted">Comisión Técnica</span>
+            </div>
+          </button>
+
+          <button type="button" (click)="actualizarValoresPorCategoria('tesoreria')"
+            [class.border-accent-amber]="formCategoria === 'tesoreria'"
+            [class.bg-accent-amber/10]="formCategoria === 'tesoreria'"
+            [class.border-border-subtle]="formCategoria !== 'tesoreria'"
+            [class.bg-court-base]="formCategoria !== 'tesoreria'"
+            class="p-3.5 rounded-2xl border-2 text-left transition-all cursor-pointer flex items-center gap-3">
+            <span class="material-symbols-outlined text-accent-amber text-2xl">receipt_long</span>
+            <div>
+              <span class="text-xs font-extrabold text-white block">Tesorería &amp; Cánones</span>
+              <span class="text-[10px] text-text-muted">Aranceles Oficiales</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Número Oficial, Expediente y Carácter Urgente -->
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+        <div class="sm:col-span-5">
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1.5">
+            Número de Resolución / Circular *
+          </label>
+          <input type="text" [(ngModel)]="formNumero"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-court-base border border-border-subtle text-primary font-mono font-bold text-xs uppercase focus:border-primary outline-none" />
+        </div>
+
+        <div class="sm:col-span-4">
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1.5">
+            Expediente / Referencia
+          </label>
+          <input type="text" [(ngModel)]="formExpediente"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-court-base border border-border-subtle text-white font-mono text-xs uppercase focus:border-primary outline-none" />
+        </div>
+
+        <div class="sm:col-span-3 flex flex-col justify-end">
+          <label
+            class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-court-base border border-border-subtle cursor-pointer select-none">
+            <input type="checkbox" [(ngModel)]="formUrgente" class="rounded text-accent-crimson-deep focus:ring-0" />
+            <span class="text-xs font-bold text-secondary">Carácter Urgente</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 3. Título de la Publicación -->
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1.5">
+          Título Oficial del Fallo o Circular *
+        </label>
+        <input type="text" [(ngModel)]="formTitulo"
+          placeholder="Ej: FALLO DISCIPLINARIO - INCIDENTES FECHA 5 PRIMERA DIVISIÓN"
+          class="w-full px-4 py-3 rounded-xl bg-court-base border border-border-subtle text-white text-sm font-bold uppercase placeholder:text-text-muted/50 focus:border-primary outline-none" />
+      </div>
+
+      <!-- 4. Vinculación Institucional (Club / Atleta Sancionado) -->
+      <div class="p-4 rounded-2xl bg-court-base/90 border border-border-subtle space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-primary flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-base">shield</span>
+            <span>Alcance Institucional &amp; Vinculación con Padrón</span>
+          </span>
+          @if (formCategoria === 'tribunal') {
+          <label class="flex items-center gap-2 text-xs text-tertiary font-bold cursor-pointer">
+            <input type="checkbox" [(ngModel)]="formRegistrarSancionDb" class="rounded text-tertiary" />
+            <span>Impactar en Padrón de Sanciones</span>
+          </label>
+          }
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+          <div>
+            <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+              Institución Destinataria / Afectada *
+            </label>
+            <select [ngModel]="formClubId()" (ngModelChange)="onClubModalChange($event)"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-court-surface border border-border-subtle text-white text-xs focus:border-primary outline-none">
+              <option value="">Todos los Clubes Afiliados (General / Sin club específico)</option>
+              @for (c of clubes(); track c.id) {
+              <option [value]="c.id">{{ c.nombre }} ({{ c.siglas }})</option>
+              }
+            </select>
+          </div>
+
+          @if (formCategoria === 'tribunal') {
+          <div class="space-y-2 pt-2 border-t border-white/5">
+            <div class="flex items-center justify-between">
+              <label
+                class="text-[11px] font-bold uppercase tracking-wider text-text-secondary flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm text-secondary">person_search</span>
+                <span>Atleta o Sujeto Sancionado (Tribunal de Penas)</span>
+              </label>
+              @if (formClubId()) {
+              <span class="text-[10px] text-text-muted font-medium">
+                Padrón del club: {{ jugadoresDelClubModal().length }} atleta(s)
+              </span>
+              }
+            </div>
+
+            <!-- Caso 1: Aún no seleccionó Club -->
+            @if (!formClubId()) {
+            <div
+              class="p-3.5 rounded-xl bg-court-base/60 border border-dashed border-border-subtle flex items-center gap-3 text-text-muted">
+              <span class="material-symbols-outlined text-xl text-text-muted shrink-0">info</span>
+              <div class="text-[11px]">
+                <span class="font-bold text-text-secondary block">Seleccione primero un Club arriba</span>
+                Para cargar los jugadores federados de dicha institución y evitar listas interminables.
+              </div>
+            </div>
+            } @else {
+            <!-- Caso 2: Jugador ya seleccionado -->
+            @if (selectedJugadorModal(); as sj) {
+            <div
+              class="p-3 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-between gap-3 animate-fade-in">
+              <div class="flex items-center gap-3 min-w-0">
+                <div
+                  class="size-9 rounded-xl bg-primary text-court-base flex items-center justify-center text-xs font-black shrink-0 shadow-sm">
+                  {{ getInitials(sj.nombreCompleto) }}
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-white truncate">{{ sj.nombreCompleto }}</span>
+                    <span
+                      class="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-bold uppercase">Federado</span>
+                  </div>
+                  <div class="text-[11px] text-text-secondary flex items-center gap-2 flex-wrap">
+                    <span>DNI {{ sj.dni }}</span>
+                    <span>•</span>
+                    <span>{{ sj.categoria }}</span>
+                    @if (sj.posicion) {
+                    <span>• {{ sj.posicion }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+              <button type="button" (click)="deseleccionarJugadorModal()"
+                class="px-2.5 py-1.5 rounded-lg bg-court-surface hover:bg-white/10 text-text-muted hover:text-white text-[11px] font-bold transition-colors cursor-pointer shrink-0 flex items-center gap-1 border border-border-glass">
+                <span class="material-symbols-outlined text-xs">close</span>
+                <span>Cambiar</span>
+              </button>
+            </div>
+            } @else {
+            <!-- Caso 3: Búsqueda y listado interactivo dentro del club -->
+            <div class="space-y-2 bg-court-base/70 p-3 rounded-2xl border border-border-subtle">
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-2.5 text-text-muted text-sm">search</span>
+                <input type="text" [ngModel]="filtroBusquedaJugador()"
+                  (ngModelChange)="filtroBusquedaJugador.set($event)"
+                  placeholder="Filtrar atleta por apellido, nombre o DNI..."
+                  class="w-full pl-9 pr-3 py-2 rounded-xl bg-court-surface border border-border-subtle text-white text-xs placeholder:text-text-muted focus:border-primary outline-none" />
+                @if (filtroBusquedaJugador()) {
+                <button type="button" (click)="filtroBusquedaJugador.set('')"
+                  class="absolute right-2.5 top-2 text-text-muted hover:text-white">
+                  <span class="material-symbols-outlined text-sm">close</span>
+                </button>
+                }
+              </div>
+
+              @if (cargandoJugadoresClub()) {
+              <div class="py-4 text-center text-xs text-text-muted flex items-center justify-center gap-2">
+                <span class="size-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
+                <span>Cargando padrón oficial del club...</span>
+              </div>
+              } @else {
+              <div class="max-h-44 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+                @for (j of jugadoresFiltradosModal(); track j.id) {
+                <div (click)="seleccionarJugadorModal(j)"
+                  class="p-2 rounded-lg bg-court-surface/80 hover:bg-court-card-hover border border-border-glass hover:border-primary/40 flex items-center justify-between gap-2 cursor-pointer transition-all">
+                  <div class="flex items-center gap-2.5 min-w-0">
+                    <div
+                      class="size-7 rounded-lg bg-court-card text-primary flex items-center justify-center text-[10px] font-black shrink-0">
+                      {{ getInitials(j.nombreCompleto) }}
+                    </div>
+                    <div class="min-w-0">
+                      <span class="text-xs font-bold text-white block truncate">{{ j.nombreCompleto }}</span>
+                      <span class="text-[10px] text-text-muted">DNI {{ j.dni }} • {{ j.categoria }}</span>
+                    </div>
+                  </div>
+                  <span
+                    class="text-[10px] font-bold text-primary px-2 py-1 rounded bg-primary/10 hover:bg-primary/20 shrink-0">
+                    Seleccionar
+                  </span>
+                </div>
+                } @empty {
+                <div class="py-3 text-center text-xs text-text-muted">
+                  No se encontraron jugadores que coincidan con la búsqueda en este club.
+                </div>
+                }
+              </div>
+              }
+
+              <!-- Alternativa: Sanción Institucional o Persona Manual -->
+              <div class="pt-2 border-t border-white/5">
+                <label class="text-[10px] font-bold uppercase tracking-wider text-text-muted block mb-1">
+                  O ingresar sanción institucional / personal no federado (DT, delegado, etc.):
+                </label>
+                <input type="text" [ngModel]="formSancionadoManual()" (ngModelChange)="formSancionadoManual.set($event)"
+                  placeholder="Ej: Sanción a la Institución, o Director Técnico..."
+                  class="w-full px-3 py-1.5 rounded-lg bg-court-surface border border-border-subtle text-white text-xs placeholder:text-text-muted focus:border-secondary outline-none" />
+              </div>
+            </div>
+            }
+            }
+          </div>
+          }
+        </div>
+
+        @if (formCategoria === 'tribunal' && formRegistrarSancionDb) {
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-white/5">
+          <div>
+            <label class="text-[10px] font-bold uppercase tracking-wider text-text-muted block mb-1">
+              Sanción Resumida (Padrón)
+            </label>
+            <input type="text" [(ngModel)]="formFalloCorto" placeholder="Ej: 2 Fechas de Suspensión"
+              class="w-full px-3 py-2 rounded-lg bg-court-surface border border-border-subtle text-white text-xs" />
+          </div>
+          <div>
+            <label class="text-[10px] font-bold uppercase tracking-wider text-text-muted block mb-1">
+              Total de Fechas a Cumplir
+            </label>
+            <input type="number" min="1" max="99" [(ngModel)]="formFechasTotales"
+              class="w-full px-3 py-2 rounded-lg bg-court-surface border border-border-subtle text-white text-xs num-tabular" />
+          </div>
+          <div class="flex items-end">
+            <label class="flex items-center gap-2 text-xs text-text-secondary cursor-pointer pb-2">
+              <input type="checkbox" [(ngModel)]="formInhabilitarJugador" class="rounded text-accent-crimson-deep" />
+              <span>Inhabilitar ficha en partido</span>
+            </label>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- 5. Cuerpo Legal (VISTO / CONSIDERANDO / RESUELVE) o Resumen -->
+      @if (formCategoria === 'tribunal') {
+      <div class="space-y-4">
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            VISTO:
+          </label>
+          <textarea rows="2" [(ngModel)]="formVisto"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-court-base border border-border-subtle text-white text-xs leading-relaxed focus:border-primary outline-none"></textarea>
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            CONSIDERANDO:
+          </label>
+          <textarea rows="2" [(ngModel)]="formConsiderando"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-court-base border border-border-subtle text-white text-xs leading-relaxed focus:border-primary outline-none"></textarea>
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            PARTE RESOLUTIVA (Un artículo por línea):
+          </label>
+          <textarea rows="3" [(ngModel)]="formResuelveTexto"
+            placeholder="Art. 1°: Aplicar DOS (2) fechas de suspensión...&#10;Art. 2°: Notifíquese y archívese."
+            class="w-full px-3.5 py-2.5 rounded-xl bg-court-base border border-border-subtle text-white text-xs leading-relaxed focus:border-primary outline-none"></textarea>
+        </div>
+      </div>
+      } @else {
+      <div class="space-y-4">
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            Cuerpo Descriptivo de la Circular *
+          </label>
+          <textarea rows="3" [(ngModel)]="formResumen"
+            placeholder="Describa las disposiciones técnicas, reprogramaciones o normativas arancelarias..."
+            class="w-full px-3.5 py-2.5 rounded-xl bg-court-base border border-border-subtle text-white text-xs leading-relaxed focus:border-primary outline-none"></textarea>
+        </div>
+
+        @if (formCategoria === 'tesoreria') {
+        <div class="p-4 rounded-2xl bg-court-base border border-border-subtle space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-accent-amber uppercase tracking-wider">Cuadro Tarifario Oficial</span>
+            <button type="button" (click)="agregarFilaArancel()"
+              class="text-xs font-bold text-primary hover:underline cursor-pointer">
+              + Añadir Arancel
+            </button>
+          </div>
+          @for (ar of formAranceles; track $index) {
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+            <input type="text" [(ngModel)]="ar.concepto" placeholder="Concepto"
+              class="sm:col-span-4 px-3 py-2 rounded-lg bg-court-surface border border-border-subtle text-white text-xs" />
+            <input type="text" [(ngModel)]="ar.monto" placeholder="$18.500"
+              class="sm:col-span-3 px-3 py-2 rounded-lg bg-court-surface border border-border-subtle text-white text-xs font-mono" />
+            <input type="text" [(ngModel)]="ar.detalle" placeholder="Detalle / Vigencia"
+              class="sm:col-span-4 px-3 py-2 rounded-lg bg-court-surface border border-border-subtle text-white text-xs" />
+            <button type="button" (click)="quitarFilaArancel($index)"
+              class="sm:col-span-1 p-2 text-text-muted hover:text-accent-crimson-deep flex justify-center cursor-pointer">
+              <span class="material-symbols-outlined text-base">delete</span>
+            </button>
+          </div>
+          }
+        </div>
+        }
+      </div>
+      }
+
+      <!-- 6. Recuadro de Alerta / Vigencia & Anexo PDF -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            Título Alerta / Plazo (Opcional)
+          </label>
+          <input type="text" [(ngModel)]="formAlertaTitulo"
+            class="w-full px-3.5 py-2 rounded-xl bg-court-base border border-border-subtle text-white text-xs" />
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+            Autoridad Firmante (Sello Digital)
+          </label>
+          <input type="text" [(ngModel)]="formAutoridad"
+            class="w-full px-3.5 py-2 rounded-xl bg-court-base border border-border-subtle text-white text-xs" />
+        </div>
+      </div>
+
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1">
+          Detalle de Alerta / Plazo de Apelación
+        </label>
+        <input type="text" [(ngModel)]="formAlertaTexto"
+          class="w-full px-3.5 py-2 rounded-xl bg-court-base border border-border-subtle text-white text-xs" />
+      </div>
+
+      <!-- Adjuntar PDF Oficial -->
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-wider text-text-secondary block mb-1.5">
+          Documento Anexo Oficial (PDF Sellado)
+        </label>
+        <label
+          class="flex items-center justify-between px-4 py-3 rounded-2xl border-2 border-dashed border-border-subtle hover:border-primary/50 bg-court-base/70 cursor-pointer transition-colors">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-2xl">upload_file</span>
+            <div class="text-xs">
+              <span class="font-bold text-white block">
+                {{ selectedPdfFile ? selectedPdfFile.name : 'Seleccionar documento PDF oficial para anexar' }}
+              </span>
+              <span class="text-[10px] text-text-muted">Formato PDF homologado con firma digital</span>
+            </div>
+          </div>
+          <span class="px-3 py-1 rounded-lg bg-court-card text-primary text-xs font-bold border border-primary/20">
+            Examinar
+          </span>
+          <input type="file" accept=".pdf,image/*" class="hidden" (change)="onPdfSelected($event)" />
+        </label>
+      </div>
+    </div>
+
+    <!-- Modal Footer Actions -->
+    <div class="p-6 bg-court-card border-t border-border-subtle flex items-center justify-end gap-3">
+      <button type="button" (click)="cerrarModalNuevaResolucion()"
+        class="px-5 py-2.5 rounded-xl bg-court-surface hover:bg-court-card-hover text-text-secondary hover:text-white text-xs font-bold transition-colors cursor-pointer">
+        Cancelar
+      </button>
+      <button type="button" (click)="publicarResolucion()" [disabled]="isSubmitting()"
+        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:brightness-110 text-white text-xs font-black uppercase tracking-wider shadow-lg shadow-sky-500/30 transition-all active:scale-95 cursor-pointer disabled:opacity-50">
+        @if (isSubmitting()) {
+        <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+        <span>Homologando...</span>
+        } @else {
+        <span class="material-symbols-outlined text-[18px]">verified</span>
+        <span>Firmar y Publicar en Boletín</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- ===================================================================== -->
+<!-- MODAL 2: VISOR DE EXPEDIENTE OFICIAL COMPLETO                          -->
+<!-- ===================================================================== -->
+@if (selectedResolutionModal(); as doc) {
+<div
+  class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in no-print"
+  (click)="cerrarExpedienteModal()">
+  <div class="w-full max-w-2xl bg-court-surface border border-border-subtle rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5"
+    (click)="$event.stopPropagation()">
+    <div class="flex items-start justify-between gap-4 border-b border-border-subtle pb-4">
+      <div class="flex items-center gap-3">
+        <img src="/img/logo.png" alt="FJH" class="w-10 h-10 object-contain" />
+        <div>
+          <span class="text-xs font-black text-primary uppercase tracking-wider block">{{ doc.numero }}</span>
+          <span class="text-[11px] text-text-muted">{{ doc.suborgano }} • {{ doc.fecha }}</span>
+        </div>
+      </div>
+      <button type="button" (click)="cerrarExpedienteModal()"
+        class="p-1.5 rounded-lg text-text-muted hover:text-white cursor-pointer">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <h3 class="text-base sm:text-lg font-extrabold text-white leading-snug">{{ doc.titulo }}</h3>
+
+    @if (doc.visto) {
+    <p class="text-xs text-text-secondary leading-relaxed"><strong class="text-white">VISTO:</strong> {{ doc.visto }}
+    </p>
+    }
+    @if (doc.considerando) {
+    <p class="text-xs text-text-secondary leading-relaxed"><strong class="text-white">CONSIDERANDO:</strong> {{
+      doc.considerando }}</p>
+    }
+    @if (doc.resuelve && doc.resuelve.length > 0) {
+    <div class="p-4 rounded-xl bg-court-base border border-border-glass space-y-1.5 text-xs text-white">
+      @for (r of doc.resuelve; track r) {
+      <p>{{ r }}</p>
+      }
+    </div>
+    }
+    @if (doc.resumen) {
+    <p class="text-xs text-text-secondary leading-relaxed">{{ doc.resumen }}</p>
+    }
+
+    <div class="pt-4 border-t border-border-subtle flex items-center justify-between">
+      <div class="text-[11px] text-tertiary font-bold flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-base">verified</span>
+        <span>{{ doc.selloAutoridad }}</span>
+      </div>
+      <button type="button" (click)="imprimirBoletin()"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-on-primary text-xs font-bold cursor-pointer">
+        <span class="material-symbols-outlined text-sm">print</span>
+        <span>Imprimir Copia</span>
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- ===================================================================== -->
+<!-- MODAL 3: CONFIRMACIÓN DE ELIMINACIÓN                                  -->
+<!-- ===================================================================== -->
+@if (resolutionToDelete(); as target) {
+<div
+  class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in no-print"
+  (click)="cancelarEliminar()">
+  <div class="w-full max-w-md bg-court-card border border-border-subtle rounded-2xl p-6 shadow-2xl space-y-4"
+    (click)="$event.stopPropagation()">
+    <div class="flex items-center gap-3">
+      <div
+        class="w-11 h-11 rounded-xl bg-accent-crimson-deep/20 text-accent-crimson-deep flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-2xl">delete_forever</span>
+      </div>
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-widest text-accent-crimson-deep block">Acción
+          Administrativa</span>
+        <h4 class="text-base font-extrabold text-white">¿Eliminar resolución del Boletín?</h4>
+      </div>
+    </div>
+    <p class="text-xs text-text-secondary leading-relaxed">
+      Se retirará <strong class="text-white">{{ target.numero }}</strong> ({{ target.titulo }}) del listado oficial.
+    </p>
+    <div class="flex items-center justify-end gap-2 pt-2">
+      <button type="button" (click)="cancelarEliminar()"
+        class="px-4 py-2 rounded-xl bg-court-surface text-text-secondary hover:text-white text-xs font-bold cursor-pointer">
+        Cancelar
+      </button>
+      <button type="button" (click)="ejecutarEliminar()"
+        class="px-4 py-2 rounded-xl bg-accent-crimson-deep hover:bg-rose-600 text-white text-xs font-bold cursor-pointer">
+        Confirmar Eliminación
+      </button>
+    </div>
+  </div>
+</div>
+}

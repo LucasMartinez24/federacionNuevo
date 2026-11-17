@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+.num-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

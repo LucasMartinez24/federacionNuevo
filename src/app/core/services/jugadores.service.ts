@@ -24,6 +24,10 @@ export interface Jugador {
   fichaMedicaUrl?: string | null;
   autorizacionUrl?: string | null;
   fichaJugadorUrl?: string | null;
+  posicion?: string | null;
+  fotoDniFrente?: string | null;
+  fotoFichaMedica?: string | null;
+  fotoAutorizacionMenor?: string | null;
   clubId: string;
   club?: Club;
   createdAt?: string;
@@ -59,6 +63,10 @@ export class JugadoresService {
 
   eliminarJugador(id: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`);
+  }
+
+  deleteJugador(id: string): Observable<{ message: string }> {
+    return this.eliminarJugador(id);
   }
 
   getMovimientos(jugadorId: string): Observable<any[]> {

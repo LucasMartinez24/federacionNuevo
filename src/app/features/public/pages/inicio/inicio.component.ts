@@ -1,17 +1,46 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { GaleriaService, FotoGaleria } from '../../../../core/services/galeria.service';
+import { PartidosService, PartidoItem } from '../../../../core/services/partidos.service';
+import { TorneosService, Torneo, PosicionClub } from '../../../../core/services/torneos.service';
+import { ClubesService } from '../../../../core/services/clubes.service';
+import { environment } from '../../../../../environments/environment';
 
-interface Match {
+export interface MatchDisplay {
+  id: string;
+  torneoId?: string;
   competition: string;
+  category: string;
+  rama: string;
   status: string;
   statusTone: 'live' | 'scheduled' | 'finished';
   home: string;
   away: string;
-  homeInitial: string;
-  awayInitial: string;
+  homeLogo?: string | null;
+  awayLogo?: string | null;
+  homeSiglas?: string;
+  awaySiglas?: string;
   score: string;
+  golesLocal: number;
+  golesVisitante: number;
   venue: string;
   detail: string;
+  date?: string | null;
+  hora?: string | null;
+  jornada?: number;
+}
+
+export interface GoleadorItem {
+  pos: number;
+  jugadorId?: string;
+  nombre: string;
+  club: string;
+  clubLogo?: string | null;
+  clubSiglas?: string;
+  pj: number;
+  goles: number;
 }
 
 @Component({
@@ -22,69 +51,124 @@ interface Match {
   styleUrl: './inicio.component.css',
 })
 export class InicioComponent {
+  private readonly torneosService = inject(TorneosService);
+  private readonly partidosService = inject(PartidosService);
+  private readonly galeriaService = inject(GaleriaService);
+  private readonly clubesService = inject(ClubesService);
+
+  protected readonly serverUrl = environment.serverUrl;
   protected readonly menuOpen = signal(false);
-  protected readonly activeFilter = signal('Primera Masc');
-  protected readonly activeGender = signal('Masc');
 
-  protected readonly matches: readonly Match[] = [
-    {
-      competition: 'Apertura • 1° Div Masculino',
-      status: "2T 22'",
-      statusTone: 'live',
-      home: 'CIAF Jujuy',
-      away: 'Minas HC',
-      homeInitial: 'C',
-      awayInitial: 'M',
-      score: '26:24',
-      venue: 'Estadio Federación de Básquet',
-      detail: 'Árbitro: C. Tolaba / M. Jerez',
-    },
-    {
-      competition: 'Apertura • 1° Div Masculino',
-      status: 'Hoy 20:30 hs',
-      statusTone: 'scheduled',
-      home: 'Lavalle HC',
-      away: 'San Salvador HC',
-      homeInitial: 'L',
-      awayInitial: 'S',
-      score: 'VS',
-      venue: 'Club Atlético Gorriti - Cancha 1',
-      detail: 'Árbitro: F. Ramos / G. Benítez',
-    },
-    {
-      competition: 'Apertura • 1° Div Masculino',
-      status: 'Finalizado',
-      statusTone: 'finished',
-      home: 'Defensores',
-      away: 'Tiro y Gimnasia',
-      homeInitial: 'D',
-      awayInitial: 'T',
-      score: '19:23',
-      venue: 'Complejo Deportivo San Pedro',
-      detail: 'Planilla cerrada y firmada',
-    },
+  // Filtros Match Center: Categoría Principal + Rama
+  protected readonly matchCategories = [
+    { label: 'Todas', value: 'Todas' },
+    { label: 'Primera División', value: 'Primera' },
+    { label: 'Juveniles', value: 'Juveniles' },
+    { label: 'Cadetes', value: 'Cadetes' },
+    { label: 'Menores', value: 'Menores' },
   ];
 
-  protected readonly galleryItems = [
-    {
-      label: 'Torneo Apertura',
-      date: '18 Mayo, 2025',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCKr062kwRRxRQSlLayP-ELMnthIrLnHQ_p2DFCWlx_5DKMEZOf-Er6IbFbXyo_UzQxvybTwlQ07K3DeTLAq8U2LzKO7ZIACa2JbO4-gTXYxzie7-gqFtf5Ho-sc0nDohZP-Nz9hoTyQlJRtbOhUnxYgKIm4FyiJY8Vmxwkl3JceTai6fXm6pjT_XeFgKoc8sVoO3lr6K3NjWUKlKm0_3DOBGGJrrEeKhQEuBh22jyruzSbYtw5f0Y9xQ',
-    },
-    {
-      label: 'Selecciones FJH',
-      date: '14 Mayo, 2025',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuDeM49TJggaKKIX4b9l1YTZqEmz3hNKSyjCOhh0TCYBFOkPB593gKIsEhF0Jg0V7qDEihmdn90tIxdqgZa4_cZgS49cSpyLVVvNbVGLHwYpFYLHqNJpgiAyRfgcNLdjWtHKvByGF0ATtOc0qJxaIuOYN3TBTlokfquLd7qTeofCTJCdjAb9VySERji7lYvczpti8wr4pjneFZNxf0hvCYH7o3V4R5ZEipSH7ArEu1vMGbQMX7PrmM-uHg',
-    },
-    {
-      label: 'Handball Jujeño',
-      date: '10 Mayo, 2025',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuC_Uc7m-VfEPjkg-WuQYv7TFkCizYGlpCDSchPdxg2W3eTzUGdQfsaY5J-NSchXcE0NcA6AdL0c-apGjkHi8nq1cO44XFfOJia7gdAyvP9Fhv4mXt_HR3BfYJoIpHAi-mmAZ7E9ttjIbtPxvps2apROthKI_z13zrg_9C4kCWQ9VKcKehBSSjoYuRoBls_xdtp5j0hKZjdPEa3JS26SNHZbV8oO3Pu20MuUtawlWnX642zAfkme2mHVUA',
-    },
+  protected readonly matchCategory = signal<string>('Todas');
+  protected readonly matchGender = signal<'Ambas' | 'Masc' | 'Fem'>('Ambas');
+
+  // Filtros Top Goleadores
+  protected readonly activeGender = signal<'Masc' | 'Fem'>('Masc');
+  protected readonly activeScorerCategory = signal<string>('Todas');
+
+  // Datos principales reactivos
+  protected readonly torneos = signal<Torneo[]>([]);
+  protected readonly activeTorneo = signal<Torneo | null>(null);
+  protected readonly allMatches = signal<MatchDisplay[]>([]);
+  protected readonly tablaPosiciones = signal<PosicionClub[]>([]);
+  protected readonly goleadores = signal<GoleadorItem[]>([]);
+  protected readonly galleryItems = signal<FotoGaleria[]>([]);
+  protected readonly totalClubesCount = signal<number>(14);
+
+  // Estadísticas y computados
+  protected readonly liveMatches = computed(() =>
+    this.allMatches().filter((m) => m.statusTone === 'live')
+  );
+
+  protected readonly scheduledMatches = computed(() =>
+    this.allMatches().filter((m) => m.statusTone === 'scheduled')
+  );
+
+  protected readonly recentFinishedMatches = computed(() =>
+    this.allMatches().filter((m) => m.statusTone === 'finished')
+  );
+
+  // Lista de filtros para el Match Center: Todas las categorías federadas con femenino y masculino
+  protected readonly filterPills = [
+    { label: 'Todos', value: 'Todos' },
+    { label: 'Primera Masc', value: 'Primera Masc' },
+    { label: 'Primera Fem', value: 'Primera Fem' },
+    { label: 'Juveniles Masc', value: 'Juveniles Masc' },
+    { label: 'Juveniles Fem', value: 'Juveniles Fem' },
+    { label: 'Cadetes Masc', value: 'Cadetes Masc' },
+    { label: 'Cadetes Fem', value: 'Cadetes Fem' },
+    { label: 'Menores Masc', value: 'Menores Masc' },
+    { label: 'Menores Fem', value: 'Menores Fem' },
   ];
+
+  // Opciones de categoría oficial FJH para el Top Goleadores (desde Menores hasta Primera)
+  protected readonly scorerCategories = [
+    { label: 'Todas las Cat.', value: 'Todas' },
+    { label: 'Primera', value: 'Primera' },
+    { label: 'Juveniles', value: 'Juveniles' },
+    { label: 'Cadetes', value: 'Cadetes' },
+    { label: 'Menores', value: 'Menores' },
+  ];
+
+  // Partidos destacados filtrados por categoría y rama seleccionadas limpiamente
+  protected readonly filteredMatches = computed(() => {
+    const selectedCat = this.matchCategory();
+    const selectedGender = this.matchGender();
+    const list = this.allMatches();
+
+    return list
+      .filter((m) => {
+        const cat = (m.category || '').toLowerCase();
+        const rama = (m.rama || '').toLowerCase();
+        const comp = (m.competition || '').toLowerCase();
+
+        // 1. Filtro de Categoría
+        let matchCat = true;
+        if (selectedCat !== 'Todas') {
+          const cLower = selectedCat.toLowerCase();
+          matchCat = cat.includes(cLower) || comp.includes(cLower);
+        }
+
+        // 2. Filtro de Rama / Género
+        let matchGender = true;
+        if (selectedGender === 'Masc') {
+          matchGender = rama.includes('masc') || comp.includes('masc');
+        } else if (selectedGender === 'Fem') {
+          matchGender = rama.includes('fem') || comp.includes('fem');
+        }
+
+        return matchCat && matchGender;
+      })
+      .slice(0, 6);
+  });
+
+  // Próximos partidos para la columna de fixture
+  protected readonly upcomingFixture = computed(() => {
+    const scheduled = this.scheduledMatches();
+    if (scheduled.length > 0) return scheduled.slice(0, 5);
+    return this.allMatches().slice(0, 5);
+  });
+
+  // Top scorer #1
+  protected readonly topScorer = computed(() => {
+    const list = this.goleadores();
+    return list.length > 0 ? list[0] : null;
+  });
+
+  // Ranking restante (posiciones 2 a 5)
+  protected readonly runnersUpScorers = computed(() => {
+    const list = this.goleadores();
+    return list.length > 1 ? list.slice(1, 6) : [];
+  });
 
   protected readonly sponsors = [
     { name: 'Kempa', image: '/img/sponsors/kempa.webp', light: false },
@@ -96,15 +180,180 @@ export class InicioComponent {
     { name: 'Muebles Norteñita', image: '/img/sponsors/muebles.png', light: true },
   ];
 
+  constructor() {
+    this.cargarDatos();
+  }
+
   protected toggleMenu(): void {
     this.menuOpen.update((open) => !open);
   }
 
-  protected selectFilter(filter: string): void {
-    this.activeFilter.set(filter);
+  protected selectMatchCategory(cat: string): void {
+    this.matchCategory.set(cat);
   }
 
-  protected selectGender(gender: string): void {
+  protected selectMatchGender(gender: 'Ambas' | 'Masc' | 'Fem'): void {
+    this.matchGender.set(gender);
+  }
+
+  protected selectGender(gender: 'Masc' | 'Fem'): void {
     this.activeGender.set(gender);
+    this.cargarGoleadores();
+  }
+
+  protected selectScorerCategory(cat: string): void {
+    this.activeScorerCategory.set(cat);
+    this.cargarGoleadores();
+  }
+
+  protected getInitials(name?: string, siglas?: string): string {
+    if (siglas) return siglas.toUpperCase();
+    if (!name) return 'CLB';
+    return name.substring(0, 3).toUpperCase();
+  }
+
+  /**
+   * Genera URL absoluta del logo del club
+   */
+  protected getClubLogoUrl(logoUrl: string | null | undefined): string {
+    if (!logoUrl) return '';
+    if (logoUrl.startsWith('http://') || logoUrl.startsWith('https://')) {
+      return logoUrl;
+    }
+    return `${this.serverUrl}${logoUrl}`;
+  }
+
+  protected photoUrl(photo: FotoGaleria): string {
+    if (!photo || !photo.url) return '';
+    return photo.url.startsWith('http') ? photo.url : `${this.serverUrl}${photo.url}`;
+  }
+
+  /**
+   * Carga torneos, partidos, clubes, posiciones, goleadores y galería
+   */
+  private cargarDatos(): void {
+    // 1. Clubes para contador
+    this.clubesService.getClubes().pipe(catchError(() => of([]))).subscribe((clubs) => {
+      if (clubs && clubs.length > 0) {
+        this.totalClubesCount.set(clubs.length);
+      }
+    });
+
+    // 2. Galería
+    this.galeriaService.getFotos().pipe(catchError(() => of([]))).subscribe((photos) => {
+      this.galleryItems.set(photos.slice(0, 3));
+    });
+
+    // 3. Torneos y fixtures
+    this.torneosService.getTorneos().pipe(
+      catchError(() => of([])),
+      switchMap((tournaments) => {
+        this.torneos.set(tournaments);
+
+        const active = tournaments.find((t) => t.estado === 'In Progress') || tournaments[0] || null;
+        this.activeTorneo.set(active);
+
+        if (active) {
+          this.partidosService.getTablaPosiciones(active.id).pipe(catchError(() => of([]))).subscribe((pos) => {
+            this.tablaPosiciones.set(pos);
+          });
+        }
+
+        if (tournaments.length === 0) return of([]);
+
+        return forkJoin(
+          tournaments.map((tournament) =>
+            this.partidosService.getFixtureByTorneo(tournament.id).pipe(
+              map((partidos) =>
+                partidos.map((p) => this.transformarPartido(p, tournament))
+              ),
+              catchError(() => of([]))
+            )
+          )
+        );
+      })
+    ).subscribe((groups) => {
+      const flattened = groups.flat().filter((m): m is MatchDisplay => !!m);
+      this.allMatches.set(flattened);
+    });
+
+    // 4. Goleadores
+    this.cargarGoleadores();
+  }
+
+  private cargarGoleadores(): void {
+    const generoFiltro = this.activeGender() === 'Fem' ? 'Femenino' : 'Masculino';
+    const categoriaFiltro = this.activeScorerCategory();
+
+    this.partidosService.getGoleadores(undefined, generoFiltro, categoriaFiltro).pipe(
+      catchError(() => of([]))
+    ).subscribe((gols) => {
+      // Si la categoría seleccionada tiene goleadores, mostrarla; si no, dejar vacío el ranking de esa categoría
+      this.goleadores.set(gols || []);
+    });
+  }
+
+  private transformarPartido(p: PartidoItem, torneo: Torneo): MatchDisplay | null {
+    if (!p.id) return null;
+
+    const home = p.local?.nombre || 'Equipo Local';
+    const away = p.visitante?.nombre || 'Equipo Visitante';
+    const estadoStr = (p.estado || 'Programado').trim();
+    const estadoLower = estadoStr.toLowerCase();
+
+    let statusTone: 'live' | 'scheduled' | 'finished' = 'scheduled';
+    if (estadoLower.includes('final') || estadoLower.includes('terminado')) {
+      statusTone = 'finished';
+    } else if (
+      estadoLower.includes('vivo') ||
+      estadoLower.includes('juego') ||
+      estadoLower.includes('disputa') ||
+      estadoLower.includes('1t') ||
+      estadoLower.includes('2t')
+    ) {
+      statusTone = 'live';
+    }
+
+    const gL = p.golesLocal ?? 0;
+    const gV = p.golesVisitante ?? 0;
+    const score = statusTone === 'scheduled' ? 'VS' : `${gL} : ${gV}`;
+
+    let fechaFormateada = 'Fecha a confirmar';
+    if (p.fecha) {
+      const d = new Date(p.fecha);
+      if (!isNaN(d.getTime())) {
+        const dia = d.toLocaleDateString('es-AR', { weekday: 'short', day: '2-digit', month: 'short' });
+        fechaFormateada = dia.toUpperCase();
+      } else {
+        fechaFormateada = String(p.fecha).substring(0, 10);
+      }
+    }
+
+    const rama = torneo.rama || 'Masculino';
+    const cat = torneo.categoria || 'Primera División';
+
+    return {
+      id: p.id,
+      torneoId: p.torneoId || torneo.id,
+      competition: `${torneo.nombre} · ${cat} (${rama})`,
+      category: cat,
+      rama,
+      status: estadoStr,
+      statusTone,
+      home,
+      away,
+      homeLogo: p.local?.logoUrl || null,
+      awayLogo: p.visitante?.logoUrl || null,
+      homeSiglas: p.local?.siglas,
+      awaySiglas: p.visitante?.siglas,
+      score,
+      golesLocal: gL,
+      golesVisitante: gV,
+      venue: p.lugar || 'Sede oficial a confirmar',
+      detail: p.hora ? `${fechaFormateada} · ${p.hora}` : fechaFormateada,
+      date: fechaFormateada,
+      hora: p.hora || null,
+      jornada: p.jornada,
+    };
   }
 }

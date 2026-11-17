@@ -39,7 +39,7 @@
 
     <div class="flex items-center gap-2.5">
       <a
-        routerLink="/admin/jugadores"
+        [routerLink]="isClub ? '/club/jugadores' : '/admin/jugadores'"
         class="px-3.5 py-2 text-xs md:text-sm font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-all flex items-center gap-1.5 border border-slate-700 cursor-pointer">
         <span class="material-symbols-outlined text-sm md:text-base">arrow_back</span>
         <span class="hidden sm:inline">Volver</span>
@@ -257,9 +257,17 @@
             <div class="mb-5 p-4 rounded-2xl bg-slate-950/60 border border-slate-800 flex flex-col gap-3">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
+                  @if (hasValidLogo(selectedClub)) {
+                  <img
+                    [src]="getClubLogoUrl(selectedClub?.logoUrl)"
+                    [alt]="selectedClub?.nombre || clubNombre"
+                    (error)="onClubLogoError()"
+                    class="w-10 h-10 rounded-xl object-contain bg-slate-900 p-1 border border-slate-700 shrink-0 shadow-sm" />
+                  } @else {
                   <div class="w-10 h-10 rounded-xl bg-slate-800 text-sky-400 border border-slate-700 font-bold flex items-center justify-center shrink-0">
                     {{ getClubInitials(selectedClub) }}
                   </div>
+                  }
                   <div class="flex flex-col">
                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">
                       Institución Deportiva Asignada <span class="text-red-400">*</span>
@@ -305,7 +313,8 @@
                 }
               </div>
 
-              <!-- Selector interactivo de Clubes -->
+              <!-- Selector interactivo de Clubes (Solo Administradores de Federación) -->
+              @if (!isClub) {
               <div class="flex flex-col gap-1.5 pt-2 border-t border-slate-800/80">
                 <label class="text-[10px] font-black text-slate-400 uppercase">
                   Cambiar / Seleccionar Club:
@@ -337,6 +346,18 @@
                 </span>
                 }
               </div>
+              } @else {
+              <!-- Bloque Bloqueado Obligatorio para Club -->
+              <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-emerald-400 text-xs font-bold">
+                  <span class="material-symbols-outlined text-base">lock</span>
+                  <span>Club detectado y vinculado automáticamente a su usuario</span>
+                </div>
+                <span class="text-[10px] uppercase font-extrabold tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                  Solo {{ selectedClub?.siglas || clubNombre }}
+                </span>
+              </div>
+              }
             </div>
 
             <!-- Grilla de Categoría Base, Régimen Veteranos, Equipo y Estado -->
@@ -433,20 +454,28 @@
                 <p class="text-[9px] text-slate-400 truncate w-full px-2">
                   {{ fileNames.fichaMedica || (existingUrls.fichaMedica ? 'Archivo guardado' : 'Opcional / Apto') }}
                 </p>
+                <div class="mt-2 flex items-center gap-2 z-10">
+                  <a
+                    href="/docs/ficha-medica-vacia.pdf"
+                    download="ficha-medica-vacia.pdf"
+                    target="_blank"
+                    class="text-[10px] font-bold text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-0.5">
+                    <span class="material-symbols-outlined text-[13px]">download</span> Plantilla PDF
+                  </a>
+                  @if (existingUrls.fichaMedica) {
+                  <button
+                    type="button"
+                    (click)="verDocumento(existingUrls.fichaMedica)"
+                    class="text-[10px] font-bold text-sky-400 hover:underline flex items-center gap-0.5">
+                    <span class="material-symbols-outlined text-[13px]">visibility</span> Ver
+                  </button>
+                  }
+                </div>
                 <input
                   class="absolute inset-0 opacity-0 cursor-pointer"
                   type="file"
                   (change)="onFileChange($event, 'fichaMedica')"
                   accept=".pdf,.jpg,.jpeg,.png" />
-
-                @if (existingUrls.fichaMedica) {
-                <button
-                  type="button"
-                  (click)="verDocumento(existingUrls.fichaMedica)"
-                  class="mt-2 text-[10px] font-bold text-sky-400 hover:underline z-10 flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[13px]">visibility</span> Ver actual
-                </button>
-                }
               </div>
 
               <!-- Drop Zone 2: Ficha FJH -->
@@ -475,20 +504,28 @@
                   [class.text-slate-400]="!isCampoInvalido('fichaJugador')">
                   {{ fileNames.fichaJugador || (existingUrls.fichaJugador ? 'Archivo guardado' : (documentacionDiferida ? 'Documento pendiente' : 'Obligatorio')) }}
                 </p>
+                <div class="mt-2 flex items-center gap-2 z-10">
+                  <a
+                    href="/docs/Formulario-Fichaje-FJH.pdf"
+                    download="Formulario-Fichaje-FJH.pdf"
+                    target="_blank"
+                    class="text-[10px] font-bold text-sky-400 hover:text-sky-300 hover:underline flex items-center gap-0.5">
+                    <span class="material-symbols-outlined text-[13px]">download</span> Formulario FJH
+                  </a>
+                  @if (existingUrls.fichaJugador) {
+                  <button
+                    type="button"
+                    (click)="verDocumento(existingUrls.fichaJugador)"
+                    class="text-[10px] font-bold text-sky-400 hover:underline flex items-center gap-0.5">
+                    <span class="material-symbols-outlined text-[13px]">visibility</span> Ver
+                  </button>
+                  }
+                </div>
                 <input
                   class="absolute inset-0 opacity-0 cursor-pointer"
                   type="file"
                   (change)="onFileChange($event, 'fichaJugador')"
                   accept=".pdf,.jpg,.jpeg,.png" />
-
-                @if (existingUrls.fichaJugador) {
-                <button
-                  type="button"
-                  (click)="verDocumento(existingUrls.fichaJugador)"
-                  class="mt-2 text-[10px] font-bold text-sky-400 hover:underline z-10 flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[13px]">visibility</span> Ver actual
-                </button>
-                }
               </div>
 
               <!-- Drop Zone 3: Autorización Padres (Solo si es menor) -->
@@ -517,20 +554,28 @@
                   [class.text-slate-400]="!isCampoInvalido('autorizacionPadres')">
                   {{ fileNames.autorizacionPadres || (existingUrls.autorizacionPadres ? 'Archivo guardado' : (documentacionDiferida ? 'Documento pendiente' : 'Requerido menores')) }}
                 </p>
+                <div class="mt-2 flex items-center gap-2 z-10">
+                  <a
+                    href="/docs/autorizacion-menores-18.pdf"
+                    download="autorizacion-menores-18.pdf"
+                    target="_blank"
+                    class="text-[10px] font-bold text-amber-400 hover:text-amber-300 hover:underline flex items-center gap-0.5">
+                    <span class="material-symbols-outlined text-[13px]">download</span> Modelo -18
+                  </a>
+                  @if (existingUrls.autorizacionPadres) {
+                  <button
+                    type="button"
+                    (click)="verDocumento(existingUrls.autorizacionPadres)"
+                    class="text-[10px] font-bold text-sky-400 hover:underline flex items-center gap-0.5">
+                    <span class="material-symbols-outlined text-[13px]">visibility</span> Ver
+                  </button>
+                  }
+                </div>
                 <input
                   class="absolute inset-0 opacity-0 cursor-pointer"
                   type="file"
                   (change)="onFileChange($event, 'autorizacionPadres')"
                   accept=".pdf,.jpg,.jpeg,.png" />
-
-                @if (existingUrls.autorizacionPadres) {
-                <button
-                  type="button"
-                  (click)="verDocumento(existingUrls.autorizacionPadres)"
-                  class="mt-2 text-[10px] font-bold text-sky-400 hover:underline z-10 flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[13px]">visibility</span> Ver actual
-                </button>
-                }
               </div>
               } @else {
               <!-- Si es mayor de edad -->

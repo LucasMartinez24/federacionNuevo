@@ -10,6 +10,8 @@ export interface User {
   nombre?: string;
   role: UserRole;
   siglas?: string;
+  logoUrl?: string | null;
+  esInvitado?: boolean;
 }
 
 export interface LoginCredentials {
