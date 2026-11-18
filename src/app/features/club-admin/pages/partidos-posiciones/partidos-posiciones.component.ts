@@ -85,6 +85,36 @@ export class PartidosPosicionesComponent implements OnInit {
   protected readonly tablaPosiciones = signal<PosicionClub[]>([]);
   protected readonly torneoActivo = signal<Torneo | null>(null);
 
+  // Selector desplegable visual de torneos
+  protected readonly selectorTorneosAbierto = signal<boolean>(false);
+
+  // Torneos filtrados opcionalmente según categoría y rama
+  protected readonly torneosDisponibles = computed(() => {
+    const list = this.torneos();
+    const cat = this.selectedCategory();
+    const rama = this.selectedRama();
+
+    return list.filter((t) => {
+      const tCat = (t.categoria || '').toLowerCase();
+      const tRama = (t.rama || '').toLowerCase();
+      const tNom = (t.nombre || '').toLowerCase();
+
+      let matchCat = true;
+      if (cat !== 'TODAS') {
+        if (cat === 'PRIMERA') matchCat = tCat.includes('primera') || tNom.includes('primera');
+        else if (cat === 'JUVENILES') matchCat = tCat.includes('juvenil') || tNom.includes('juvenil');
+        else if (cat === 'CADETES') matchCat = tCat.includes('cadete') || tNom.includes('cadete');
+        else if (cat === 'MENORES') matchCat = tCat.includes('menor') || tNom.includes('menor');
+      }
+
+      let matchRama = true;
+      if (rama === 'Masc') matchRama = tRama.includes('masc') || tNom.includes('masc');
+      else if (rama === 'Fem') matchRama = tRama.includes('fem') || tNom.includes('fem');
+
+      return matchCat && matchRama;
+    });
+  });
+
   // Modal Acta / Detalle
   protected readonly partidoActaSeleccionado = signal<PartidoClubDisplay | null>(null);
 
@@ -580,20 +610,22 @@ export class PartidosPosicionesComponent implements OnInit {
   }
 
   cargarTablaTorneo(torneoId: string): void {
-    const cat = this.selectedCategory();
-    const rama = this.selectedRama();
-
-    if (torneoId && torneoId !== 'categoria') {
-      this.partidosService
-        .getFixtureByTorneo(torneoId)
-        .pipe(catchError(() => of([])))
-        .subscribe((list) => this.todosPartidosTorneo.set(list || []));
-    } else {
+    if (!torneoId) {
+      this.tablaPosiciones.set([]);
       this.todosPartidosTorneo.set([]);
+      this.loading.set(false);
+      return;
     }
 
+    // 1. Cargar fixture completo del torneo específico para playoffs y estadísticas
     this.partidosService
-      .getTablaPosiciones(torneoId, undefined, cat, rama)
+      .getFixtureByTorneo(torneoId)
+      .pipe(catchError(() => of([])))
+      .subscribe((list) => this.todosPartidosTorneo.set(list || []));
+
+    // 2. Cargar tabla de posiciones estrictamente por ese torneoId
+    this.partidosService
+      .getTablaPosiciones(torneoId)
       .pipe(catchError(() => of([])))
       .subscribe({
         next: (tabla) => {
@@ -602,6 +634,65 @@ export class PartidosPosicionesComponent implements OnInit {
         },
         error: () => this.loading.set(false),
       });
+  }
+
+  toggleSelectorTorneos(): void {
+    this.selectorTorneosAbierto.update((v) => !v);
+  }
+
+  seleccionarTorneo(t: Torneo): void {
+    this.torneoActivo.set(t);
+    this.selectorTorneosAbierto.set(false);
+
+    // Sincronizar filtros de categoría y rama visuales
+    const catLower = (t.categoria || '').toLowerCase();
+    if (catLower.includes('primera')) this.selectedCategory.set('PRIMERA');
+    else if (catLower.includes('juvenil')) this.selectedCategory.set('JUVENILES');
+    else if (catLower.includes('cadete')) this.selectedCategory.set('CADETES');
+    else if (catLower.includes('menor')) this.selectedCategory.set('MENORES');
+
+    const ramaLower = (t.rama || '').toLowerCase();
+    if (ramaLower.includes('masc')) this.selectedRama.set('Masc');
+    else if (ramaLower.includes('fem')) this.selectedRama.set('Fem');
+
+    this.cargarTablaTorneo(t.id);
+  }
+
+  seleccionarTorneoPorId(id: string): void {
+    const found = this.torneos().find((t) => t.id === id);
+    if (found) {
+      this.seleccionarTorneo(found);
+    }
+  }
+
+  getEstadoVisualTorneo(estado: string): { label: string; badgeClass: string; ping: boolean } {
+    const est = (estado || '').toLowerCase().trim();
+    if (est === 'in progress' || est === 'activo' || est === 'en curso') {
+      return {
+        label: 'En Disputa',
+        badgeClass: 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400',
+        ping: true,
+      };
+    }
+    if (est === 'upcoming' || est === 'proximo') {
+      return {
+        label: 'Próximo',
+        badgeClass: 'bg-amber-500/15 border-amber-500/40 text-amber-400',
+        ping: false,
+      };
+    }
+    if (est === 'pausa') {
+      return {
+        label: 'Receso',
+        badgeClass: 'bg-rose-500/15 border-rose-500/40 text-rose-400',
+        ping: false,
+      };
+    }
+    return {
+      label: 'Concluido',
+      badgeClass: 'bg-slate-700/40 border-slate-600/40 text-slate-300',
+      ping: false,
+    };
   }
 
   setView(view: 'agenda' | 'standings' | 'playoffs'): void {
@@ -705,12 +796,17 @@ export class PartidosPosicionesComponent implements OnInit {
     });
 
     if (match) {
-      this.torneoActivo.set(match);
-      this.cargarTablaTorneo(match.id);
+      this.seleccionarTorneo(match);
     } else {
-      // Si no hay torneo creado para esa categoría/rama, se envía a la API con los filtros y limpia la tabla
-      this.torneoActivo.set(null);
-      this.cargarTablaTorneo('categoria');
+      // Si no hay torneo creado para esa categoría/rama específica, no inventar consolidado
+      const firstAvailable = this.torneosDisponibles()[0];
+      if (firstAvailable) {
+        this.seleccionarTorneo(firstAvailable);
+      } else {
+        this.torneoActivo.set(null);
+        this.tablaPosiciones.set([]);
+        this.todosPartidosTorneo.set([]);
+      }
     }
   }
 

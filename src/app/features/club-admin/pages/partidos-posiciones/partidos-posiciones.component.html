@@ -134,68 +134,157 @@
     </div>
   </section>
 
-  <!-- 3. CATEGORY & RAMA SEGMENTED FILTER STRIP -->
-  <section class="w-full pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-    <!-- Selector de Categorías -->
-    <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none no-scrollbar flex-1">
-      @for (cat of categoriasFiltro; track cat.value) {
-      <button
-        type="button"
-        (click)="setCategory(cat.value)"
-        [class.bg-[#0B3C5D]]="selectedCategory() === cat.value"
-        [class.text-white]="selectedCategory() === cat.value"
-        [class.border-sky-400/40]="selectedCategory() === cat.value"
-        [class.shadow-lg]="selectedCategory() === cat.value"
-        [class.shadow-sky-500/20]="selectedCategory() === cat.value"
-        [class.font-bold]="selectedCategory() === cat.value"
-        [class.text-slate-400]="selectedCategory() !== cat.value"
-        [class.bg-surface-container-low/70]="selectedCategory() !== cat.value"
-        [class.border-white/10]="selectedCategory() !== cat.value"
-        class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5 cursor-pointer">
-        @if (selectedCategory() === cat.value) {
-        <span class="size-2 rounded-full bg-primary-container animate-pulse"></span>
+  <!-- 3. CATEGORY, RAMA & TOURNAMENT SELECTOR STRIP -->
+  <section class="w-full pb-6 flex flex-col gap-3.5">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-surface-container-low/80 p-3.5 rounded-2xl border border-white/10 shadow-lg">
+      <!-- Selector de Categorías -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none no-scrollbar flex-1">
+        @for (cat of categoriasFiltro; track cat.value) {
+        <button
+          type="button"
+          (click)="setCategory(cat.value)"
+          [class.bg-[#0B3C5D]]="selectedCategory() === cat.value"
+          [class.text-white]="selectedCategory() === cat.value"
+          [class.border-sky-400/40]="selectedCategory() === cat.value"
+          [class.shadow-lg]="selectedCategory() === cat.value"
+          [class.shadow-sky-500/20]="selectedCategory() === cat.value"
+          [class.font-bold]="selectedCategory() === cat.value"
+          [class.text-slate-400]="selectedCategory() !== cat.value"
+          [class.bg-surface-container-low/70]="selectedCategory() !== cat.value"
+          [class.border-white/10]="selectedCategory() !== cat.value"
+          class="shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5 cursor-pointer">
+          @if (selectedCategory() === cat.value) {
+          <span class="size-2 rounded-full bg-primary-container animate-pulse"></span>
+          }
+          {{ cat.label }}
+        </button>
         }
-        {{ cat.label }}
-      </button>
-      }
+      </div>
+
+      <!-- Selector de Rama (Femenino / Masculino / Ambas) -->
+      <div class="flex items-center bg-surface-container-high/90 p-1 rounded-xl border border-white/10 shadow-inner shrink-0 self-start lg:self-auto">
+        <button
+          type="button"
+          (click)="setRama('TODAS')"
+          [class.bg-[#0B3C5D]]="selectedRama() === 'TODAS'"
+          [class.text-white]="selectedRama() === 'TODAS'"
+          [class.border]="selectedRama() === 'TODAS'"
+          [class.border-sky-400/40]="selectedRama() === 'TODAS'"
+          [class.text-text-secondary]="selectedRama() !== 'TODAS'"
+          class="px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer">
+          Ambas
+        </button>
+        <button
+          type="button"
+          (click)="setRama('Masc')"
+          [class.bg-[#0B3C5D]]="selectedRama() === 'Masc'"
+          [class.text-white]="selectedRama() === 'Masc'"
+          [class.border]="selectedRama() === 'Masc'"
+          [class.border-sky-400/40]="selectedRama() === 'Masc'"
+          [class.text-text-secondary]="selectedRama() !== 'Masc'"
+          class="px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer">
+          Masculino
+        </button>
+        <button
+          type="button"
+          (click)="setRama('Fem')"
+          [class.bg-[#0B3C5D]]="selectedRama() === 'Fem'"
+          [class.text-white]="selectedRama() === 'Fem'"
+          [class.border]="selectedRama() === 'Fem'"
+          [class.border-sky-400/40]="selectedRama() === 'Fem'"
+          [class.text-text-secondary]="selectedRama() !== 'Fem'"
+          class="px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer">
+          Femenino
+        </button>
+      </div>
     </div>
 
-    <!-- Selector de Rama (Femenino / Masculino / Ambas) -->
-    <div class="flex items-center bg-surface-container-high/90 p-1 rounded-xl border border-white/10 shadow-inner shrink-0 self-start md:self-auto">
-      <button
-        type="button"
-        (click)="setRama('TODAS')"
-        [class.bg-[#0B3C5D]]="selectedRama() === 'TODAS'"
-        [class.text-white]="selectedRama() === 'TODAS'"
-        [class.border]="selectedRama() === 'TODAS'"
-        [class.border-sky-400/40]="selectedRama() === 'TODAS'"
-        [class.text-text-secondary]="selectedRama() !== 'TODAS'"
-        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer">
-        Ambas Ramas
-      </button>
-      <button
-        type="button"
-        (click)="setRama('Masc')"
-        [class.bg-[#0B3C5D]]="selectedRama() === 'Masc'"
-        [class.text-white]="selectedRama() === 'Masc'"
-        [class.border]="selectedRama() === 'Masc'"
-        [class.border-sky-400/40]="selectedRama() === 'Masc'"
-        [class.text-text-secondary]="selectedRama() !== 'Masc'"
-        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer">
-        Masculino
-      </button>
-      <button
-        type="button"
-        (click)="setRama('Fem')"
-        [class.bg-[#0B3C5D]]="selectedRama() === 'Fem'"
-        [class.text-white]="selectedRama() === 'Fem'"
-        [class.border]="selectedRama() === 'Fem'"
-        [class.border-sky-400/40]="selectedRama() === 'Fem'"
-        [class.text-text-secondary]="selectedRama() !== 'Fem'"
-        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer">
-        Femenino
-      </button>
+    <!-- Barra de Selección Explícita de Torneo Activo -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-extrabold uppercase tracking-wider text-text-muted">Torneo Oficial en Consulta:</span>
+        @if (torneoActivo(); as t) {
+        <button
+          type="button"
+          (click)="toggleSelectorTorneos()"
+          class="flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-court-surface hover:bg-white/[0.08] border border-sky-400/30 text-xs font-bold text-white transition-all shadow-md group cursor-pointer">
+          <span class="size-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="font-extrabold text-sky-300">{{ t.nombre }}</span>
+          <span class="text-text-muted font-normal">({{ t.categoria }} • {{ t.rama }})</span>
+          <span class="material-symbols-outlined text-[18px] text-sky-400 group-hover:translate-y-0.5 transition-transform"
+            [class.rotate-180]="selectorTorneosAbierto()">
+            expand_more
+          </span>
+        </button>
+        } @else {
+        <span class="text-xs text-text-muted italic">Sin torneo seleccionado para este filtro</span>
+        }
+      </div>
+
+      <span class="text-xs text-text-muted">
+        Mostrando <strong class="text-white">{{ tablaPosiciones().length }}</strong> clubes en la tabla oficial
+      </span>
     </div>
+
+    <!-- PANEL DESPLEGABLE: GRILLA VISUAL DE TORNEOS DE LA FEDERACIÓN -->
+    @if (selectorTorneosAbierto()) {
+    <div class="bg-court-card border border-white/10 rounded-2xl p-4 shadow-2xl flex flex-col gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-white">
+          <span class="material-symbols-outlined text-[18px] text-sky-400">emoji_events</span>
+          <span>Seleccionar Torneo Específico ({{ torneosDisponibles().length }})</span>
+        </div>
+        <button
+          type="button"
+          (click)="selectorTorneosAbierto.set(false)"
+          class="text-xs text-text-muted hover:text-white flex items-center gap-1 cursor-pointer">
+          <span>Cerrar</span>
+          <span class="material-symbols-outlined text-[16px]">close</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[360px] overflow-y-auto pr-1">
+        @for (t of torneosDisponibles(); track t.id) {
+        @let visual = getEstadoVisualTorneo(t.estado);
+        @let isSelected = torneoActivo()?.id === t.id;
+        <div
+          (click)="seleccionarTorneo(t)"
+          [class]="isSelected
+            ? 'bg-[#0B3C5D]/80 border-sky-400 shadow-lg shadow-sky-500/20 ring-1 ring-sky-400'
+            : 'bg-surface-dim/80 border-white/10 hover:border-white/30 hover:bg-white/[0.05]'"
+          class="p-3.5 rounded-xl border flex flex-col justify-between gap-3 transition-all cursor-pointer group text-left">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span
+                class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider border flex items-center gap-1"
+                [class]="visual.badgeClass">
+                @if (visual.ping) {
+                <span class="size-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                }
+                {{ visual.label }}
+              </span>
+              @if (isSelected) {
+              <span class="material-symbols-outlined text-[18px] text-sky-400">check_circle</span>
+              }
+            </div>
+            <h4 class="text-sm font-black text-white group-hover:text-sky-300 transition-colors leading-snug line-clamp-2">
+              {{ t.nombre }}
+            </h4>
+          </div>
+
+          <div class="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-text-muted">
+            <span class="font-bold text-text-secondary">{{ t.categoria }}</span>
+            <span class="px-2 py-0.5 rounded bg-white/5 border border-white/5 font-semibold">{{ t.rama }}</span>
+          </div>
+        </div>
+        } @empty {
+        <div class="col-span-full p-6 text-center text-text-muted text-xs border border-dashed border-white/10 rounded-xl">
+          No hay torneos registrados para la combinación de categoría y rama actual.
+        </div>
+        }
+      </div>
+    </div>
+    }
   </section>
 
   <!-- MAIN CONTENT CONTAINER -->
@@ -400,7 +489,7 @@
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-primary-container">table_chart</span>
           <h2 class="text-sm uppercase tracking-wider font-extrabold text-white">
-            TABLA DE POSICIONES &amp; CLASIFICACIÓN • {{ torneoActivo()?.nombre || 'TORNEO' }} ({{ torneoActivo()?.temporada || '2026' }})
+            TABLA DE POSICIONES OFICIAL • {{ torneoActivo()?.nombre || 'TORNEO' }} ({{ torneoActivo()?.categoria || 'Categoría' }} • {{ torneoActivo()?.rama || 'Rama' }})
           </h2>
         </div>
         <div class="flex flex-wrap items-center gap-3 text-xs text-text-muted">

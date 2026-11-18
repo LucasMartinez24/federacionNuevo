@@ -103,6 +103,43 @@ export class FixtureComponent implements OnInit, OnDestroy {
     });
   });
 
+  // Selector desplegable visual de torneos activos
+  readonly selectorTorneosAbierto = signal<boolean>(false);
+
+  toggleSelectorTorneos(): void {
+    this.selectorTorneosAbierto.update((v) => !v);
+  }
+
+  getEstadoVisualTorneo(estado: string): { label: string; badgeClass: string; ping: boolean } {
+    const est = (estado || '').toLowerCase().trim();
+    if (est === 'in progress' || est === 'activo' || est === 'en curso') {
+      return {
+        label: 'En Disputa',
+        badgeClass: 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400',
+        ping: true,
+      };
+    }
+    if (est === 'upcoming' || est === 'proximo') {
+      return {
+        label: 'Próximo',
+        badgeClass: 'bg-amber-500/15 border-amber-500/40 text-amber-400',
+        ping: false,
+      };
+    }
+    if (est === 'pausa') {
+      return {
+        label: 'Receso',
+        badgeClass: 'bg-rose-500/15 border-rose-500/40 text-rose-400',
+        ping: false,
+      };
+    }
+    return {
+      label: 'Concluido',
+      badgeClass: 'bg-slate-700/40 border-slate-600/40 text-slate-300',
+      ping: false,
+    };
+  }
+
   // Vistas / Tabs principales
   readonly currentTab = signal<'fixture' | 'playoffs' | 'posiciones'>('fixture');
   readonly currentFase = signal<'Fase Grupos' | 'Fase Final'>('Fase Grupos');

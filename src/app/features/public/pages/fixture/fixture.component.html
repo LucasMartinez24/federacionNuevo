@@ -110,8 +110,8 @@
 
         <div class="border-t border-white/[0.06]"></div>
 
-        <!-- Fila 2: Selector de Rama + Selector de Torneo Específico -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <!-- Fila 2: Selector de Rama + Desplegable Visual de Torneos Activos -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
           
           <!-- Rama / Género -->
           <div class="flex items-center gap-2">
@@ -135,23 +135,20 @@
             </div>
           </div>
 
-          <!-- Torneo Activo Dropdown / Indicador -->
+          <!-- Botón de Torneo Activo Seleccionado con trigger de panel -->
           <div class="flex items-center gap-2">
             <span class="text-xs font-extrabold uppercase tracking-wider text-text-muted">Torneo:</span>
-            @if (torneosFiltrados().length > 0) {
-            <div class="relative min-w-[240px]">
-              <select [ngModel]="torneoSeleccionado()?.id" (ngModelChange)="seleccionarTorneoPorId($event)"
-                class="w-full appearance-none bg-court-surface border border-white/15 rounded-xl pl-3 pr-8 py-2 text-xs font-bold text-white outline-none focus:border-primary cursor-pointer shadow-inner">
-                @for (t of torneosFiltrados(); track t.id) {
-                <option [value]="t.id" class="bg-slate-900 text-white">
-                  {{ t.nombre }} ({{ t.categoria }} • {{ t.rama }})
-                </option>
-                }
-              </select>
-              <span class="material-symbols-outlined text-[18px] text-text-muted pointer-events-none absolute right-2.5 top-2.5">
+            @if (torneoSeleccionado(); as tActual) {
+            <button type="button" (click)="toggleSelectorTorneos()"
+              class="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-court-surface hover:bg-white/[0.08] border border-sky-400/30 text-xs font-bold text-white transition-all shadow-md group cursor-pointer">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="font-extrabold">{{ tActual.nombre }}</span>
+              <span class="text-text-muted font-normal">({{ tActual.categoria }} • {{ tActual.rama }})</span>
+              <span class="material-symbols-outlined text-[18px] text-sky-400 group-hover:translate-y-0.5 transition-transform"
+                [class.rotate-180]="selectorTorneosAbierto()">
                 expand_more
               </span>
-            </div>
+            </button>
             } @else {
             <span class="px-3 py-1.5 rounded-xl bg-court-surface border border-dashed border-white/15 text-xs text-text-muted italic">
               Sin torneos disponibles para este filtro
@@ -160,6 +157,62 @@
           </div>
 
         </div>
+
+        <!-- PANEL DESPLEGABLE: GRILLA VISUAL DE TORNEOS ACTIVOS & OFICIALES -->
+        @if (selectorTorneosAbierto()) {
+        <div class="border-t border-white/[0.08] pt-3.5 flex flex-col gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-text-primary">
+              <span class="material-symbols-outlined text-[18px] text-primary">emoji_events</span>
+              <span>Competiciones Disponibles ({{ torneosFiltrados().length }})</span>
+            </div>
+            <button type="button" (click)="selectorTorneosAbierto.set(false)"
+              class="text-xs text-text-muted hover:text-white flex items-center gap-1 cursor-pointer">
+              <span>Cerrar panel</span>
+              <span class="material-symbols-outlined text-[16px]">close</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[380px] overflow-y-auto pr-1">
+            @for (t of torneosFiltrados(); track t.id) {
+            @let visual = getEstadoVisualTorneo(t.estado);
+            @let isSelected = torneoSeleccionado()?.id === t.id;
+            <div (click)="seleccionarTorneo(t); selectorTorneosAbierto.set(false)"
+              [class]="isSelected
+                ? 'bg-[#0B3C5D]/80 border-sky-400 shadow-lg shadow-sky-500/20 ring-1 ring-sky-400'
+                : 'bg-court-surface/90 border-white/10 hover:border-white/30 hover:bg-white/[0.06]'"
+              class="p-3.5 rounded-xl border flex flex-col justify-between gap-3 transition-all cursor-pointer group text-left">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider border flex items-center gap-1"
+                    [class]="visual.badgeClass">
+                    @if (visual.ping) {
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    }
+                    {{ visual.label }}
+                  </span>
+                  @if (isSelected) {
+                  <span class="material-symbols-outlined text-[18px] text-sky-400">check_circle</span>
+                  }
+                </div>
+                <h4 class="text-sm font-black text-white group-hover:text-primary transition-colors leading-snug line-clamp-2">
+                  {{ t.nombre }}
+                </h4>
+              </div>
+
+              <div class="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-text-muted">
+                <span class="font-bold text-text-secondary">{{ t.categoria }}</span>
+                <span class="px-2 py-0.5 rounded bg-white/5 border border-white/5 font-semibold">{{ t.rama }}</span>
+              </div>
+            </div>
+            } @empty {
+            <div class="col-span-full p-6 text-center text-text-muted text-xs border border-dashed border-white/10 rounded-xl">
+              No hay competencias registradas que coincidan con los filtros seleccionados.
+            </div>
+            }
+          </div>
+        </div>
+        }
 
       </div>
 
