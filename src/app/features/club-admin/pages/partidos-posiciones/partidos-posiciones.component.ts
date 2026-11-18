@@ -186,10 +186,10 @@ export class PartidosPosicionesComponent implements OnInit {
             puntosSumados = 3;
           } else if (golesClub === golesRival) {
             resultadoTipo = 'empate';
-            puntosSumados = 2; // En handball por reglamento CAH el empate otorga 2 pts, derrota 1 pt
+            puntosSumados = 1;
           } else {
             resultadoTipo = 'derrota';
-            puntosSumados = 1;
+            puntosSumados = 0;
           }
         }
 
