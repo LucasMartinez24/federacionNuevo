@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -54,7 +55,7 @@ export interface PartidoClubDisplay {
 @Component({
   selector: 'app-partidos-posiciones',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './partidos-posiciones.component.html',
   styleUrl: './partidos-posiciones.component.css',
 })
@@ -72,7 +73,7 @@ export class PartidosPosicionesComponent implements OnInit {
   protected readonly loading = signal<boolean>(true);
 
   // Selector de vista
-  protected readonly currentView = signal<'agenda' | 'standings' | 'playoffs'>('agenda');
+  protected readonly currentView = signal<'agenda' | 'standings' | 'fixture_general' | 'playoffs'>('agenda');
 
   // Filtros: Categoría y Rama oficiales
   protected readonly selectedCategory = signal<string>('TODAS');
@@ -84,6 +85,11 @@ export class PartidosPosicionesComponent implements OnInit {
   protected readonly torneos = signal<Torneo[]>([]);
   protected readonly tablaPosiciones = signal<PosicionClub[]>([]);
   protected readonly torneoActivo = signal<Torneo | null>(null);
+
+  // Jornada seleccionada para la vista de Fixture General de Torneos
+  protected readonly jornadaTorneoSeleccionada = signal<number>(1);
+  protected readonly filtroTextoFixture = signal<string>('');
+  protected readonly filtroEstadoFixture = signal<string>('TODOS');
 
   // Selector desplegable visual de torneos
   protected readonly selectorTorneosAbierto = signal<boolean>(false);
@@ -287,8 +293,14 @@ export class PartidosPosicionesComponent implements OnInit {
       });
   });
 
-  // Próximos encuentros (Programados / En Juego)
+  // Próximos encuentros (Programados / En Juego) del Club
+  // REGLA: Si el torneo está concluido/finalizado, NO se muestran partidos pendientes inconclusos
   protected readonly proximosPartidos = computed(() => {
+    const t = this.torneoActivo();
+    const est = (t?.estado || '').toLowerCase().trim();
+    if (est === 'finalizado' || est === 'concluido' || est === 'archive' || est === 'archivado') {
+      return [];
+    }
     return this.partidosProcesados().filter((p) => p.estado !== 'Finalizado');
   });
 
@@ -297,6 +309,46 @@ export class PartidosPosicionesComponent implements OnInit {
     return this.partidosProcesados()
       .filter((p) => p.estado === 'Finalizado')
       .reverse();
+  });
+
+  // Jornadas únicas existentes en el torneo seleccionado
+  protected readonly jornadasTorneo = computed<number[]>(() => {
+    const list = this.todosPartidosTorneo();
+    const nums = Array.from(new Set(list.map((p) => Number(p.jornada || 1))))
+      .filter((n) => n < 90) // Fase regular
+      .sort((a, b) => a - b);
+    return nums.length > 0 ? nums : [1];
+  });
+
+  // Partidos de todas las fechas y clubes para la pestaña "Torneos & Fechas"
+  protected readonly partidosJornadaTorneo = computed(() => {
+    const all = this.todosPartidosTorneo();
+    const jNum = this.jornadaTorneoSeleccionada();
+    const txt = this.filtroTextoFixture().toLowerCase().trim();
+    const est = this.filtroEstadoFixture();
+
+    return all.filter((p) => {
+      // 1. Jornada
+      if (Number(p.jornada || 1) !== jNum) return false;
+
+      // 2. Estado
+      if (est !== 'TODOS') {
+        const pEst = (p.estado || '').toLowerCase();
+        if (est === 'FINALIZADOS' && !pEst.includes('final')) return false;
+        if (est === 'EN_VIVO' && !pEst.includes('vivo') && !pEst.includes('juego')) return false;
+        if (est === 'PROGRAMADOS' && (pEst.includes('final') || pEst.includes('vivo'))) return false;
+      }
+
+      // 3. Texto
+      if (txt) {
+        const loc = (p.local?.nombre || '').toLowerCase();
+        const vis = (p.visitante?.nombre || '').toLowerCase();
+        const cancha = (p.lugar || '').toLowerCase();
+        if (!loc.includes(txt) && !vis.includes(txt) && !cancha.includes(txt)) return false;
+      }
+
+      return true;
+    });
   });
 
   // Estadísticas del club en la tabla
@@ -695,8 +747,12 @@ export class PartidosPosicionesComponent implements OnInit {
     };
   }
 
-  setView(view: 'agenda' | 'standings' | 'playoffs'): void {
+  setView(view: 'agenda' | 'standings' | 'fixture_general' | 'playoffs'): void {
     this.currentView.set(view);
+  }
+
+  setJornadaTorneo(j: number): void {
+    this.jornadaTorneoSeleccionada.set(j);
   }
 
   getEstadoClasificacionClub(idx: number): {

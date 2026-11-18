@@ -34,7 +34,19 @@
           [class.text-text-secondary]="currentView() !== 'agenda'"
           class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer">
           <span class="material-symbols-outlined text-base text-primary-container">calendar_month</span>
-          <span class="hidden sm:inline">Partidos &amp; Agenda</span>
+          <span class="hidden sm:inline">Mi Agenda</span>
+        </button>
+        <button
+          type="button"
+          (click)="setView('fixture_general')"
+          [class.bg-[#0B3C5D]]="currentView() === 'fixture_general'"
+          [class.text-white]="currentView() === 'fixture_general'"
+          [class.border]="currentView() === 'fixture_general'"
+          [class.border-sky-400/40]="currentView() === 'fixture_general'"
+          [class.text-text-secondary]="currentView() !== 'fixture_general'"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:text-white cursor-pointer">
+          <span class="material-symbols-outlined text-base text-sky-400">stadium</span>
+          <span class="hidden sm:inline">Torneo &amp; Fechas</span>
         </button>
         <button
           type="button"
@@ -620,6 +632,168 @@
           <span>Criterio de Desempate: 1° Puntos, 2° Gol Diferencia (DG), 3° Mayor cantidad de Goles a Favor (GF).</span>
           <span class="text-slate-400">Actualizado automáticamente con actas homologadas</span>
         </div>
+      </div>
+    </section>
+    }
+
+    <!-- MODULE 3.5: VISTA DE FIXTURE GENERAL DEL TORNEO (TODOS LOS CLUBES Y FECHAS) -->
+    @if (currentView() === 'fixture_general') {
+    <section class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-sky-400">stadium</span>
+          <h2 class="text-sm uppercase tracking-wider font-extrabold text-white">
+            FIXTURE GENERAL • {{ torneoActivo()?.nombre || 'TORNEO' }} ({{ torneoActivo()?.categoria }} • {{ torneoActivo()?.rama }})
+          </h2>
+        </div>
+        <span class="text-xs text-text-muted">
+          {{ todosPartidosTorneo().length }} encuentros programados en el campeonato
+        </span>
+      </div>
+
+      <!-- Barra de Filtros: Selector de Fechas / Jornadas + Búsqueda y Estado -->
+      <div class="bg-surface-container-low/80 border border-white/10 rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xl">
+        <!-- Tira horizontal de Jornadas -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none no-scrollbar">
+          <span class="text-[10px] font-black uppercase tracking-wider text-text-muted mr-1.5 shrink-0">
+            Jornadas:
+          </span>
+          @for (j of jornadasTorneo(); track j) {
+          <button
+            type="button"
+            (click)="setJornadaTorneo(j)"
+            [class.bg-[#0B3C5D]]="jornadaTorneoSeleccionada() === j"
+            [class.text-white]="jornadaTorneoSeleccionada() === j"
+            [class.border-sky-400/50]="jornadaTorneoSeleccionada() === j"
+            [class.shadow-md]="jornadaTorneoSeleccionada() === j"
+            [class.font-black]="jornadaTorneoSeleccionada() === j"
+            [class.bg-surface-dim]="jornadaTorneoSeleccionada() !== j"
+            [class.text-slate-400]="jornadaTorneoSeleccionada() !== j"
+            [class.border-white/10]="jornadaTorneoSeleccionada() !== j"
+            class="px-3 py-1.5 rounded-xl text-xs border transition-all shrink-0 cursor-pointer">
+            Fecha {{ j }}
+          </button>
+          }
+        </div>
+
+        <!-- Filtros secundarios: Búsqueda y Estado -->
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="relative flex-1 sm:w-56">
+            <span class="material-symbols-outlined text-[15px] text-text-muted absolute left-3 top-1/2 -translate-y-1/2">search</span>
+            <input
+              type="text"
+              [ngModel]="filtroTextoFixture()"
+              (ngModelChange)="filtroTextoFixture.set($event)"
+              placeholder="Buscar club o cancha..."
+              class="w-full bg-surface-dim border border-white/10 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-text-muted outline-none focus:border-sky-400" />
+          </div>
+
+          <select
+            [ngModel]="filtroEstadoFixture()"
+            (ngModelChange)="filtroEstadoFixture.set($event)"
+            class="bg-surface-dim border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-sky-400 cursor-pointer">
+            <option value="TODOS">Todos los Estados</option>
+            <option value="FINALIZADOS">Finalizados</option>
+            <option value="EN_VIVO">En Juego / Vivo</option>
+            <option value="PROGRAMADOS">Programados</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grilla de Tarjetas de Partidos de la Fecha -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        @for (p of partidosJornadaTorneo(); track p.id) {
+        @let esMiClub = p.localId === clubId() || p.visitanteId === clubId();
+        <article
+          class="bg-slate-900/80 backdrop-blur-md rounded-2xl border transition-all duration-200 flex flex-col justify-between overflow-hidden shadow-xl hover:border-sky-400/40"
+          [class.border-sky-400]="esMiClub"
+          [class.ring-1]="esMiClub"
+          [class.ring-sky-400/30]="esMiClub"
+          [class.border-white/10]="!esMiClub">
+          <!-- Top Tag -->
+          <div class="px-4 py-2 bg-surface-container-low/90 border-b border-white/5 flex items-center justify-between text-[11px]">
+            <span class="text-text-muted font-bold">Fecha {{ p.jornada || jornadaTorneoSeleccionada() }} • {{ p.fase || 'Fase Regular' }}</span>
+            <div class="flex items-center gap-1.5">
+              @if (esMiClub) {
+              <span class="px-1.5 py-0.5 rounded bg-primary-container text-[#101d23] text-[9px] font-black uppercase">
+                TU PARTIDO
+              </span>
+              }
+              <span
+                class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
+                [class.bg-emerald-500/20]="p.estado === 'Finalizado'"
+                [class.text-emerald-300]="p.estado === 'Finalizado'"
+                [class.border]="p.estado === 'Finalizado'"
+                [class.border-emerald-500/30]="p.estado === 'Finalizado'"
+                [class.bg-amber-500/20]="p.estado === 'En Vivo'"
+                [class.text-amber-300]="p.estado === 'En Vivo'"
+                [class.bg-white/5]="p.estado !== 'Finalizado' && p.estado !== 'En Vivo'"
+                [class.text-slate-400]="p.estado !== 'Finalizado' && p.estado !== 'En Vivo'">
+                {{ p.estado || 'Programado' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Matchup -->
+          <div class="p-4 flex flex-col gap-3">
+            <div class="grid grid-cols-7 items-center gap-2">
+              <!-- Local -->
+              <div class="col-span-3 flex flex-col items-center text-center">
+                <div class="size-12 rounded-xl bg-surface-dim border border-white/10 p-1 flex items-center justify-center mb-1">
+                  @if (p.local?.logoUrl) {
+                  <img [src]="getClubLogoUrl(p.local.logoUrl)" class="w-full h-full object-contain" />
+                  } @else {
+                  <span class="text-xs font-black text-sky-400">{{ getClubInitials(p.local) }}</span>
+                  }
+                </div>
+                <strong class="text-xs text-white leading-tight line-clamp-2">{{ p.local?.nombre || 'Local' }}</strong>
+              </div>
+
+              <!-- Score / VS -->
+              <div class="col-span-1 flex flex-col items-center justify-center">
+                @if (p.estado === 'Finalizado' || p.estado === 'En Vivo') {
+                <div class="px-2 py-1 rounded-lg bg-surface-dim border border-white/10 text-sm font-black tabular-nums text-white">
+                  {{ p.golesLocal ?? 0 }} : {{ p.golesVisitante ?? 0 }}
+                </div>
+                } @else {
+                <span class="text-xs font-black text-text-muted">VS</span>
+                }
+              </div>
+
+              <!-- Visitante -->
+              <div class="col-span-3 flex flex-col items-center text-center">
+                <div class="size-12 rounded-xl bg-surface-dim border border-white/10 p-1 flex items-center justify-center mb-1">
+                  @if (p.visitante?.logoUrl) {
+                  <img [src]="getClubLogoUrl(p.visitante.logoUrl)" class="w-full h-full object-contain" />
+                  } @else {
+                  <span class="text-xs font-black text-amber-400">{{ getClubInitials(p.visitante) }}</span>
+                  }
+                </div>
+                <strong class="text-xs text-white leading-tight line-clamp-2">{{ p.visitante?.nombre || 'Visita' }}</strong>
+              </div>
+            </div>
+
+            <!-- Datos de Fecha / Sede -->
+            <div class="bg-surface-dim/90 rounded-xl p-2.5 border border-white/5 flex flex-col gap-1 text-[11px] text-text-muted">
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-1 truncate">
+                  <span class="material-symbols-outlined text-[13px] text-sky-400">location_on</span>
+                  <span class="truncate">{{ p.lugar || 'Sede a confirmar' }}</span>
+                </span>
+                <span class="font-bold text-slate-300 shrink-0">
+                  {{ p.hora || 'Horario a confirmar' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
+        } @empty {
+        <div class="col-span-full py-12 text-center text-text-muted bg-slate-900/40 rounded-2xl border border-white/5 flex flex-col items-center gap-2">
+          <span class="material-symbols-outlined text-4xl text-text-muted/60">event_busy</span>
+          <p class="text-sm font-bold text-white">No hay partidos en la Fecha {{ jornadaTorneoSeleccionada() }} para los filtros actuales</p>
+          <small class="text-xs text-text-muted">Probá cambiando el filtro de estado o seleccionando otra jornada.</small>
+        </div>
+        }
       </div>
     </section>
     }
