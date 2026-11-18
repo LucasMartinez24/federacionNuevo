@@ -7,6 +7,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { Club, ClubesService } from '../../../../core/services/clubes.service';
 import { PartidosService } from '../../../../core/services/partidos.service';
 import { Torneo, TorneosService } from '../../../../core/services/torneos.service';
+import { PublicNavbarComponent } from '../../../../shared/components/public-navbar/public-navbar.component';
 
 export interface JugadorPlanilla {
   id: string | null;
@@ -36,7 +37,7 @@ export interface AccionHistorial {
 @Component({
   selector: 'app-fixture',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, PublicNavbarComponent],
   templateUrl: './fixture.component.html',
   styleUrl: './fixture.component.css',
 })
@@ -539,6 +540,10 @@ export class FixtureComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.cargarClubes();
     this.route.queryParams.subscribe((params) => {
+      const tabParam = params['tab'];
+      if (tabParam === 'posiciones' || tabParam === 'playoffs' || tabParam === 'fixture') {
+        this.currentTab.set(tabParam);
+      }
       const tId = params['torneoId'];
       this.cargarTorneos(tId);
     });

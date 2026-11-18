@@ -9,7 +9,7 @@
   background: #080e18;
   font-family: var(--font-sans);
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .gallery-header {

@@ -6,6 +6,8 @@ import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Club, ClubesService } from '../../../../core/services/clubes.service';
 import { SancionDisciplinaria, SancionesService } from '../../../../core/services/sanciones.service';
+import { BoletinOficial, BoletinesService } from '../../../../core/services/boletines.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-resoluciones-club',
@@ -18,15 +20,21 @@ export class ResolucionesClubComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly sancionesService = inject(SancionesService);
   private readonly clubesService = inject(ClubesService);
+  private readonly boletinesService = inject(BoletinesService);
 
   protected readonly currentUser = this.authService.currentUser;
   protected readonly club = signal<Club | null>(null);
   protected readonly sanciones = signal<SancionDisciplinaria[]>([]);
+  protected readonly boletines = signal<BoletinOficial[]>([]);
   protected readonly loading = signal<boolean>(true);
 
-  // Filtros
+  // Tab principal: Sanciones del club vs Boletines y Circulares oficiales
+  protected readonly activeTab = signal<'sanciones' | 'boletines'>('sanciones');
+
+  // Filtros de Sanciones
   protected readonly filterType = signal<'todas' | 'activas' | 'cumplidas'>('todas');
   protected readonly selectedSancion = signal<SancionDisciplinaria | null>(null);
+  protected readonly selectedBoletin = signal<BoletinOficial | null>(null);
 
   protected readonly clubId = computed(() => this.currentUser()?.id || '');
 
@@ -66,6 +74,11 @@ export class ResolucionesClubComponent implements OnInit {
     ).length;
   });
 
+  // Boletines oficiales y circulares federativas
+  protected readonly boletinesOficiales = computed(() => {
+    return this.boletines();
+  });
+
   ngOnInit(): void {
     this.cargarDatos();
   }
@@ -83,6 +96,13 @@ export class ResolucionesClubComponent implements OnInit {
         });
     }
 
+    this.boletinesService
+      .getBoletines()
+      .pipe(catchError(() => of([])))
+      .subscribe({
+        next: (bols) => this.boletines.set(bols || []),
+      });
+
     this.sancionesService
       .getSanciones()
       .pipe(catchError(() => of([])))
@@ -95,6 +115,10 @@ export class ResolucionesClubComponent implements OnInit {
       });
   }
 
+  setActiveTab(tab: 'sanciones' | 'boletines'): void {
+    this.activeTab.set(tab);
+  }
+
   setFilter(type: 'todas' | 'activas' | 'cumplidas'): void {
     this.filterType.set(type);
   }
@@ -105,5 +129,19 @@ export class ResolucionesClubComponent implements OnInit {
 
   cerrarDetalle(): void {
     this.selectedSancion.set(null);
+  }
+
+  verDetalleBoletin(boletin: BoletinOficial): void {
+    this.selectedBoletin.set(boletin);
+  }
+
+  cerrarDetalleBoletin(): void {
+    this.selectedBoletin.set(null);
+  }
+
+  getAdjuntoUrl(url: string): string {
+    if (!url) return '#';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `${environment.serverUrl}${url.startsWith('/') ? '' : '/'}${url}`;
   }
 }

@@ -175,10 +175,10 @@
                 <label class="font-label-caps text-label-caps uppercase tracking-wider text-text-secondary">
                   CONTRASEÑA
                 </label>
-                <a routerLink="/soporte"
+                <button type="button" (click)="showRecoveryModal.set(true)"
                   class="font-label-caps text-label-caps text-primary hover:text-primary-container tracking-wider transition-colors cursor-pointer">
                   ¿Olvidaste tu clave?
-                </a>
+                </button>
               </div>
               <div
                 [class.border-accent-crimson-deep]="error()?.field === 'password' || error()?.field === 'all'"
@@ -261,11 +261,11 @@
           <p class="font-body-medium text-xs text-text-muted">
             ¿Problemas para ingresar o necesitas blanqueo de clave?
           </p>
-          <a routerLink="/soporte"
+          <button type="button" (click)="showRecoveryModal.set(true)"
             class="inline-flex items-center gap-1.5 mt-2 font-body-bold text-xs text-primary-container hover:text-primary transition-colors cursor-pointer">
             <span class="material-symbols-outlined text-[16px]">help_outline</span>
             <span>Contactar a la Mesa de Entradas FJH</span>
-          </a>
+          </button>
           <div class="mt-4 pt-3 flex items-center justify-center gap-2">
             <span class="material-symbols-outlined text-text-muted text-[14px]"
               style="font-variation-settings: 'FILL' 1;">verified_user</span>
@@ -278,3 +278,52 @@
     </section>
   </div>
 </main>
+
+@if (showRecoveryModal()) {
+<div
+  class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+  (click)="showRecoveryModal.set(false)">
+  <div
+    class="w-full max-w-md bg-court-card border border-border-subtle rounded-2xl p-6 shadow-2xl space-y-4"
+    (click)="$event.stopPropagation()">
+    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-xl">support_agent</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-extrabold text-white uppercase">Asistencia de Credenciales FJH</h3>
+          <p class="text-[11px] text-text-secondary">Mesa de Entradas &amp; Secretaría Administrativa</p>
+        </div>
+      </div>
+      <button type="button" (click)="showRecoveryModal.set(false)" class="text-text-muted hover:text-white cursor-pointer">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <p class="text-xs text-text-secondary leading-relaxed">
+      Por seguridad institucional, el blanqueo de contraseñas de <strong>Clubes Afiliados</strong> y <strong>Personal Federativo</strong> es gestionado por la Secretaría de la Federación Jujeña de Handball.
+    </p>
+
+    <div class="p-3.5 rounded-xl bg-court-surface border border-border-subtle space-y-2 text-xs">
+      <div class="flex items-center gap-2 text-text-primary font-semibold">
+        <span class="material-symbols-outlined text-primary text-base">mail</span>
+        <span>mesa.entradas&#64;handballjujuy.org.ar</span>
+      </div>
+      <div class="flex items-center gap-2 text-text-secondary">
+        <span class="material-symbols-outlined text-tertiary text-base">verified_user</span>
+        <span>Solicite el restablecimiento indicando nombre del club o DNI del oficial.</span>
+      </div>
+    </div>
+
+    <div class="flex justify-end pt-2">
+      <button
+        type="button"
+        (click)="showRecoveryModal.set(false)"
+        class="px-4 py-2 rounded-xl bg-primary-container text-on-primary-container text-xs font-bold cursor-pointer">
+        Entendido
+      </button>
+    </div>
+  </div>
+</div>
+}

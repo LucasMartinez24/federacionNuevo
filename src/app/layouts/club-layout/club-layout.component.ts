@@ -6,6 +6,8 @@ import { of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 import { ClubesService } from '../../core/services/clubes.service';
+import { SancionesService } from '../../core/services/sanciones.service';
+import { TicketsService } from '../../core/services/tickets.service';
 
 interface ClubNavGroup {
   label: string;
@@ -28,12 +30,16 @@ interface ClubNavGroup {
 export class ClubLayoutComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly clubesService = inject(ClubesService);
+  private readonly sancionesService = inject(SancionesService);
+  private readonly ticketsService = inject(TicketsService);
   private readonly router = inject(Router);
 
   protected readonly currentUser = this.authService.currentUser;
   protected readonly clubLogoUrl = signal<string | null>(null);
   protected readonly sidebarOpen = signal<boolean>(false);
   protected readonly notificationsOpen = signal<boolean>(false);
+  protected readonly activeSanctionsCount = signal<number>(0);
+  protected readonly openTicketsCount = signal<number>(0);
 
   // Registro de errores de carga de logos para fallback automático a iniciales
   private readonly logoErrorIds = signal<Set<string | number>>(new Set());
@@ -51,6 +57,33 @@ export class ClubLayoutComponent implements OnInit {
           if (club?.logoUrl) {
             this.clubLogoUrl.set(club.logoUrl);
           }
+        });
+    }
+
+    if (u?.id) {
+      this.ticketsService
+        .getTickets(u.id)
+        .pipe(catchError(() => of([])))
+        .subscribe((tickets) => {
+          const open = (tickets || []).filter((t) => t.status !== 'Resuelto' && t.status !== 'Cerrado').length;
+          this.openTicketsCount.set(open);
+        });
+
+      this.sancionesService
+        .getSanciones()
+        .pipe(catchError(() => of([])))
+        .subscribe((sanciones) => {
+          const nom = (u.nombre || '').toLowerCase();
+          const sig = (u.siglas || '').toLowerCase();
+          const mine = (sanciones || []).filter((s) => {
+            const matchClub =
+              (s.clubId && s.clubId === u.id) ||
+              (nom && (s.institucion || '').toLowerCase().includes(nom)) ||
+              (sig && (s.institucion || '').toLowerCase().includes(sig));
+            const isActive = s.totales === 0 || (s.cumplidas ?? 0) < (s.totales ?? 1);
+            return matchClub && isActive;
+          });
+          this.activeSanctionsCount.set(mine.length);
         });
     }
   }

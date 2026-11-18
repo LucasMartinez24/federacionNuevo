@@ -751,17 +751,63 @@
     <!-- ======================================================================= -->
     <!-- 2. FASE ELIMINATORIA / PLAYOFFS (SEPARADA DE LAS FECHAS REGULARES)      -->
     <!-- ======================================================================= -->
-    @if (jornadasPlayoffs().length > 0) {
-      <div class="flex items-center justify-between px-1 pt-2 flex-wrap gap-2">
-        <div class="flex items-center gap-2.5">
-          <span class="px-2.5 py-1 bg-amber-500/20 border border-amber-400/30 text-amber-300 rounded-md text-[10px] font-bold uppercase tracking-wider">
-            Fase Eliminatoria
-          </span>
-          <span class="text-xs font-bold uppercase tracking-wider text-text-secondary">
-            Llaves de Playoffs Definidas ({{ countPartidosPlayoffs() }} Cruces)
-          </span>
-        </div>
+    <div class="flex items-center justify-between px-1 pt-4 flex-wrap gap-3">
+      <div class="flex items-center gap-2.5">
+        <span class="px-2.5 py-1 bg-amber-500/20 border border-amber-400/30 text-amber-300 rounded-md text-[10px] font-bold uppercase tracking-wider">
+          Fase Eliminatoria &amp; Playoffs
+        </span>
+        <span class="text-xs font-bold uppercase tracking-wider text-text-secondary">
+          {{ jornadasPlayoffs().length > 0 ? (countPartidosPlayoffs() + ' Cruces Definidos') : 'Sin Llaves Creadas Aún' }}
+        </span>
       </div>
+
+      <!-- BOTONES DE ACCIÓN PARA GENERAR Y AÑADIR INSTANCIAS DE PLAYOFFS -->
+      <div class="flex items-center flex-wrap gap-2">
+        <button
+          type="button"
+          (click)="sincronizarPlayoffsDesdeTabla()"
+          [disabled]="isSyncingPlayoffs()"
+          class="btn-press h-8 px-3 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-400/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          title="Sincronizar automáticamente llaves de Semis y Final según la tabla">
+          <span class="material-symbols-outlined text-[16px]">sync</span>
+          <span>{{ isSyncingPlayoffs() ? 'Sincronizando...' : 'Sincronizar desde Tabla' }}</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="agregarInstanciaPlayoff('cuartos')"
+          class="btn-press h-8 px-2.5 rounded-lg bg-court-card hover:bg-court-card-hover text-white border border-white/10 text-xs font-bold flex items-center gap-1 cursor-pointer">
+          <span class="material-symbols-outlined text-[15px] text-amber-400">add</span>
+          <span>+ Cuartos</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="agregarInstanciaPlayoff('semifinales')"
+          class="btn-press h-8 px-2.5 rounded-lg bg-court-card hover:bg-court-card-hover text-white border border-white/10 text-xs font-bold flex items-center gap-1 cursor-pointer">
+          <span class="material-symbols-outlined text-[15px] text-amber-400">add</span>
+          <span>+ Semifinales</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="agregarInstanciaPlayoff('final')"
+          class="btn-press h-8 px-2.5 rounded-lg bg-court-card hover:bg-court-card-hover text-white border border-white/10 text-xs font-bold flex items-center gap-1 cursor-pointer">
+          <span class="material-symbols-outlined text-[15px] text-amber-400">add</span>
+          <span>+ Gran Final</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="agregarInstanciaPlayoff('tercero')"
+          class="btn-press h-8 px-2.5 rounded-lg bg-court-card hover:bg-court-card-hover text-white border border-white/10 text-xs font-bold flex items-center gap-1 cursor-pointer">
+          <span class="material-symbols-outlined text-[15px] text-amber-400">add</span>
+          <span>+ 3° Puesto</span>
+        </button>
+      </div>
+    </div>
+
+    @if (jornadasPlayoffs().length > 0) {
 
       @for (playoff of jornadasPlayoffs(); track playoff.numero) {
         <div class="bg-court-card rounded-2xl p-4 lg:p-5 shadow-xl border border-amber-500/25 flex flex-col gap-3">

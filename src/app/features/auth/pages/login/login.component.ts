@@ -33,6 +33,7 @@ export class LoginComponent {
   protected readonly showPassword = signal(false);
   protected readonly loading = signal(false);
   protected readonly error = signal<LoginError | null>(null);
+  protected readonly showRecoveryModal = signal(false);
 
   protected togglePassword(): void {
     this.showPassword.update((val) => !val);

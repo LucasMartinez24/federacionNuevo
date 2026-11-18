@@ -62,9 +62,8 @@ export const routes: Routes = [
   },
   {
     path: 'tabla-goleadores',
-    loadComponent: () =>
-      import('./features/public/pages/not-found/not-found.component').then((m) => m.NotFoundComponent),
-    title: 'FJH - Página no disponible',
+    redirectTo: 'fixture',
+    pathMatch: 'full',
   },
   {
     path: 'soporte',
@@ -80,6 +79,7 @@ export const routes: Routes = [
         (m) => m.FederationLayoutComponent,
       ),
     canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
       {
         path: '',
@@ -109,6 +109,14 @@ export const routes: Routes = [
             './features/federation-admin/pages/jugadores/jugador-crear/jugador-crear.component'
           ).then((m) => m.JugadorCrearComponent),
         title: 'FJH - Expediente y Edición de Atleta',
+      },
+      {
+        path: 'clubes',
+        loadComponent: () =>
+          import(
+            './features/federation-admin/pages/jugadores/jugadores-auditoria.component'
+          ).then((m) => m.JugadoresAuditoriaComponent),
+        title: 'FJH - Directorio de Clubes Afiliados',
       },
       {
         path: 'clubes/crear',
@@ -217,6 +225,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./layouts/club-layout/club-layout.component').then((m) => m.ClubLayoutComponent),
     canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
       {
         path: '',
@@ -246,6 +255,22 @@ export const routes: Routes = [
             './features/club-admin/pages/jugadores-plantilla/jugadores-plantilla.component'
           ).then((m) => m.JugadoresPlantillaComponent),
         title: 'FJH - Gestión de Plantilla del Club',
+      },
+      {
+        path: 'jugadores/crear',
+        loadComponent: () =>
+          import(
+            './features/federation-admin/pages/jugadores/jugador-crear/jugador-crear.component'
+          ).then((m) => m.JugadorCrearComponent),
+        title: 'FJH - Inscribir Jugador en Mi Club',
+      },
+      {
+        path: 'jugadores/editar/:id',
+        loadComponent: () =>
+          import(
+            './features/federation-admin/pages/jugadores/jugador-crear/jugador-crear.component'
+          ).then((m) => m.JugadorCrearComponent),
+        title: 'FJH - Editar Ficha de Jugador',
       },
       {
         path: 'resoluciones',

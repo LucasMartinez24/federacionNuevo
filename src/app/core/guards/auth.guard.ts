@@ -14,7 +14,24 @@ export const authGuard: CanActivateFn = (route, state) => {
         router.navigate(['/admin/galeria']);
         return false;
       }
+      return true;
     }
+
+    if (role === 'user') {
+      // Los clubes operan exclusivamente dentro de /club/* y no acceden a /admin/*
+      if (state.url.startsWith('/admin')) {
+        router.navigate(['/club/fixture']);
+        return false;
+      }
+      return true;
+    }
+
+    // El personal de la Federación opera en /admin/* y no accede a /club/*
+    if (state.url.startsWith('/club')) {
+      router.navigate(['/admin/jugadores']);
+      return false;
+    }
+
     return true;
   }
 

@@ -177,10 +177,14 @@
         <!-- Notificaciones de Mesa/Sanciones -->
         <div class="relative">
           <button (click)="toggleNotifications()"
-            class="relative p-2 rounded-lg text-text-secondary hover:text-white hover:bg-court-card transition-colors"
+            class="relative p-2 rounded-lg text-text-secondary hover:text-white hover:bg-court-card transition-colors cursor-pointer"
             title="Notificaciones de Federación" type="button">
             <span class="material-symbols-outlined text-[20px]">notifications</span>
-            <span class="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary ring-2 ring-court-surface"></span>
+            @if (activeSanctionsCount() + openTicketsCount() > 0) {
+            <span class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-600 text-[9px] font-bold text-white animate-pulse">
+              {{ activeSanctionsCount() + openTicketsCount() }}
+            </span>
+            }
           </button>
 
           <!-- Dropdown Notificaciones -->
@@ -192,10 +196,36 @@
               <span class="text-xs font-extrabold text-white uppercase tracking-wider">Avisos de Federación</span>
               <span class="text-[10px] text-primary font-bold">Oficial 2026</span>
             </div>
+
+            @if (activeSanctionsCount() > 0) {
+            <a routerLink="/club/resoluciones" (click)="closeNotifications()"
+              class="p-2.5 rounded-xl bg-accent-crimson-deep/15 border border-accent-crimson-deep/30 hover:bg-accent-crimson-deep/25 transition-colors flex items-start gap-2.5">
+              <span class="material-symbols-outlined text-accent-crimson-deep text-lg mt-0.5">gavel</span>
+              <div class="text-xs">
+                <span class="font-bold text-white block">{{ activeSanctionsCount() }} Sanción(es) Activa(s)</span>
+                <span class="text-[11px] text-text-secondary">Revise los fallos vigentes del Tribunal de Penas.</span>
+              </div>
+            </a>
+            }
+
+            @if (openTicketsCount() > 0) {
+            <a routerLink="/club/mesa-ayuda" (click)="closeNotifications()"
+              class="p-2.5 rounded-xl bg-primary/15 border border-primary/30 hover:bg-primary/25 transition-colors flex items-start gap-2.5">
+              <span class="material-symbols-outlined text-primary text-lg mt-0.5">support_agent</span>
+              <div class="text-xs">
+                <span class="font-bold text-white block">{{ openTicketsCount() }} Trámite(s) en Curso</span>
+                <span class="text-[11px] text-text-secondary">Expedientes abiertos en Mesa de Entradas FJH.</span>
+              </div>
+            </a>
+            }
+
+            @if (activeSanctionsCount() === 0 && openTicketsCount() === 0) {
             <div class="py-2 text-center text-xs text-text-secondary">
               <p class="font-medium text-slate-300">Sin notificaciones urgentes pendientes.</p>
               <p class="text-[10px] text-text-muted mt-1">Todas las resoluciones y actas están al día.</p>
             </div>
+            }
+
             <a routerLink="/club/mesa-ayuda" (click)="closeNotifications()"
               class="w-full text-center py-1.5 text-xs font-bold text-primary hover:bg-court-surface rounded-lg transition-colors">
               Ir a Mesa de Entradas

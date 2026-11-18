@@ -1,34 +1,5 @@
 <div class="public-site">
-  <header class="public-header">
-    <div class="header-inner">
-      <a class="brand" routerLink="/" aria-label="Federación Jujeña de Handball">
-        <img src="img/logo.png" alt="FJH" />
-        <span><strong>Federación Jujeña de Handball</strong><small><i></i> FJH · Afiliada a la CAH</small></span>
-      </a>
-      <nav class="desktop-nav" aria-label="Navegación pública">
-        <a class="active" routerLink="/">Inicio</a>
-        <a href="#competencias">Torneos & Competencias</a>
-        <a routerLink="/fixture">Fixtures & Resultados</a>
-        <a href="#goleadores">Posiciones & Goleadores</a>
-        <a routerLink="/galeria">Galería</a>
-      </nav>
-      <div class="header-actions">
-        <a class="referee-portal" routerLink="/login">
-          <span class="material-symbols-outlined">sports_handball</span>Panel institucional
-        </a>
-      </div>
-    </div>
-    @if (menuOpen()) {
-    <nav class="mobile-nav" aria-label="Menú móvil">
-      <a routerLink="/" (click)="toggleMenu()">Inicio</a>
-      <a href="#competencias" (click)="toggleMenu()">Torneos & Competencias</a>
-      <a routerLink="/fixture" (click)="toggleMenu()">Fixtures & Resultados</a>
-      <a href="#goleadores" (click)="toggleMenu()">Posiciones & Goleadores</a>
-      <a routerLink="/galeria" (click)="toggleMenu()">Galería</a>
-      <a routerLink="/login" (click)="toggleMenu()">Panel institucional</a>
-    </nav>
-    }
-  </header>
+  <app-public-navbar activePage="inicio"></app-public-navbar>
 
   <main id="inicio">
     <!-- Live Ticker dinámico -->
@@ -287,14 +258,23 @@
               <h2>Top Goleadores</h2>
             </div>
             <div class="scorer-filters-container">
-              <!-- Filtro de Rama / Género -->
-              <div class="filter-pills-row">
+              <!-- Fila superior: Selector de Torneo (Global vs Individual) + Rama -->
+              <div class="filter-pills-row" style="gap: 6px; align-items: center; flex-wrap: wrap;">
+                @if (torneos().length > 0) {
+                <select class="category-select-pill" [value]="activeScorerTorneoId()"
+                  (change)="selectScorerTorneo($any($event.target).value)" aria-label="Filtrar goleadores por torneo">
+                  <option value="all">Global FJH (Todos)</option>
+                  @for (t of torneos(); track t.id) {
+                  <option [value]="t.id">{{ t.nombre }}</option>
+                  }
+                </select>
+                }
                 <div class="date-tabs gender-tabs">
                   <button [class.active]="activeGender() === 'Masc'" (click)="selectGender('Masc')">Masc</button>
                   <button [class.active]="activeGender() === 'Fem'" (click)="selectGender('Fem')">Fem</button>
                 </div>
               </div>
-              <!-- Filtro de Categoría -->
+              <!-- Fila inferior: Filtro de Categoría -->
               <div class="filter-pills-row">
                 <div class="date-tabs category-tabs">
                   @for (cat of scorerCategories; track cat.value) {
@@ -442,7 +422,7 @@
   <nav class="bottom-nav">
     <a class="active" routerLink="/"><span class="material-symbols-outlined">home</span>Inicio</a>
     <a routerLink="/fixture"><span class="material-symbols-outlined">calendar_month</span>Fixture</a>
-    <a href="#posiciones"><span class="material-symbols-outlined">leaderboard</span>Posiciones</a>
+    <a routerLink="/fixture" [queryParams]="{ tab: 'posiciones' }"><span class="material-symbols-outlined">leaderboard</span>Posiciones</a>
     <a routerLink="/galeria"><span class="material-symbols-outlined">photo_library</span>Galería</a>
     <a routerLink="/login"><span class="material-symbols-outlined">sports_handball</span>Panel institucional</a>
   </nav>
@@ -466,7 +446,7 @@
         <h3>Competiciones & Fix</h3>
         <a href="#competencias">Torneo Apertura & Clausura</a>
         <a routerLink="/fixture">Fixtures de la Fecha</a>
-        <a href="#posiciones">Tabla de Posiciones</a>
+        <a routerLink="/fixture" [queryParams]="{ tab: 'posiciones' }">Tabla de Posiciones</a>
         <a href="#goleadores">Goleadores Oficiales</a>
       </div>
       <div>

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../../../../environments/environment';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Club, ClubesService } from '../../../../core/services/clubes.service';
 import { TicketItem, TicketMessage, TicketsService } from '../../../../core/services/tickets.service';
@@ -234,6 +235,12 @@ export class MesaAyudaClubComponent implements OnInit {
         this.mostrarMensaje('Error al crear la solicitud en Mesa de Entradas.');
       },
     });
+  }
+
+  getAttachmentUrl(url: string): string {
+    if (!url) return '#';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `${environment.serverUrl}${url}`;
   }
 
   mostrarMensaje(msg: string): void {

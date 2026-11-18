@@ -1,8 +1,77 @@
 :host {
   display: block;
+  color-scheme: dark;
 }
 
 .tabular-numbers {
   font-variant-numeric: tabular-nums;
 }
 
+.roster-shell {
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  selection-background-color: rgba(56, 189, 248, 0.25);
+}
+
+.roster-shell ::selection {
+  background: rgba(56, 189, 248, 0.25);
+  color: #f8fafc;
+}
+
+.interactive-btn {
+  transition:
+    transform 150ms cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 150ms cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 150ms cubic-bezier(0.23, 1, 0.32, 1),
+    color 150ms cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.interactive-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.interactive-btn:focus-visible,
+.search-field:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+.roster-scroll::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.roster-scroll::-webkit-scrollbar-track {
+  background: #0b1320;
+  border-radius: 999px;
+}
+
+.roster-scroll::-webkit-scrollbar-thumb {
+  background: #2a3d5c;
+  border-radius: 999px;
+}
+
+.roster-scroll::-webkit-scrollbar-thumb:hover {
+  background: #38bdf8;
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-surface {
+  animation: modalEnter 200ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

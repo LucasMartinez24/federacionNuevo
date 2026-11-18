@@ -73,6 +73,12 @@ export const authenticatedNavigation: readonly NavigationGroup[] = [
         roles: federationStaff,
       },
       {
+        label: 'Clubes Afiliados',
+        route: '/admin/clubes',
+        icon: 'shield',
+        roles: federationStaff,
+      },
+      {
         label: 'Boletín & Resoluciones',
         route: '/admin/boletin-resoluciones',
         icon: 'campaign',

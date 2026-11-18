@@ -2,8 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../../environments/environment';
+import { AdminSidebarStateService } from '../../../../core/navigation/admin-sidebar-state.service';
 import { Club, ClubesService } from '../../../../core/services/clubes.service';
 import { Jugador, JugadoresService } from '../../../../core/services/jugadores.service';
 import { PartidosService } from '../../../../core/services/partidos.service';
@@ -36,8 +39,10 @@ export class JugadoresAuditoriaComponent implements OnInit {
   private readonly jugadoresService = inject(JugadoresService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly sancionesService = inject(SancionesService);
   private readonly partidosService = inject(PartidosService);
+  private readonly sidebarState = inject(AdminSidebarStateService);
 
   // URL sanitizada para el visor de PDFs
   protected readonly safeDocUrl = computed<SafeResourceUrl | null>(() => {
@@ -126,11 +131,26 @@ export class JugadoresAuditoriaComponent implements OnInit {
 
   // Actas Digitales en Revisión
   protected readonly actasPendientes = signal<ActaPendiente[]>([]);
+  protected readonly partidosSinArbitro = computed(() =>
+    this.actasPendientes().filter(
+      (a) => a.mesa === 'Designación arbitral pendiente' && a.estado !== 'Finalizado',
+    ),
+  );
+  protected readonly sedesSinArbitro = computed(() => {
+    const sedes = Array.from(
+      new Set(
+        this.partidosSinArbitro()
+          .map((a) => a.sede)
+          .filter(Boolean),
+      ),
+    );
+    return sedes.length > 0 ? sedes.slice(0, 2).join(' y ') : 'Ninguna sede afectada';
+  });
 
-  // Club actualmente seleccionado
+  // Club actualmente seleccionado (null = Modo "Ver Todos los Clubes")
   protected readonly activeClub = computed(() => {
     const id = this.selectedClubId();
-    if (!id) return this.clubes()[0] || null;
+    if (!id) return null;
     return this.clubes().find((c) => c.id === id) || null;
   });
 
@@ -222,12 +242,18 @@ export class JugadoresAuditoriaComponent implements OnInit {
     });
   });
 
-  // Estadísticas del club activo
+  // Estadísticas del club activo (o padrón general cuando se selecciona "Ver Todos")
   protected readonly activeClubStats = computed(() => {
     const club = this.activeClub();
-    if (!club) return { total: 0, enabled: 0, pending: 0 };
+    if (!club) {
+      return {
+        total: this.totalAthletes(),
+        enabled: this.enabledAthletes(),
+        pending: this.pendingAthletes(),
+      };
+    }
     const clubAthletes = this.jugadores().filter(
-      (j) => j.clubId === club.id || j.club?.nombre.toLowerCase().startsWith(club.nombre.toLowerCase().replace(/ [bc]$/, '')),
+      (j) => j.clubId === club.id || j.club?.nombre?.toLowerCase().startsWith(club.nombre.toLowerCase().replace(/ [bc]$/, '')),
     );
     return {
       total: clubAthletes.length,
@@ -262,6 +288,18 @@ export class JugadoresAuditoriaComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    if (this.router.url.includes('/admin/clubes')) {
+      this.activeTab.set('clubes');
+    }
+    this.route.queryParams.subscribe((params) => {
+      if (params['tab'] === 'clubes' || params['tab'] === 'actas' || params['tab'] === 'tribunal' || params['tab'] === 'fichajes') {
+        this.activeTab.set(params['tab']);
+      }
+      if (params['clubId']) {
+        this.selectedClubId.set(params['clubId']);
+        this.activeTab.set('fichajes');
+      }
+    });
     this.cargarDatos();
   }
 
@@ -271,8 +309,9 @@ export class JugadoresAuditoriaComponent implements OnInit {
     this.clubesService.getClubes().subscribe({
       next: (clubes) => {
         this.clubes.set(clubes);
-        if (clubes.length > 0 && !this.selectedClubId()) {
-          this.selectedClubId.set(clubes[0].id);
+        const queryClubId = this.route.snapshot.queryParams['clubId'];
+        if (queryClubId && clubes.some((c) => c.id === queryClubId)) {
+          this.selectedClubId.set(queryClubId);
         }
 
         // Cargar sanciones desde el backend
@@ -337,7 +376,19 @@ export class JugadoresAuditoriaComponent implements OnInit {
   }
 
   selectClub(clubId: string | null): void {
-    this.selectedClubId.set(clubId);
+    if (clubId === null || this.selectedClubId() === clubId) {
+      this.selectedClubId.set(null);
+    } else {
+      this.selectedClubId.set(clubId);
+    }
+    this.selectedPlayerIds.set(new Set());
+  }
+
+  getPlayerClubName(player: Jugador): string {
+    if (player.club?.siglas) return player.club.siglas;
+    if (player.club?.nombre) return player.club.nombre;
+    const found = this.clubes().find((c) => c.id === player.clubId);
+    return found?.siglas || found?.nombre || 'Club FJH';
   }
 
   mostrarMensaje(mensaje: string): void {
@@ -351,6 +402,8 @@ export class JugadoresAuditoriaComponent implements OnInit {
 
   filtrarPorUrgencia(tipo: string): void {
     if (tipo === 'arbitral') {
+      this.activeTab.set('actas');
+    } else {
       this.selectedStatusFilter.set('Pendientes de Auditoría');
     }
   }
@@ -547,17 +600,37 @@ export class JugadoresAuditoriaComponent implements OnInit {
   }
 
   aprobarLote(): void {
-    const count = this.selectedPlayerIds().size;
-    if (count === 0) return;
-    this.mostrarMensaje(`Se han habilitado provisoriamente ${count} atleta(s).`);
-    this.selectedPlayerIds.set(new Set());
+    const ids = Array.from(this.selectedPlayerIds());
+    if (ids.length === 0) return;
+
+    const requests = ids.map((id) =>
+      this.jugadoresService.cambiarEstado(id, 'Habilitado').pipe(catchError(() => of(null))),
+    );
+    forkJoin(requests).subscribe(() => {
+      this.jugadores.update((list) =>
+        list.map((j) => (ids.includes(j.id) ? { ...j, estado: 'Habilitado' } : j)),
+      );
+      this.selectedPlayerIds.set(new Set());
+      this.sidebarState.reload();
+      this.mostrarMensaje(`Se han habilitado oficialmente ${ids.length} atleta(s).`);
+    });
   }
 
   rechazarLote(): void {
-    const count = this.selectedPlayerIds().size;
-    if (count === 0) return;
-    this.mostrarMensaje(`Se han observado los fichajes de ${count} atleta(s).`);
-    this.selectedPlayerIds.set(new Set());
+    const ids = Array.from(this.selectedPlayerIds());
+    if (ids.length === 0) return;
+
+    const requests = ids.map((id) =>
+      this.jugadoresService.cambiarEstado(id, 'Observado').pipe(catchError(() => of(null))),
+    );
+    forkJoin(requests).subscribe(() => {
+      this.jugadores.update((list) =>
+        list.map((j) => (ids.includes(j.id) ? { ...j, estado: 'Observado' } : j)),
+      );
+      this.selectedPlayerIds.set(new Set());
+      this.sidebarState.reload();
+      this.mostrarMensaje(`Se han observado los fichajes de ${ids.length} atleta(s).`);
+    });
   }
 
   getClubLogoUrl(logoUrl: string | null | undefined): string {
@@ -742,6 +815,7 @@ export class JugadoresAuditoriaComponent implements OnInit {
     this.tribunalJugadorSeleccionadoId.set(id);
     const j = this.jugadores().find((x) => x.id === id);
     if (j) {
+      this.tribunalNombreManual.set(j.nombreCompleto || '');
       this.tribunalClubManual.set(j.club?.nombre || '');
       this.tribunalCategoriaManual.set(j.categoria || 'Primera Masc.');
     }

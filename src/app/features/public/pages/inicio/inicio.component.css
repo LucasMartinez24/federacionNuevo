@@ -15,7 +15,7 @@
   color: #f8fafc;
   background: var(--surface);
   font-family: var(--font-sans);
-  overflow: hidden
+  overflow-x: clip
 }
 
 .wide-container {
@@ -888,6 +888,10 @@
   align-items: start;
 }
 
+.split-grid > * {
+  min-width: 0;
+}
+
 @media (max-width: 992px) {
   .split-grid {
     grid-template-columns: 1fr;
@@ -905,20 +909,34 @@
 }
 
 .scorers-header {
-  align-items: flex-start;
-  gap: 14px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
 }
 
 .scorer-filters-container {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  align-items: flex-end;
+  align-items: stretch;
+  width: 100%;
 }
 
 .filter-pills-row {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  max-width: 100%;
+}
+
+.category-tabs {
+  width: 100%;
+  overflow-x: auto;
+  justify-content: space-between;
+}
+
+.category-tabs button {
+  flex: 1;
+  text-align: center;
 }
 
 .gender-tabs button {

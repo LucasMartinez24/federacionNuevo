@@ -7,6 +7,7 @@ import { PartidosService, PartidoItem } from '../../../../core/services/partidos
 import { TorneosService, Torneo, PosicionClub } from '../../../../core/services/torneos.service';
 import { ClubesService } from '../../../../core/services/clubes.service';
 import { environment } from '../../../../../environments/environment';
+import { PublicNavbarComponent } from '../../../../shared/components/public-navbar/public-navbar.component';
 
 export interface MatchDisplay {
   id: string;
@@ -46,7 +47,7 @@ export interface GoleadorItem {
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, PublicNavbarComponent],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css',
 })
@@ -74,6 +75,7 @@ export class InicioComponent {
   // Filtros Top Goleadores
   protected readonly activeGender = signal<'Masc' | 'Fem'>('Masc');
   protected readonly activeScorerCategory = signal<string>('Todas');
+  protected readonly activeScorerTorneoId = signal<string>('all'); // 'all' para ranking global o ID específico del torneo
 
   // Datos principales reactivos
   protected readonly torneos = signal<Torneo[]>([]);
@@ -206,6 +208,11 @@ export class InicioComponent {
     this.cargarGoleadores();
   }
 
+  protected selectScorerTorneo(torneoId: string): void {
+    this.activeScorerTorneoId.set(torneoId);
+    this.cargarGoleadores();
+  }
+
   protected getInitials(name?: string, siglas?: string): string {
     if (siglas) return siglas.toUpperCase();
     if (!name) return 'CLB';
@@ -284,11 +291,12 @@ export class InicioComponent {
   private cargarGoleadores(): void {
     const generoFiltro = this.activeGender() === 'Fem' ? 'Femenino' : 'Masculino';
     const categoriaFiltro = this.activeScorerCategory();
+    const torneoIdFiltro = this.activeScorerTorneoId() === 'all' ? undefined : this.activeScorerTorneoId();
 
-    this.partidosService.getGoleadores(undefined, generoFiltro, categoriaFiltro).pipe(
+    this.partidosService.getGoleadores(torneoIdFiltro, generoFiltro, categoriaFiltro).pipe(
       catchError(() => of([]))
     ).subscribe((gols) => {
-      // Si la categoría seleccionada tiene goleadores, mostrarla; si no, dejar vacío el ranking de esa categoría
+      // Si la categoría/torneo seleccionada tiene goleadores, mostrarla; si no, dejar vacío el ranking
       this.goleadores.set(gols || []);
     });
   }

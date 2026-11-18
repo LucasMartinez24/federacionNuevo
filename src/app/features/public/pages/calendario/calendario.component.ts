@@ -14,6 +14,7 @@ import {
 import { Club, ClubesService } from '../../../../core/services/clubes.service';
 import { PartidosService } from '../../../../core/services/partidos.service';
 import { Torneo, TorneosService } from '../../../../core/services/torneos.service';
+import { PublicNavbarComponent } from '../../../../shared/components/public-navbar/public-navbar.component';
 
 export interface CalendarioMatchItem {
   id: string;
@@ -57,7 +58,7 @@ export interface CalendarDayCell {
 @Component({
   selector: 'app-calendario',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, PublicNavbarComponent],
   templateUrl: './calendario.component.html',
   styleUrl: './calendario.component.css',
 })

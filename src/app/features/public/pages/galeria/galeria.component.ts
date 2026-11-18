@@ -1,43 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { FotoGaleria, GaleriaService } from '../../../../core/services/galeria.service';
+import { PublicNavbarComponent } from '../../../../shared/components/public-navbar/public-navbar.component';
 
 @Component({
   selector: 'app-galeria',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, PublicNavbarComponent],
   template: `
     <div class="gallery-page">
-      <!-- Header Público Oficial -->
-      <header class="gallery-header">
-        <a routerLink="/" class="gallery-brand">
-          <img src="/img/logo.png" alt="Federación Jujeña de Handball" />
-          <div class="flex flex-col">
-            <span class="brand-title">Federación Jujeña de Handball</span>
-            <span class="brand-sub">FJH • Galería Oficial</span>
-          </div>
-        </a>
-        <div class="header-links">
-          <a routerLink="/" class="gallery-back">
-            <span class="material-symbols-outlined">arrow_back</span>
-            <span>Inicio</span>
-          </a>
-          <a routerLink="/fixture" class="gallery-back">
-            <span class="material-symbols-outlined">sports_handball</span>
-            <span>Fixture</span>
-          </a>
-          <a routerLink="/calendario" class="gallery-back">
-            <span class="material-symbols-outlined">calendar_month</span>
-            <span>Calendario</span>
-          </a>
-          <a routerLink="/login" class="login-chip">
-            <span class="material-symbols-outlined">sports_handball</span>
-            <span>Panel Oficial</span>
-          </a>
-        </div>
-      </header>
+      <!-- Header Público Oficial Unificado -->
+      <app-public-navbar activePage="galeria"></app-public-navbar>
 
       <!-- Hero Section -->
       <section class="gallery-hero">

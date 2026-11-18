@@ -6,115 +6,9 @@
   <!-- ===================================================================== -->
   <!-- BARRA DE NAVEGACIÓN SUPERIOR (NAVBAR PÚBLICA / INSTITUCIONAL)          -->
   <!-- ===================================================================== -->
-  <header class="sticky top-0 z-50 bg-[#080e18]/95 backdrop-blur-xl border-b border-white/10 shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 lg:px-8 h-20 flex items-center justify-between gap-4">
-      
-      <!-- Brand & Botón Volver -->
-      <div class="flex items-center gap-3 sm:gap-4 min-w-0">
-        <a routerLink="/" 
-          class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-court-surface hover:bg-court-card text-text-secondary hover:text-white border border-white/10 transition-colors text-xs font-bold shrink-0"
-          title="Volver a la portada principal">
-          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-          <span class="hidden sm:inline">Volver</span>
-        </a>
-
-        <a routerLink="/" class="flex items-center gap-3 min-w-0 group text-decoration-none">
-          <img src="img/logo.png" alt="FJH" class="w-10 h-10 object-contain shrink-0 drop-shadow-[0_2px_8px_rgba(56,189,248,0.3)]" />
-          <div class="flex flex-col min-w-0">
-            <span class="font-bold text-white text-sm sm:text-base leading-tight truncate group-hover:text-primary transition-colors">
-              Federación Jujeña de Handball
-            </span>
-            <span class="text-[10px] font-extrabold uppercase tracking-widest text-primary flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-              Match Center Oficial • FJH
-            </span>
-          </div>
-        </a>
-      </div>
-
-      <!-- Links de Navegación Rápida -->
-      <nav class="hidden md:flex items-center gap-1.5">
-        <a routerLink="/" 
-          class="px-3 py-1.5 rounded-xl text-xs font-medium text-text-muted hover:text-white hover:bg-white/5 transition-all">
-          Inicio
-        </a>
-        <a routerLink="/fixture" 
-          class="px-3 py-1.5 rounded-xl text-xs font-bold text-primary bg-primary/10 border border-primary/30 transition-all">
-          Fixture & Planillas
-        </a>
-        <a routerLink="/calendario" 
-          class="px-3 py-1.5 rounded-xl text-xs font-medium text-text-muted hover:text-white hover:bg-white/5 transition-all">
-          Calendario
-        </a>
-        <a routerLink="/galeria" 
-          class="px-3 py-1.5 rounded-xl text-xs font-medium text-text-muted hover:text-white hover:bg-white/5 transition-all">
-          Galería
-        </a>
-      </nav>
-
-      <!-- Botón de Panel Administrativo / Club / Login -->
-      <div class="flex items-center gap-2.5 shrink-0">
-        @if (authService.isAuthenticated()) {
-          @if (isAdminContext() || authService.canManagePlanilla()) {
-            <a routerLink="/admin/jugadores" 
-              class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-[#0B3C5D] text-white text-xs font-bold shadow-md hover:brightness-110 transition-all">
-              <span class="material-symbols-outlined text-[17px]">admin_panel_settings</span>
-              <span class="hidden sm:inline">Panel Federación</span>
-            </a>
-          } @else if (authService.isClub()) {
-            <a routerLink="/club/fixture" 
-              class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-[#0B3C5D] text-white text-xs font-bold shadow-md hover:brightness-110 transition-all">
-              <span class="material-symbols-outlined text-[17px]">shield</span>
-              <span class="hidden sm:inline">Portal Mi Club</span>
-            </a>
-          }
-        } @else {
-          <a routerLink="/login" 
-            class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-xs font-bold transition-all">
-            <span class="material-symbols-outlined text-[17px]">lock</span>
-            <span>Ingreso Oficial</span>
-          </a>
-        }
-
-        <!-- Toggle Mobile Nav -->
-        <button type="button" (click)="mobileMenuOpen.set(!mobileMenuOpen())"
-          class="md:hidden p-2 rounded-xl text-text-muted hover:text-white hover:bg-white/5 transition-colors">
-          <span class="material-symbols-outlined text-2xl">
-            {{ mobileMenuOpen() ? 'close' : 'menu' }}
-          </span>
-        </button>
-      </div>
-
-    </div>
-
-    <!-- Menú Desplegable Móvil -->
-    @if (mobileMenuOpen()) {
-    <div class="md:hidden border-t border-white/10 bg-[#0d1524] px-4 py-3 flex flex-col gap-2">
-      <a routerLink="/" (click)="mobileMenuOpen.set(false)" 
-        class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-text-muted hover:text-white hover:bg-white/5">
-        <span class="material-symbols-outlined text-base">home</span>
-        Inicio
-      </a>
-      <a routerLink="/fixture" (click)="mobileMenuOpen.set(false)" 
-        class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-primary bg-primary/10">
-        <span class="material-symbols-outlined text-base">calendar_month</span>
-        Fixture & Planillas
-      </a>
-      <a routerLink="/galeria" (click)="mobileMenuOpen.set(false)" 
-        class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-text-muted hover:text-white hover:bg-white/5">
-        <span class="material-symbols-outlined text-base">photo_library</span>
-        Galería
-      </a>
-      @if (!authService.isAuthenticated()) {
-      <a routerLink="/login" (click)="mobileMenuOpen.set(false)" 
-        class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-rose-300 bg-rose-500/10">
-        <span class="material-symbols-outlined text-base">lock</span>
-        Acceso Panel Institucional
-      </a>
-      }
-    </div>
-    }
-  </header>
+  @if (!isAdminContext()) {
+  <app-public-navbar [activePage]="currentTab() === 'posiciones' ? 'posiciones' : 'fixture'"></app-public-navbar>
+  }
 
   <!-- TOAST DE FEEDBACK -->
   @if (feedback(); as fb) {
@@ -1184,10 +1078,12 @@
   }
 
   <!-- FOOTER INSTITUCIONAL -->
+  @if (!isAdminContext()) {
   <footer class="max-w-7xl mx-auto px-4 lg:px-8 pt-10 mt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-text-muted">
     <span>© 2026 Federación Jujeña de Handball (FJH). Todos los derechos reservados.</span>
     <span>Desarrollado por <strong class="text-primary font-bold">REC Technologies</strong></span>
   </footer>
+  }
 
   <!-- ===================================================================== -->
   <!-- MODAL MESA DE CONTROL EN VIVO & VISOR DE ACTA OFICIAL HOMOLOGADA      -->
