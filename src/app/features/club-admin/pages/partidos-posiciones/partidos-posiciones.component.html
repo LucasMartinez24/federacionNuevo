@@ -1,22 +1,31 @@
 <div class="relative w-full overflow-hidden flex flex-col font-sans">
   <!-- Subtle Ambient Court Lighting Glows -->
-  <div class="absolute -top-36 left-1/4 w-[600px] h-[350px] bg-sky-500/10 rounded-full blur-[140px] pointer-events-none"></div>
-  <div class="absolute top-96 -right-32 w-[500px] h-[300px] bg-tertiary/5 rounded-full blur-[130px] pointer-events-none"></div>
+  <div
+    class="absolute -top-36 left-1/4 w-[600px] h-[350px] bg-sky-500/10 rounded-full blur-[140px] pointer-events-none">
+  </div>
+  <div
+    class="absolute top-96 -right-32 w-[500px] h-[300px] bg-tertiary/5 rounded-full blur-[130px] pointer-events-none">
+  </div>
 
   <!-- 1. TOP SUBHEADER / ACTIONS -->
   <div class="flex flex-col md:flex-row items-center justify-between gap-4 pb-4 border-b border-white/10 mb-6">
     <div class="flex items-center gap-3 w-full md:w-auto">
-      <div class="flex items-center justify-center size-11 rounded-xl bg-[#0B3C5D] border border-sky-400/30 shadow-lg shadow-sky-500/10 text-primary-container shrink-0">
+      <div
+        class="flex items-center justify-center size-11 rounded-xl bg-[#0B3C5D] border border-sky-400/30 shadow-lg shadow-sky-500/10 text-primary-container shrink-0">
         <span class="material-symbols-outlined text-2xl">sports_handball</span>
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <span class="text-[10px] uppercase font-extrabold tracking-widest text-primary-container bg-primary-container/10 px-2 py-0.5 rounded-full border border-sky-400/20">FJH Oficial</span>
-          <span class="text-xs text-text-muted">• {{ torneoActivo()?.nombre || 'Temporada Oficial' }} {{ torneoActivo()?.temporada || '2026' }}</span>
+          <span
+            class="text-[10px] uppercase font-extrabold tracking-widest text-primary-container bg-primary-container/10 px-2 py-0.5 rounded-full border border-sky-400/20">FJH
+            Oficial</span>
+          <span class="text-xs text-text-muted">• {{ torneoActivo()?.nombre || 'Temporada Oficial' }} {{
+            torneoActivo()?.temporada || '2026' }}</span>
         </div>
         <h1 class="text-lg md:text-xl font-black tracking-tight text-white flex items-center gap-2">
           AGENDA &amp; COMPETICIÓN
-          <span class="text-xs font-semibold px-2 py-0.5 bg-white/10 text-slate-300 rounded-md">{{ club()?.siglas || currentUser()?.siglas || 'CLUB' }}</span>
+          <span class="text-xs font-semibold px-2 py-0.5 bg-white/10 text-slate-300 rounded-md">{{ club()?.siglas ||
+            currentUser()?.siglas || 'CLUB' }}</span>
         </h1>
       </div>
     </div>
@@ -24,48 +33,33 @@
     <!-- Navigation Views & Download CTA -->
     <div class="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
       <div class="flex items-center bg-surface-container-high/90 p-1 rounded-xl border border-white/10 shadow-inner">
-        <button
-          type="button"
-          (click)="setView('agenda')"
-          [class.bg-[#0B3C5D]]="currentView() === 'agenda'"
-          [class.text-white]="currentView() === 'agenda'"
-          [class.border]="currentView() === 'agenda'"
+        <button type="button" (click)="setView('agenda')" [class.bg-[#0B3C5D]]="currentView() === 'agenda'"
+          [class.text-white]="currentView() === 'agenda'" [class.border]="currentView() === 'agenda'"
           [class.border-sky-400/40]="currentView() === 'agenda'"
           [class.text-text-secondary]="currentView() !== 'agenda'"
           class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer">
           <span class="material-symbols-outlined text-base text-primary-container">calendar_month</span>
           <span class="hidden sm:inline">Mi Agenda</span>
         </button>
-        <button
-          type="button"
-          (click)="setView('fixture_general')"
+        <button type="button" (click)="setView('fixture_general')"
           [class.bg-[#0B3C5D]]="currentView() === 'fixture_general'"
-          [class.text-white]="currentView() === 'fixture_general'"
-          [class.border]="currentView() === 'fixture_general'"
+          [class.text-white]="currentView() === 'fixture_general'" [class.border]="currentView() === 'fixture_general'"
           [class.border-sky-400/40]="currentView() === 'fixture_general'"
           [class.text-text-secondary]="currentView() !== 'fixture_general'"
           class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:text-white cursor-pointer">
           <span class="material-symbols-outlined text-base text-sky-400">stadium</span>
           <span class="hidden sm:inline">Torneo &amp; Fechas</span>
         </button>
-        <button
-          type="button"
-          (click)="setView('standings')"
-          [class.bg-[#0B3C5D]]="currentView() === 'standings'"
-          [class.text-white]="currentView() === 'standings'"
-          [class.border]="currentView() === 'standings'"
+        <button type="button" (click)="setView('standings')" [class.bg-[#0B3C5D]]="currentView() === 'standings'"
+          [class.text-white]="currentView() === 'standings'" [class.border]="currentView() === 'standings'"
           [class.border-sky-400/40]="currentView() === 'standings'"
           [class.text-text-secondary]="currentView() !== 'standings'"
           class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:text-white cursor-pointer">
           <span class="material-symbols-outlined text-base">leaderboard</span>
           <span class="hidden sm:inline">Tabla de Posiciones</span>
         </button>
-        <button
-          type="button"
-          (click)="setView('playoffs')"
-          [class.bg-[#0B3C5D]]="currentView() === 'playoffs'"
-          [class.text-white]="currentView() === 'playoffs'"
-          [class.border]="currentView() === 'playoffs'"
+        <button type="button" (click)="setView('playoffs')" [class.bg-[#0B3C5D]]="currentView() === 'playoffs'"
+          [class.text-white]="currentView() === 'playoffs'" [class.border]="currentView() === 'playoffs'"
           [class.border-sky-400/40]="currentView() === 'playoffs'"
           [class.text-text-secondary]="currentView() !== 'playoffs'"
           class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:text-white cursor-pointer">
@@ -75,9 +69,7 @@
       </div>
 
       <!-- Download Fixture PDF Action -->
-      <button
-        type="button"
-        (click)="descargarFixturePdf()"
+      <button type="button" (click)="descargarFixturePdf()"
         class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-primary-container text-[#101d23] text-xs font-extrabold tracking-wide hover:brightness-110 active:scale-95 transition-all shadow-md shadow-sky-500/20 shrink-0 cursor-pointer">
         <span class="material-symbols-outlined text-base">download</span>
         <span class="hidden sm:inline">Descargar Fixture PDF</span>
@@ -87,15 +79,19 @@
 
   <!-- 2. CLUB CONTEXT HERO BANNER -->
   <section class="w-full pb-6">
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-court-card via-surface-container-low to-court-card border border-white/10 p-5 md:p-6 shadow-2xl">
+    <div
+      class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-court-card via-surface-container-low to-court-card border border-white/10 p-5 md:p-6 shadow-2xl">
       <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex items-center gap-4">
           <!-- Club Crest Badge -->
-          <div class="size-16 rounded-2xl bg-gradient-to-tr from-blue-700 via-red-600 to-blue-600 p-0.5 shadow-xl shadow-red-950/40 flex items-center justify-center shrink-0">
+          <div
+            class="size-16 rounded-2xl bg-gradient-to-tr from-blue-700 via-red-600 to-blue-600 p-0.5 shadow-xl shadow-red-950/40 flex items-center justify-center shrink-0">
             @if (hasValidLogo(club()?.logoUrl)) {
-            <img [src]="getClubLogoUrl(club()?.logoUrl)" [alt]="club()?.nombre || 'Club'" class="w-full h-full object-cover rounded-[14px] bg-surface-dim" />
+            <img [src]="getClubLogoUrl(club()?.logoUrl)" [alt]="club()?.nombre || 'Club'"
+              class="w-full h-full object-cover rounded-[14px] bg-surface-dim" />
             } @else {
-            <div class="w-full h-full bg-surface-dim/90 rounded-[14px] flex flex-col items-center justify-center border border-white/10">
+            <div
+              class="w-full h-full bg-surface-dim/90 rounded-[14px] flex flex-col items-center justify-center border border-white/10">
               <span class="text-xs font-black tracking-tighter text-red-500">{{ club()?.siglas || 'CLUB' }}</span>
               <span class="text-[9px] font-bold text-sky-400">FJH</span>
             </div>
@@ -103,12 +99,15 @@
           </div>
           <div>
             <div class="flex items-center gap-2 mb-1 flex-wrap">
-              <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">{{ club()?.nombre || currentUser()?.nombre || 'Mi Club' }}</h2>
-              <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-tertiary/15 text-tertiary border border-tertiary/30">
+              <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">{{ club()?.nombre ||
+                currentUser()?.nombre || 'Mi Club' }}</h2>
+              <span
+                class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-tertiary/15 text-tertiary border border-tertiary/30">
                 {{ club()?.esInvitado ? 'Equipo Invitado FJH' : 'Afiliado CAH' }}
               </span>
               @if (miEstadoClasificacion(); as miEst) {
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide flex items-center gap-1"
+              <span
+                class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide flex items-center gap-1"
                 [class]="miEst.enZona
                   ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40'
                   : 'bg-amber-500/15 text-amber-300 border border-amber-400/30'">
@@ -118,26 +117,31 @@
               }
             </div>
             <p class="text-xs md:text-sm text-text-secondary max-w-2xl font-normal">
-              Centro de control unificado: Fixture oficial, actas digitales homologadas por mesa y tabla general del Torneo Apertura 2026.
+              Centro de control unificado: Fixture oficial, actas digitales homologadas por mesa y tabla general del
+              Torneo Apertura 2026.
             </p>
           </div>
         </div>
 
         <!-- Quick Stat Capsules -->
         <div class="flex items-center gap-2 md:gap-3 flex-wrap">
-          <div class="bg-surface-dim/70 border border-white/10 rounded-xl px-3 py-2 text-center flex-1 md:flex-initial min-w-[80px]">
+          <div
+            class="bg-surface-dim/70 border border-white/10 rounded-xl px-3 py-2 text-center flex-1 md:flex-initial min-w-[80px]">
             <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Posición</span>
             <span class="text-lg font-black text-primary-container tabular-numbers">{{ clubStats().posicion }}</span>
           </div>
-          <div class="bg-surface-dim/70 border border-white/10 rounded-xl px-3 py-2 text-center flex-1 md:flex-initial min-w-[80px]">
+          <div
+            class="bg-surface-dim/70 border border-white/10 rounded-xl px-3 py-2 text-center flex-1 md:flex-initial min-w-[80px]">
             <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Puntos</span>
             <span class="text-lg font-black text-white tabular-numbers">{{ clubStats().puntos }}</span>
           </div>
-          <div class="bg-surface-dim/70 border border-white/10 rounded-xl px-3 py-2 text-center flex-1 md:flex-initial min-w-[80px]">
+          <div
+            class="bg-surface-dim/70 border border-white/10 rounded-xl px-3 py-2 text-center flex-1 md:flex-initial min-w-[80px]">
             <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Eficacia</span>
             <span class="text-lg font-black text-tertiary tabular-numbers">{{ clubStats().eficacia }}</span>
           </div>
-          <a routerLink="/club/jugadores" class="px-3.5 py-2.5 rounded-xl bg-surface-bright/70 hover:bg-surface-bright text-xs font-bold text-slate-200 border border-white/10 transition-all flex items-center justify-center gap-1.5 shadow-sm">
+          <a routerLink="/club/jugadores"
+            class="px-3.5 py-2.5 rounded-xl bg-surface-bright/70 hover:bg-surface-bright text-xs font-bold text-slate-200 border border-white/10 transition-all flex items-center justify-center gap-1.5 shadow-sm">
             <span class="material-symbols-outlined text-base text-sky-400">badge</span>
             <span>Padrón de Jugadores</span>
           </a>
@@ -148,20 +152,17 @@
 
   <!-- 3. CATEGORY, RAMA & TOURNAMENT SELECTOR STRIP -->
   <section class="w-full pb-6 flex flex-col gap-3.5">
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-surface-container-low/80 p-3.5 rounded-2xl border border-white/10 shadow-lg">
+    <div
+      class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-surface-container-low/80 p-3.5 rounded-2xl border border-white/10 shadow-lg">
       <!-- Selector de Categorías -->
       <div class="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none no-scrollbar flex-1">
         @for (cat of categoriasFiltro; track cat.value) {
-        <button
-          type="button"
-          (click)="setCategory(cat.value)"
-          [class.bg-[#0B3C5D]]="selectedCategory() === cat.value"
+        <button type="button" (click)="setCategory(cat.value)" [class.bg-[#0B3C5D]]="selectedCategory() === cat.value"
           [class.text-white]="selectedCategory() === cat.value"
           [class.border-sky-400/40]="selectedCategory() === cat.value"
           [class.shadow-lg]="selectedCategory() === cat.value"
           [class.shadow-sky-500/20]="selectedCategory() === cat.value"
-          [class.font-bold]="selectedCategory() === cat.value"
-          [class.text-slate-400]="selectedCategory() !== cat.value"
+          [class.font-bold]="selectedCategory() === cat.value" [class.text-slate-400]="selectedCategory() !== cat.value"
           [class.bg-surface-container-low/70]="selectedCategory() !== cat.value"
           [class.border-white/10]="selectedCategory() !== cat.value"
           class="shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5 cursor-pointer">
@@ -174,37 +175,24 @@
       </div>
 
       <!-- Selector de Rama (Femenino / Masculino / Ambas) -->
-      <div class="flex items-center bg-surface-container-high/90 p-1 rounded-xl border border-white/10 shadow-inner shrink-0 self-start lg:self-auto">
-        <button
-          type="button"
-          (click)="setRama('TODAS')"
-          [class.bg-[#0B3C5D]]="selectedRama() === 'TODAS'"
-          [class.text-white]="selectedRama() === 'TODAS'"
-          [class.border]="selectedRama() === 'TODAS'"
+      <div
+        class="flex items-center bg-surface-container-high/90 p-1 rounded-xl border border-white/10 shadow-inner shrink-0 self-start lg:self-auto">
+        <button type="button" (click)="setRama('TODAS')" [class.bg-[#0B3C5D]]="selectedRama() === 'TODAS'"
+          [class.text-white]="selectedRama() === 'TODAS'" [class.border]="selectedRama() === 'TODAS'"
           [class.border-sky-400/40]="selectedRama() === 'TODAS'"
           [class.text-text-secondary]="selectedRama() !== 'TODAS'"
           class="px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer">
           Ambas
         </button>
-        <button
-          type="button"
-          (click)="setRama('Masc')"
-          [class.bg-[#0B3C5D]]="selectedRama() === 'Masc'"
-          [class.text-white]="selectedRama() === 'Masc'"
-          [class.border]="selectedRama() === 'Masc'"
-          [class.border-sky-400/40]="selectedRama() === 'Masc'"
-          [class.text-text-secondary]="selectedRama() !== 'Masc'"
+        <button type="button" (click)="setRama('Masc')" [class.bg-[#0B3C5D]]="selectedRama() === 'Masc'"
+          [class.text-white]="selectedRama() === 'Masc'" [class.border]="selectedRama() === 'Masc'"
+          [class.border-sky-400/40]="selectedRama() === 'Masc'" [class.text-text-secondary]="selectedRama() !== 'Masc'"
           class="px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer">
           Masculino
         </button>
-        <button
-          type="button"
-          (click)="setRama('Fem')"
-          [class.bg-[#0B3C5D]]="selectedRama() === 'Fem'"
-          [class.text-white]="selectedRama() === 'Fem'"
-          [class.border]="selectedRama() === 'Fem'"
-          [class.border-sky-400/40]="selectedRama() === 'Fem'"
-          [class.text-text-secondary]="selectedRama() !== 'Fem'"
+        <button type="button" (click)="setRama('Fem')" [class.bg-[#0B3C5D]]="selectedRama() === 'Fem'"
+          [class.text-white]="selectedRama() === 'Fem'" [class.border]="selectedRama() === 'Fem'"
+          [class.border-sky-400/40]="selectedRama() === 'Fem'" [class.text-text-secondary]="selectedRama() !== 'Fem'"
           class="px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer">
           Femenino
         </button>
@@ -216,14 +204,13 @@
       <div class="flex items-center gap-2">
         <span class="text-xs font-extrabold uppercase tracking-wider text-text-muted">Torneo Oficial en Consulta:</span>
         @if (torneoActivo(); as t) {
-        <button
-          type="button"
-          (click)="toggleSelectorTorneos()"
+        <button type="button" (click)="toggleSelectorTorneos()"
           class="flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-court-surface hover:bg-white/[0.08] border border-sky-400/30 text-xs font-bold text-white transition-all shadow-md group cursor-pointer">
           <span class="size-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span class="font-extrabold text-sky-300">{{ t.nombre }}</span>
           <span class="text-text-muted font-normal">({{ t.categoria }} • {{ t.rama }})</span>
-          <span class="material-symbols-outlined text-[18px] text-sky-400 group-hover:translate-y-0.5 transition-transform"
+          <span
+            class="material-symbols-outlined text-[18px] text-sky-400 group-hover:translate-y-0.5 transition-transform"
             [class.rotate-180]="selectorTorneosAbierto()">
             expand_more
           </span>
@@ -240,28 +227,26 @@
 
     <!-- PANEL DESPLEGABLE: GRILLA VISUAL DE TORNEOS DE LA FEDERACIÓN -->
     @if (selectorTorneosAbierto()) {
-    <div class="bg-court-card border border-white/10 rounded-2xl p-4 shadow-2xl flex flex-col gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
+    <div
+      class="bg-court-card border border-white/10 rounded-2xl p-4 shadow-2xl flex flex-col gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-white">
           <span class="material-symbols-outlined text-[18px] text-sky-400">emoji_events</span>
           <span>Seleccionar Torneo Específico ({{ torneosDisponibles().length }})</span>
         </div>
-        <button
-          type="button"
-          (click)="selectorTorneosAbierto.set(false)"
+        <button type="button" (click)="selectorTorneosAbierto.set(false)"
           class="text-xs text-text-muted hover:text-white flex items-center gap-1 cursor-pointer">
           <span>Cerrar</span>
           <span class="material-symbols-outlined text-[16px]">close</span>
         </button>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[360px] overflow-y-auto pr-1">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[360px] overflow-y-auto pr-1">
         @for (t of torneosDisponibles(); track t.id) {
         @let visual = getEstadoVisualTorneo(t.estado);
         @let isSelected = torneoActivo()?.id === t.id;
-        <div
-          (click)="seleccionarTorneo(t)"
-          [class]="isSelected
+        <div (click)="seleccionarTorneo(t)" [class]="isSelected
             ? 'bg-[#0B3C5D]/80 border-sky-400 shadow-lg shadow-sky-500/20 ring-1 ring-sky-400'
             : 'bg-surface-dim/80 border-white/10 hover:border-white/30 hover:bg-white/[0.05]'"
           class="p-3.5 rounded-xl border flex flex-col justify-between gap-3 transition-all cursor-pointer group text-left">
@@ -279,7 +264,8 @@
               <span class="material-symbols-outlined text-[18px] text-sky-400">check_circle</span>
               }
             </div>
-            <h4 class="text-sm font-black text-white group-hover:text-sky-300 transition-colors leading-snug line-clamp-2">
+            <h4
+              class="text-sm font-black text-white group-hover:text-sky-300 transition-colors leading-snug line-clamp-2">
               {{ t.nombre }}
             </h4>
           </div>
@@ -290,7 +276,8 @@
           </div>
         </div>
         } @empty {
-        <div class="col-span-full p-6 text-center text-text-muted text-xs border border-dashed border-white/10 rounded-xl">
+        <div
+          class="col-span-full p-6 text-center text-text-muted text-xs border border-dashed border-white/10 rounded-xl">
           No hay torneos registrados para la combinación de categoría y rama actual.
         </div>
         }
@@ -311,32 +298,33 @@
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full size-3 bg-emerald-500"></span>
           </span>
-          <h2 class="text-sm uppercase tracking-wider font-extrabold text-white">PRÓXIMOS ENCUENTROS EN CALENDARIO OFICIAL</h2>
+          <h2 class="text-sm uppercase tracking-wider font-extrabold text-white">PRÓXIMOS ENCUENTROS EN CALENDARIO
+            OFICIAL</h2>
         </div>
         <span class="text-xs text-text-secondary font-medium">Torneo Apertura 2026 • FJH</span>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         @for (partido of proximosPartidos(); track partido.id) {
-        <div class="bg-slate-900/70 backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-2xl hover:border-sky-500/30 transition-all flex flex-col justify-between group">
+        <div
+          class="bg-slate-900/70 backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-2xl hover:border-sky-500/30 transition-all flex flex-col justify-between group">
           <div>
             <!-- Header Badges -->
             <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
               <div class="flex items-center gap-2">
-                <span class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-[#0B3C5D] text-primary-container border border-sky-400/30">
+                <span
+                  class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-[#0B3C5D] text-primary-container border border-sky-400/30">
                   Fecha {{ partido.jornada }} • {{ partido.torneoCat }} {{ partido.torneoRama }}
                 </span>
                 <span class="text-xs text-text-secondary">{{ partido.torneoNombre }}</span>
               </div>
               <span
                 class="px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider flex items-center gap-1"
-                [class.bg-emerald-500/15]="partido.esLocal"
-                [class.text-emerald-400]="partido.esLocal"
-                [class.border]="partido.esLocal"
-                [class.border-emerald-500/30]="partido.esLocal"
-                [class.bg-slate-800]="!partido.esLocal"
-                [class.text-slate-300]="!partido.esLocal">
-                <span class="size-1.5 rounded-full" [class.bg-emerald-400]="partido.esLocal" [class.bg-slate-400]="!partido.esLocal"></span>
+                [class.bg-emerald-500/15]="partido.esLocal" [class.text-emerald-400]="partido.esLocal"
+                [class.border]="partido.esLocal" [class.border-emerald-500/30]="partido.esLocal"
+                [class.bg-slate-800]="!partido.esLocal" [class.text-slate-300]="!partido.esLocal">
+                <span class="size-1.5 rounded-full" [class.bg-emerald-400]="partido.esLocal"
+                  [class.bg-slate-400]="!partido.esLocal"></span>
                 {{ partido.esLocal ? 'LOCAL' : 'VISITANTE' }}
               </span>
             </div>
@@ -345,11 +333,14 @@
             <div class="grid grid-cols-7 items-center gap-2 my-2">
               <!-- Local -->
               <div class="col-span-3 flex flex-col items-center text-center">
-                <div class="size-16 rounded-2xl bg-gradient-to-tr from-red-600 to-blue-700 p-0.5 shadow-lg mb-2 group-hover:scale-105 transition-transform flex items-center justify-center">
+                <div
+                  class="size-16 rounded-2xl bg-gradient-to-tr from-red-600 to-blue-700 p-0.5 shadow-lg mb-2 group-hover:scale-105 transition-transform flex items-center justify-center">
                   @if (hasValidLogo(partido.esLocal ? partido.clubLogoUrl : partido.rivalLogoUrl)) {
-                  <img [src]="getClubLogoUrl(partido.esLocal ? partido.clubLogoUrl : partido.rivalLogoUrl)" class="w-full h-full object-cover rounded-[14px]" />
+                  <img [src]="getClubLogoUrl(partido.esLocal ? partido.clubLogoUrl : partido.rivalLogoUrl)"
+                    class="w-full h-full object-cover rounded-[14px]" />
                   } @else {
-                  <div class="w-full h-full bg-surface-container rounded-[14px] flex items-center justify-center font-black text-sm text-white">
+                  <div
+                    class="w-full h-full bg-surface-container rounded-[14px] flex items-center justify-center font-black text-sm text-white">
                     {{ partido.esLocal ? partido.clubSiglas : partido.rivalSiglas }}
                   </div>
                   }
@@ -364,22 +355,28 @@
 
               <!-- Center Kickoff Info -->
               <div class="col-span-1 flex flex-col items-center justify-center text-center">
-                <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider">{{ partido.fechaStr }}</span>
-                <div class="text-2xl md:text-3xl font-black text-primary-container tabular-numbers tracking-tight my-0.5">
+                <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider">{{ partido.fechaStr
+                  }}</span>
+                <div
+                  class="text-2xl md:text-3xl font-black text-primary-container tabular-numbers tracking-tight my-0.5">
                   {{ partido.horaStr }}
                 </div>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-white/5 border border-white/10 text-slate-300">
+                <span
+                  class="px-2 py-0.5 rounded text-[10px] font-bold bg-white/5 border border-white/10 text-slate-300">
                   Cancha
                 </span>
               </div>
 
               <!-- Visitante -->
               <div class="col-span-3 flex flex-col items-center text-center">
-                <div class="size-16 rounded-2xl bg-gradient-to-tr from-slate-700 to-amber-600 p-0.5 shadow-lg mb-2 group-hover:scale-105 transition-transform flex items-center justify-center">
+                <div
+                  class="size-16 rounded-2xl bg-gradient-to-tr from-slate-700 to-amber-600 p-0.5 shadow-lg mb-2 group-hover:scale-105 transition-transform flex items-center justify-center">
                   @if (hasValidLogo(partido.esLocal ? partido.rivalLogoUrl : partido.clubLogoUrl)) {
-                  <img [src]="getClubLogoUrl(partido.esLocal ? partido.rivalLogoUrl : partido.clubLogoUrl)" class="w-full h-full object-cover rounded-[14px]" />
+                  <img [src]="getClubLogoUrl(partido.esLocal ? partido.rivalLogoUrl : partido.clubLogoUrl)"
+                    class="w-full h-full object-cover rounded-[14px]" />
                   } @else {
-                  <div class="w-full h-full bg-surface-container rounded-[14px] flex items-center justify-center font-black text-sm text-white">
+                  <div
+                    class="w-full h-full bg-surface-container rounded-[14px] flex items-center justify-center font-black text-sm text-white">
                     {{ partido.esLocal ? partido.rivalSiglas : partido.clubSiglas }}
                   </div>
                   }
@@ -395,7 +392,8 @@
           </div>
 
           <!-- Footer Details & Action -->
-          <div class="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-text-secondary">
+          <div
+            class="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-text-secondary">
             <div class="space-y-1">
               <div class="flex items-center gap-1.5 text-slate-300">
                 <span class="material-symbols-outlined text-base text-sky-400">location_on</span>
@@ -406,9 +404,7 @@
                 <span>Dupla Arbitral: {{ partido.duplaArbitral }}</span>
               </div>
             </div>
-            <button
-              type="button"
-              (click)="verActa(partido)"
+            <button type="button" (click)="verActa(partido)"
               class="px-3.5 py-2 rounded-xl bg-surface-bright/80 hover:bg-surface-bright text-white text-xs font-bold transition-all border border-white/10 flex items-center justify-center gap-1 hover:border-sky-400/40 cursor-pointer">
               <span>Ver Detalle y Padrón</span>
               <span class="material-symbols-outlined text-sm">chevron_right</span>
@@ -416,10 +412,12 @@
           </div>
         </div>
         } @empty {
-        <div class="col-span-full py-12 flex flex-col items-center justify-center text-center text-text-muted bg-slate-900/40 rounded-2xl border border-white/5">
+        <div
+          class="col-span-full py-12 flex flex-col items-center justify-center text-center text-text-muted bg-slate-900/40 rounded-2xl border border-white/5">
           <span class="material-symbols-outlined text-4xl text-text-muted/60 mb-2">event_available</span>
           <p class="text-sm font-bold text-white">No hay partidos próximos pendientes</p>
-          <small class="text-xs text-text-muted">El fixture para la próxima jornada se publicará tras el cierre de planillas oficiales.</small>
+          <small class="text-xs text-text-muted">El fixture para la próxima jornada se publicará tras el cierre de
+            planillas oficiales.</small>
         </div>
         }
       </div>
@@ -430,54 +428,63 @@
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-primary-container">history_edu</span>
-          <h2 class="text-sm uppercase tracking-wider font-extrabold text-white">RESULTADOS RECIENTES &amp; ACTAS OFICIALES</h2>
+          <h2 class="text-sm uppercase tracking-wider font-extrabold text-white">RESULTADOS RECIENTES &amp; ACTAS
+            OFICIALES</h2>
         </div>
         <span class="text-xs text-text-muted">Validadas por Tribunal de Penas FJH</span>
       </div>
 
       <div class="space-y-3">
         @for (partido of resultadosRecientes(); track partido.id) {
-        <div class="bg-slate-900/70 backdrop-blur-xl border border-white/10 rounded-2xl p-4 md:p-5 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:border-white/20 transition-all">
+        <div
+          class="bg-slate-900/70 backdrop-blur-xl border border-white/10 rounded-2xl p-4 md:p-5 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:border-white/20 transition-all">
           <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full md:w-auto">
             <!-- Result Pill -->
             <div class="flex items-center gap-2">
               @if (partido.resultadoTipo === 'victoria') {
-              <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+              <span
+                class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
                 <span class="size-1.5 rounded-full bg-emerald-400"></span> VICTORIA (+3 PTS)
               </span>
               } @else if (partido.resultadoTipo === 'empate') {
-              <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1">
-                <span class="size-1.5 rounded-full bg-amber-400"></span> EMPATE (+2 PTS)
+              <span
+                class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1">
+                <span class="size-1.5 rounded-full bg-amber-400"></span> EMPATE (+1 PT)
               </span>
               } @else {
-              <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center gap-1">
-                <span class="size-1.5 rounded-full bg-rose-400"></span> DERROTA (+1 PT)
+              <span
+                class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center gap-1">
+                <span class="size-1.5 rounded-full bg-rose-400"></span> DERROTA (0 PTS)
               </span>
               }
-              <span class="text-xs text-text-muted font-medium">Fecha {{ partido.jornada }} • {{ partido.torneoCat }}</span>
+              <span class="text-xs text-text-muted font-medium">Fecha {{ partido.jornada }} • {{ partido.torneoCat
+                }}</span>
             </div>
 
             <!-- Score & Teams -->
             <div class="flex items-center gap-3">
-              <span class="text-sm md:text-base font-bold text-white">{{ partido.esLocal ? partido.clubNombre : partido.rivalNombre }}</span>
-              <div class="px-3 py-1 rounded-xl bg-surface-dim border border-white/10 text-white font-black text-lg tabular-numbers tracking-wider shadow-inner">
-                {{ partido.esLocal ? partido.golesClub : partido.golesRival }} - {{ partido.esLocal ? partido.golesRival : partido.golesClub }}
+              <span class="text-sm md:text-base font-bold text-white">{{ partido.esLocal ? partido.clubNombre :
+                partido.rivalNombre }}</span>
+              <div
+                class="px-3 py-1 rounded-xl bg-surface-dim border border-white/10 text-white font-black text-lg tabular-numbers tracking-wider shadow-inner">
+                {{ partido.esLocal ? partido.golesClub : partido.golesRival }} - {{ partido.esLocal ? partido.golesRival
+                : partido.golesClub }}
               </div>
-              <span class="text-sm md:text-base font-bold text-slate-400">{{ partido.esLocal ? partido.rivalNombre : partido.clubNombre }}</span>
+              <span class="text-sm md:text-base font-bold text-slate-400">{{ partido.esLocal ? partido.rivalNombre :
+                partido.clubNombre }}</span>
             </div>
           </div>
 
           <!-- Goleador & Action Button -->
-          <div class="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-white/5">
+          <div
+            class="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-white/5">
             @if (partido.goleadorDestacado) {
             <div class="flex items-center gap-2 text-xs text-slate-300">
               <span class="material-symbols-outlined text-amber-400 text-sm">sports_score</span>
               <span>Goleador: <strong class="text-white">{{ partido.goleadorDestacado }}</strong></span>
             </div>
             }
-            <button
-              type="button"
-              (click)="verActa(partido)"
+            <button type="button" (click)="verActa(partido)"
               class="px-3.5 py-2 rounded-xl bg-surface-container-high hover:bg-surface-bright text-xs font-bold text-sky-400 border border-sky-400/30 hover:border-sky-400 transition-all flex items-center gap-1.5 shadow-sm shrink-0 cursor-pointer">
               <span class="material-symbols-outlined text-base">visibility</span>
               <span class="hidden sm:inline">Ver Acta Digital Homologada</span>
@@ -501,7 +508,8 @@
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-primary-container">table_chart</span>
           <h2 class="text-sm uppercase tracking-wider font-extrabold text-white">
-            TABLA DE POSICIONES OFICIAL • {{ torneoActivo()?.nombre || 'TORNEO' }} ({{ torneoActivo()?.categoria || 'Categoría' }} • {{ torneoActivo()?.rama || 'Rama' }})
+            TABLA DE POSICIONES OFICIAL • {{ torneoActivo()?.nombre || 'TORNEO' }} ({{ torneoActivo()?.categoria ||
+            'Categoría' }} • {{ torneoActivo()?.rama || 'Rama' }})
           </h2>
         </div>
         <div class="flex flex-wrap items-center gap-3 text-xs text-text-muted">
@@ -521,7 +529,8 @@
       <div class="bg-slate-900/70 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm whitespace-nowrap">
-            <thead class="bg-surface-container-low/90 text-[11px] font-bold uppercase tracking-wider text-text-muted border-b border-white/10">
+            <thead
+              class="bg-surface-container-low/90 text-[11px] font-bold uppercase tracking-wider text-text-muted border-b border-white/10">
               <tr>
                 <th class="py-3.5 pl-6 pr-3 text-center w-14" scope="col">Pos</th>
                 <th class="py-3.5 px-4" scope="col">Club</th>
@@ -539,9 +548,7 @@
             <tbody class="divide-y divide-white/5 font-medium tabular-numbers">
               @for (fila of tablaPosiciones(); track fila.clubId; let idx = $index) {
               @let est = getEstadoClasificacionClub(idx);
-              <tr
-                [class.bg-[#0B3C5D]/35]="fila.clubId === clubId()"
-                [class.border-y]="fila.clubId === clubId()"
+              <tr [class.bg-[#0B3C5D]/35]="fila.clubId === clubId()" [class.border-y]="fila.clubId === clubId()"
                 [class.border-sky-400/40]="fila.clubId === clubId()"
                 [class.border-b-2]="idx === configuracionPlayoff().cupos - 1"
                 [class.border-b-emerald-500/40]="idx === configuracionPlayoff().cupos - 1"
@@ -557,7 +564,8 @@
                   </div>
                 </td>
                 <td class="py-4 px-4 font-bold text-white flex items-center gap-3">
-                  <div class="size-8 rounded-lg bg-slate-800 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
+                  <div
+                    class="size-8 rounded-lg bg-slate-800 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
                     @if (fila.club?.logoUrl) {
                     <img [src]="getClubLogoUrl(fila.club?.logoUrl)" class="w-full h-full object-contain" />
                     } @else {
@@ -568,7 +576,8 @@
                     <div class="flex items-center gap-1.5">
                       <span>{{ fila.club?.nombre || 'Club Afiliado' }}</span>
                       @if (fila.clubId === clubId()) {
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-primary-container text-[#101d23] shadow-sm uppercase tracking-wider">
+                      <span
+                        class="px-2 py-0.5 rounded-full text-[10px] font-black bg-primary-container text-[#101d23] shadow-sm uppercase tracking-wider">
                         TU CLUB
                       </span>
                       }
@@ -578,15 +587,18 @@
                 </td>
                 <td class="py-4 px-3 text-center">
                   @if (est.enZona) {
-                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide"
+                  <span
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide"
                     [class]="est.confirmado
                       ? 'bg-emerald-500 text-slate-950'
                       : 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40'">
-                    <span class="material-symbols-outlined text-[13px]">{{ est.confirmado ? 'verified' : 'trending_up' }}</span>
+                    <span class="material-symbols-outlined text-[13px]">{{ est.confirmado ? 'verified' : 'trending_up'
+                      }}</span>
                     <span>{{ est.texto }}</span>
                   </span>
                   } @else {
-                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-white/5 text-text-muted border border-white/10">
+                  <span
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-white/5 text-text-muted border border-white/10">
                     <span>{{ est.texto }}</span>
                   </span>
                   }
@@ -597,23 +609,16 @@
                 <td class="py-4 px-3 text-center text-slate-400">{{ fila.pp ?? 0 }}</td>
                 <td class="py-4 px-3 text-center text-slate-400 hidden md:table-cell">{{ fila.gf ?? 0 }}</td>
                 <td class="py-4 px-3 text-center text-slate-400 hidden md:table-cell">{{ fila.gc ?? 0 }}</td>
-                <td
-                  class="py-4 px-3 text-center font-bold"
-                  [class.text-emerald-400]="(fila.dg ?? 0) > 0"
-                  [class.text-rose-400]="(fila.dg ?? 0) < 0"
-                  [class.text-slate-400]="(fila.dg ?? 0) === 0">
+                <td class="py-4 px-3 text-center font-bold" [class.text-emerald-400]="(fila.dg ?? 0) > 0"
+                  [class.text-rose-400]="(fila.dg ?? 0) < 0" [class.text-slate-400]="(fila.dg ?? 0) === 0">
                   {{ (fila.dg ?? 0) > 0 ? '+' : '' }}{{ fila.dg ?? 0 }}
                 </td>
                 <td class="py-4 pr-6 pl-4 text-center">
-                  <span
-                    class="px-2.5 py-1 rounded-lg font-black text-base"
+                  <span class="px-2.5 py-1 rounded-lg font-black text-base"
                     [class.bg-primary-container]="fila.clubId === clubId()"
-                    [class.text-[#101d23]]="fila.clubId === clubId()"
-                    [class.shadow-md]="fila.clubId === clubId()"
-                    [class.bg-surface-dim]="fila.clubId !== clubId()"
-                    [class.text-white]="fila.clubId !== clubId()"
-                    [class.border]="fila.clubId !== clubId()"
-                    [class.border-white/10]="fila.clubId !== clubId()">
+                    [class.text-[#101d23]]="fila.clubId === clubId()" [class.shadow-md]="fila.clubId === clubId()"
+                    [class.bg-surface-dim]="fila.clubId !== clubId()" [class.text-white]="fila.clubId !== clubId()"
+                    [class.border]="fila.clubId !== clubId()" [class.border-white/10]="fila.clubId !== clubId()">
                     {{ fila.puntos ?? 0 }}
                   </span>
                 </td>
@@ -628,8 +633,10 @@
             </tbody>
           </table>
         </div>
-        <div class="px-6 py-3 bg-surface-container-low/50 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-[11px] text-text-muted gap-2">
-          <span>Criterio de Desempate: 1° Puntos, 2° Gol Diferencia (DG), 3° Mayor cantidad de Goles a Favor (GF).</span>
+        <div
+          class="px-6 py-3 bg-surface-container-low/50 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-[11px] text-text-muted gap-2">
+          <span>Criterio de Desempate: 1° Puntos, 2° Gol Diferencia (DG), 3° Mayor cantidad de Goles a Favor
+            (GF).</span>
           <span class="text-slate-400">Actualizado automáticamente con actas homologadas</span>
         </div>
       </div>
@@ -643,7 +650,8 @@
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-sky-400">stadium</span>
           <h2 class="text-sm uppercase tracking-wider font-extrabold text-white">
-            FIXTURE GENERAL • {{ torneoActivo()?.nombre || 'TORNEO' }} ({{ torneoActivo()?.categoria }} • {{ torneoActivo()?.rama }})
+            FIXTURE GENERAL • {{ torneoActivo()?.nombre || 'TORNEO' }} ({{ torneoActivo()?.categoria }} • {{
+            torneoActivo()?.rama }})
           </h2>
         </div>
         <span class="text-xs text-text-muted">
@@ -652,21 +660,18 @@
       </div>
 
       <!-- Barra de Filtros: Selector de Fechas / Jornadas + Búsqueda y Estado -->
-      <div class="bg-surface-container-low/80 border border-white/10 rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xl">
+      <div
+        class="bg-surface-container-low/80 border border-white/10 rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xl">
         <!-- Tira horizontal de Jornadas -->
         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none no-scrollbar">
           <span class="text-[10px] font-black uppercase tracking-wider text-text-muted mr-1.5 shrink-0">
             Jornadas:
           </span>
           @for (j of jornadasTorneo(); track j) {
-          <button
-            type="button"
-            (click)="setJornadaTorneo(j)"
-            [class.bg-[#0B3C5D]]="jornadaTorneoSeleccionada() === j"
+          <button type="button" (click)="setJornadaTorneo(j)" [class.bg-[#0B3C5D]]="jornadaTorneoSeleccionada() === j"
             [class.text-white]="jornadaTorneoSeleccionada() === j"
             [class.border-sky-400/50]="jornadaTorneoSeleccionada() === j"
-            [class.shadow-md]="jornadaTorneoSeleccionada() === j"
-            [class.font-black]="jornadaTorneoSeleccionada() === j"
+            [class.shadow-md]="jornadaTorneoSeleccionada() === j" [class.font-black]="jornadaTorneoSeleccionada() === j"
             [class.bg-surface-dim]="jornadaTorneoSeleccionada() !== j"
             [class.text-slate-400]="jornadaTorneoSeleccionada() !== j"
             [class.border-white/10]="jornadaTorneoSeleccionada() !== j"
@@ -679,18 +684,14 @@
         <!-- Filtros secundarios: Búsqueda y Estado -->
         <div class="flex flex-wrap items-center gap-2">
           <div class="relative flex-1 sm:w-56">
-            <span class="material-symbols-outlined text-[15px] text-text-muted absolute left-3 top-1/2 -translate-y-1/2">search</span>
-            <input
-              type="text"
-              [ngModel]="filtroTextoFixture()"
-              (ngModelChange)="filtroTextoFixture.set($event)"
+            <span
+              class="material-symbols-outlined text-[15px] text-text-muted absolute left-3 top-1/2 -translate-y-1/2">search</span>
+            <input type="text" [ngModel]="filtroTextoFixture()" (ngModelChange)="filtroTextoFixture.set($event)"
               placeholder="Buscar club o cancha..."
               class="w-full bg-surface-dim border border-white/10 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-text-muted outline-none focus:border-sky-400" />
           </div>
 
-          <select
-            [ngModel]="filtroEstadoFixture()"
-            (ngModelChange)="filtroEstadoFixture.set($event)"
+          <select [ngModel]="filtroEstadoFixture()" (ngModelChange)="filtroEstadoFixture.set($event)"
             class="bg-surface-dim border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-sky-400 cursor-pointer">
             <option value="TODOS">Todos los Estados</option>
             <option value="FINALIZADOS">Finalizados</option>
@@ -706,27 +707,24 @@
         @let esMiClub = p.localId === clubId() || p.visitanteId === clubId();
         <article
           class="bg-slate-900/80 backdrop-blur-md rounded-2xl border transition-all duration-200 flex flex-col justify-between overflow-hidden shadow-xl hover:border-sky-400/40"
-          [class.border-sky-400]="esMiClub"
-          [class.ring-1]="esMiClub"
-          [class.ring-sky-400/30]="esMiClub"
+          [class.border-sky-400]="esMiClub" [class.ring-1]="esMiClub" [class.ring-sky-400/30]="esMiClub"
           [class.border-white/10]="!esMiClub">
           <!-- Top Tag -->
-          <div class="px-4 py-2 bg-surface-container-low/90 border-b border-white/5 flex items-center justify-between text-[11px]">
-            <span class="text-text-muted font-bold">Fecha {{ p.jornada || jornadaTorneoSeleccionada() }} • {{ p.fase || 'Fase Regular' }}</span>
+          <div
+            class="px-4 py-2 bg-surface-container-low/90 border-b border-white/5 flex items-center justify-between text-[11px]">
+            <span class="text-text-muted font-bold">Fecha {{ p.jornada || jornadaTorneoSeleccionada() }} • {{ p.fase ||
+              'Fase Regular' }}</span>
             <div class="flex items-center gap-1.5">
               @if (esMiClub) {
               <span class="px-1.5 py-0.5 rounded bg-primary-container text-[#101d23] text-[9px] font-black uppercase">
                 TU PARTIDO
               </span>
               }
-              <span
-                class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
                 [class.bg-emerald-500/20]="p.estado === 'Finalizado'"
-                [class.text-emerald-300]="p.estado === 'Finalizado'"
-                [class.border]="p.estado === 'Finalizado'"
+                [class.text-emerald-300]="p.estado === 'Finalizado'" [class.border]="p.estado === 'Finalizado'"
                 [class.border-emerald-500/30]="p.estado === 'Finalizado'"
-                [class.bg-amber-500/20]="p.estado === 'En Vivo'"
-                [class.text-amber-300]="p.estado === 'En Vivo'"
+                [class.bg-amber-500/20]="p.estado === 'En Vivo'" [class.text-amber-300]="p.estado === 'En Vivo'"
                 [class.bg-white/5]="p.estado !== 'Finalizado' && p.estado !== 'En Vivo'"
                 [class.text-slate-400]="p.estado !== 'Finalizado' && p.estado !== 'En Vivo'">
                 {{ p.estado || 'Programado' }}
@@ -739,7 +737,8 @@
             <div class="grid grid-cols-7 items-center gap-2">
               <!-- Local -->
               <div class="col-span-3 flex flex-col items-center text-center">
-                <div class="size-12 rounded-xl bg-surface-dim border border-white/10 p-1 flex items-center justify-center mb-1">
+                <div
+                  class="size-12 rounded-xl bg-surface-dim border border-white/10 p-1 flex items-center justify-center mb-1">
                   @if (p.local?.logoUrl) {
                   <img [src]="getClubLogoUrl(p.local.logoUrl)" class="w-full h-full object-contain" />
                   } @else {
@@ -752,7 +751,8 @@
               <!-- Score / VS -->
               <div class="col-span-1 flex flex-col items-center justify-center">
                 @if (p.estado === 'Finalizado' || p.estado === 'En Vivo') {
-                <div class="px-2 py-1 rounded-lg bg-surface-dim border border-white/10 text-sm font-black tabular-nums text-white">
+                <div
+                  class="px-2 py-1 rounded-lg bg-surface-dim border border-white/10 text-sm font-black tabular-nums text-white">
                   {{ p.golesLocal ?? 0 }} : {{ p.golesVisitante ?? 0 }}
                 </div>
                 } @else {
@@ -762,19 +762,22 @@
 
               <!-- Visitante -->
               <div class="col-span-3 flex flex-col items-center text-center">
-                <div class="size-12 rounded-xl bg-surface-dim border border-white/10 p-1 flex items-center justify-center mb-1">
+                <div
+                  class="size-12 rounded-xl bg-surface-dim border border-white/10 p-1 flex items-center justify-center mb-1">
                   @if (p.visitante?.logoUrl) {
                   <img [src]="getClubLogoUrl(p.visitante.logoUrl)" class="w-full h-full object-contain" />
                   } @else {
                   <span class="text-xs font-black text-amber-400">{{ getClubInitials(p.visitante) }}</span>
                   }
                 </div>
-                <strong class="text-xs text-white leading-tight line-clamp-2">{{ p.visitante?.nombre || 'Visita' }}</strong>
+                <strong class="text-xs text-white leading-tight line-clamp-2">{{ p.visitante?.nombre || 'Visita'
+                  }}</strong>
               </div>
             </div>
 
             <!-- Datos de Fecha / Sede -->
-            <div class="bg-surface-dim/90 rounded-xl p-2.5 border border-white/5 flex flex-col gap-1 text-[11px] text-text-muted">
+            <div
+              class="bg-surface-dim/90 rounded-xl p-2.5 border border-white/5 flex flex-col gap-1 text-[11px] text-text-muted">
               <div class="flex items-center justify-between">
                 <span class="flex items-center gap-1 truncate">
                   <span class="material-symbols-outlined text-[13px] text-sky-400">location_on</span>
@@ -788,10 +791,13 @@
           </div>
         </article>
         } @empty {
-        <div class="col-span-full py-12 text-center text-text-muted bg-slate-900/40 rounded-2xl border border-white/5 flex flex-col items-center gap-2">
+        <div
+          class="col-span-full py-12 text-center text-text-muted bg-slate-900/40 rounded-2xl border border-white/5 flex flex-col items-center gap-2">
           <span class="material-symbols-outlined text-4xl text-text-muted/60">event_busy</span>
-          <p class="text-sm font-bold text-white">No hay partidos en la Fecha {{ jornadaTorneoSeleccionada() }} para los filtros actuales</p>
-          <small class="text-xs text-text-muted">Probá cambiando el filtro de estado o seleccionando otra jornada.</small>
+          <p class="text-sm font-bold text-white">No hay partidos en la Fecha {{ jornadaTorneoSeleccionada() }} para los
+            filtros actuales</p>
+          <small class="text-xs text-text-muted">Probá cambiando el filtro de estado o seleccionando otra
+            jornada.</small>
         </div>
         }
       </div>
@@ -809,15 +815,16 @@
             CUADRO DE PLAYOFFS &amp; LLAVES ELIMINATORIAS • {{ torneoActivo()?.nombre || 'TORNEO' }}
           </h2>
         </div>
-        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase border"
-          [class]="estadoFaseRegular().completa
+        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase border" [class]="estadoFaseRegular().completa
             ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
             : 'bg-amber-500/20 text-amber-300 border-amber-400/40'">
-          {{ estadoFaseRegular().completa ? '✔ Llaves Oficiales Confirmadas' : '⏳ Proyección en Vivo hasta la Última Fecha' }}
+          {{ estadoFaseRegular().completa ? '✔ Llaves Oficiales Confirmadas' : '⏳ Proyección en Vivo hasta la Última
+          Fecha' }}
         </span>
       </div>
 
-      <div class="relative rounded-3xl bg-gradient-to-br from-[#06162e] via-[#0a2346] to-[#051020] border border-sky-400/25 p-4 sm:p-7 shadow-2xl overflow-x-auto custom-scrollbar">
+      <div
+        class="relative rounded-3xl bg-gradient-to-br from-[#06162e] via-[#0a2346] to-[#051020] border border-sky-400/25 p-4 sm:p-7 shadow-2xl overflow-x-auto custom-scrollbar">
         <div class="relative z-10 min-w-[740px] flex items-stretch justify-between gap-4 py-2">
 
           <!-- COLUMNA CUARTOS DE FINAL (SI EL TORNEO TIENE CUARTOS) -->
@@ -832,18 +839,25 @@
               @for (cuarto of arbol.cuartos; track cuarto.idNodo) {
               <div class="bg-[#071326]/95 border-2 rounded-2xl overflow-hidden shadow-xl"
                 [class]="(cuarto.esMiClubLocal || cuarto.esMiClubVisitante) ? 'border-sky-400 ring-2 ring-sky-400/25' : 'border-sky-400/30'">
-                <div class="px-3 py-1.5 bg-[#0b1f3a] border-b border-white/10 flex items-center justify-between text-[11px]">
-                  <span class="font-black text-white uppercase">{{ cuarto.titulo }} <span class="text-[9px] text-sky-300">• {{ cuarto.subtitulo }}</span></span>
-                  <span class="px-1.5 py-0.2 rounded bg-white/10 text-sky-200 text-[8px] font-black uppercase">{{ cuarto.estado }}</span>
+                <div
+                  class="px-3 py-1.5 bg-[#0b1f3a] border-b border-white/10 flex items-center justify-between text-[11px]">
+                  <span class="font-black text-white uppercase">{{ cuarto.titulo }} <span
+                      class="text-[9px] text-sky-300">• {{ cuarto.subtitulo }}</span></span>
+                  <span class="px-1.5 py-0.2 rounded bg-white/10 text-sky-200 text-[8px] font-black uppercase">{{
+                    cuarto.estado }}</span>
                 </div>
                 <div class="p-2.5 flex flex-col gap-1.5 text-xs">
-                  <div class="flex items-center justify-between gap-2 p-1.5 rounded-lg" [class.bg-sky-900/40]="cuarto.esMiClubLocal">
+                  <div class="flex items-center justify-between gap-2 p-1.5 rounded-lg"
+                    [class.bg-sky-900/40]="cuarto.esMiClubLocal">
                     <span class="text-white font-bold truncate">{{ cuarto.local?.nombre }}</span>
-                    <span class="font-black text-sky-300">{{ cuarto.golesLocal !== null ? cuarto.golesLocal : '-' }}</span>
+                    <span class="font-black text-sky-300">{{ cuarto.golesLocal !== null ? cuarto.golesLocal : '-'
+                      }}</span>
                   </div>
-                  <div class="flex items-center justify-between gap-2 p-1.5 rounded-lg" [class.bg-sky-900/40]="cuarto.esMiClubVisitante">
+                  <div class="flex items-center justify-between gap-2 p-1.5 rounded-lg"
+                    [class.bg-sky-900/40]="cuarto.esMiClubVisitante">
                     <span class="text-white font-bold truncate">{{ cuarto.visitante?.nombre }}</span>
-                    <span class="font-black text-sky-300">{{ cuarto.golesVisitante !== null ? cuarto.golesVisitante : '-' }}</span>
+                    <span class="font-black text-sky-300">{{ cuarto.golesVisitante !== null ? cuarto.golesVisitante :
+                      '-' }}</span>
                   </div>
                 </div>
               </div>
@@ -866,8 +880,10 @@
                 <div class="w-full bg-[#071326]/95 border-2 rounded-2xl overflow-hidden shadow-2xl"
                   [class]="(semi.esMiClubLocal || semi.esMiClubVisitante) ? 'border-sky-400 ring-2 ring-sky-400/25' : 'border-sky-400/35'">
                   <div class="px-3.5 py-2 bg-[#0b1f3a] border-b border-white/10 flex items-center justify-between">
-                    <span class="text-xs font-black text-white uppercase">{{ semi.titulo }} <span class="text-[10px] text-sky-300">• {{ semi.subtitulo }}</span></span>
-                    <span class="px-2 py-0.5 rounded-full bg-white/10 text-sky-200 text-[9px] font-black uppercase">{{ semi.estado }}</span>
+                    <span class="text-xs font-black text-white uppercase">{{ semi.titulo }} <span
+                        class="text-[10px] text-sky-300">• {{ semi.subtitulo }}</span></span>
+                    <span class="px-2 py-0.5 rounded-full bg-white/10 text-sky-200 text-[9px] font-black uppercase">{{
+                      semi.estado }}</span>
                   </div>
 
                   <div class="p-3.5 flex items-center gap-2">
@@ -876,14 +892,18 @@
                       <div class="p-2.5 rounded-xl border flex items-center justify-between gap-2"
                         [class]="semi.esMiClubLocal ? 'bg-[#0B3C5D]/60 border-sky-400' : 'bg-[#0b1d36] border-white/10'">
                         <div class="flex items-center gap-2.5 min-w-0">
-                          <div class="w-10 h-10 rounded-xl bg-[#061224] border border-sky-400/30 p-1 flex items-center justify-center shrink-0 relative">
+                          <div
+                            class="w-10 h-10 rounded-xl bg-[#061224] border border-sky-400/30 p-1 flex items-center justify-center shrink-0 relative">
                             @if (semi.local?.logoUrl) {
-                            <img [src]="getClubLogoUrl(semi.local.logoUrl)" class="w-full h-full object-contain rounded-lg" />
+                            <img [src]="getClubLogoUrl(semi.local.logoUrl)"
+                              class="w-full h-full object-contain rounded-lg" />
                             } @else {
                             <span class="text-[10px] font-black text-sky-300">{{ getClubInitials(semi.local) }}</span>
                             }
                             @if (semi.local?.puesto) {
-                            <span class="absolute -top-1.5 -left-1.5 px-1.5 rounded-full bg-emerald-500 text-slate-950 font-black text-[9px]">{{ semi.local.puesto }}</span>
+                            <span
+                              class="absolute -top-1.5 -left-1.5 px-1.5 rounded-full bg-emerald-500 text-slate-950 font-black text-[9px]">{{
+                              semi.local.puesto }}</span>
                             }
                           </div>
                           <div class="min-w-0">
@@ -893,7 +913,8 @@
                             }
                           </div>
                         </div>
-                        <span class="w-8 h-8 rounded-xl bg-[#050e1c] border border-white/15 flex items-center justify-center font-black text-sm text-white shrink-0">
+                        <span
+                          class="w-8 h-8 rounded-xl bg-[#050e1c] border border-white/15 flex items-center justify-center font-black text-sm text-white shrink-0">
                           {{ semi.golesLocal !== null ? semi.golesLocal : '-' }}
                         </span>
                       </div>
@@ -902,24 +923,31 @@
                       <div class="p-2.5 rounded-xl border flex items-center justify-between gap-2"
                         [class]="semi.esMiClubVisitante ? 'bg-[#0B3C5D]/60 border-sky-400' : 'bg-[#0b1d36] border-white/10'">
                         <div class="flex items-center gap-2.5 min-w-0">
-                          <div class="w-10 h-10 rounded-xl bg-[#061224] border border-amber-400/30 p-1 flex items-center justify-center shrink-0 relative">
+                          <div
+                            class="w-10 h-10 rounded-xl bg-[#061224] border border-amber-400/30 p-1 flex items-center justify-center shrink-0 relative">
                             @if (semi.visitante?.logoUrl) {
-                            <img [src]="getClubLogoUrl(semi.visitante.logoUrl)" class="w-full h-full object-contain rounded-lg" />
+                            <img [src]="getClubLogoUrl(semi.visitante.logoUrl)"
+                              class="w-full h-full object-contain rounded-lg" />
                             } @else {
-                            <span class="text-[10px] font-black text-amber-300">{{ getClubInitials(semi.visitante) }}</span>
+                            <span class="text-[10px] font-black text-amber-300">{{ getClubInitials(semi.visitante)
+                              }}</span>
                             }
                             @if (semi.visitante?.puesto) {
-                            <span class="absolute -top-1.5 -left-1.5 px-1.5 rounded-full bg-sky-400 text-slate-950 font-black text-[9px]">{{ semi.visitante.puesto }}</span>
+                            <span
+                              class="absolute -top-1.5 -left-1.5 px-1.5 rounded-full bg-sky-400 text-slate-950 font-black text-[9px]">{{
+                              semi.visitante.puesto }}</span>
                             }
                           </div>
                           <div class="min-w-0">
-                            <span class="text-xs font-black text-white truncate block">{{ semi.visitante?.nombre }}</span>
+                            <span class="text-xs font-black text-white truncate block">{{ semi.visitante?.nombre
+                              }}</span>
                             @if (semi.esMiClubVisitante) {
                             <span class="text-[9px] font-black text-sky-300 uppercase">★ TU CLUB</span>
                             }
                           </div>
                         </div>
-                        <span class="w-8 h-8 rounded-xl bg-[#050e1c] border border-white/15 flex items-center justify-center font-black text-sm text-white shrink-0">
+                        <span
+                          class="w-8 h-8 rounded-xl bg-[#050e1c] border border-white/15 flex items-center justify-center font-black text-sm text-white shrink-0">
                           {{ semi.golesVisitante !== null ? semi.golesVisitante : '-' }}
                         </span>
                       </div>
@@ -929,13 +957,15 @@
                     <div class="flex items-center shrink-0 pl-1">
                       <div class="w-3 h-14 border-r-2 border-y-2 border-sky-400/60 rounded-r-lg"></div>
                       <div class="w-3 h-0.5 bg-sky-400/60"></div>
-                      <div class="w-11 h-11 rounded-2xl bg-[#0b2241] border-2 border-sky-400/40 border-dashed p-1 flex items-center justify-center">
+                      <div
+                        class="w-11 h-11 rounded-2xl bg-[#0b2241] border-2 border-sky-400/40 border-dashed p-1 flex items-center justify-center">
                         @if (semi.ganador) {
-                          @if (semi.ganador.logoUrl) {
-                          <img [src]="getClubLogoUrl(semi.ganador.logoUrl)" class="w-full h-full object-contain rounded-xl" />
-                          } @else {
-                          <span class="text-[10px] font-black text-emerald-300">{{ getClubInitials(semi.ganador) }}</span>
-                          }
+                        @if (semi.ganador.logoUrl) {
+                        <img [src]="getClubLogoUrl(semi.ganador.logoUrl)"
+                          class="w-full h-full object-contain rounded-xl" />
+                        } @else {
+                        <span class="text-[10px] font-black text-emerald-300">{{ getClubInitials(semi.ganador) }}</span>
+                        }
                         } @else {
                         <span class="material-symbols-outlined text-sky-300/60 text-[18px]">shield</span>
                         }
@@ -950,7 +980,8 @@
           </div>
 
           <div class="w-8 flex flex-col justify-center py-20 shrink-0">
-            <div class="h-full max-h-[240px] border-r-2 border-y-2 border-sky-400/60 rounded-r-2xl relative flex items-center">
+            <div
+              class="h-full max-h-[240px] border-r-2 border-y-2 border-sky-400/60 rounded-r-2xl relative flex items-center">
               <div class="absolute -right-6 w-6 h-0.5 bg-sky-400/60"></div>
             </div>
           </div>
@@ -964,7 +995,8 @@
             </div>
 
             <div class="flex-1 flex flex-col justify-center gap-6 py-2">
-              <div class="bg-gradient-to-b from-[#0b2142] to-[#071326] border-2 border-amber-400/60 rounded-2xl overflow-hidden shadow-2xl">
+              <div
+                class="bg-gradient-to-b from-[#0b2142] to-[#071326] border-2 border-amber-400/60 rounded-2xl overflow-hidden shadow-2xl">
                 <div class="px-4 py-2.5 bg-amber-500/15 border-b border-amber-400/30 flex items-center justify-between">
                   <span class="text-xs font-black text-white uppercase flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-amber-400 text-[18px]">emoji_events</span>
@@ -973,34 +1005,44 @@
                   <span class="text-[10px] font-black text-amber-300 uppercase">{{ arbol.final.estado }}</span>
                 </div>
                 <div class="p-4 flex flex-col gap-2.5">
-                  <div class="p-2.5 rounded-xl bg-[#07152b] border border-white/10 flex items-center justify-between gap-2">
+                  <div
+                    class="p-2.5 rounded-xl bg-[#07152b] border border-white/10 flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2.5">
-                      <div class="w-10 h-10 rounded-xl bg-[#0d274c] border border-amber-400/40 p-1 flex items-center justify-center shrink-0">
+                      <div
+                        class="w-10 h-10 rounded-xl bg-[#0d274c] border border-amber-400/40 p-1 flex items-center justify-center shrink-0">
                         @if (arbol.final.local?.logoUrl) {
-                        <img [src]="getClubLogoUrl(arbol.final.local.logoUrl)" class="w-full h-full object-contain rounded-lg" />
+                        <img [src]="getClubLogoUrl(arbol.final.local.logoUrl)"
+                          class="w-full h-full object-contain rounded-lg" />
                         } @else {
-                        <span class="text-[10px] font-black text-amber-300">{{ getClubInitials(arbol.final.local) }}</span>
+                        <span class="text-[10px] font-black text-amber-300">{{ getClubInitials(arbol.final.local)
+                          }}</span>
                         }
                       </div>
                       <span class="text-xs sm:text-sm font-black text-white">{{ arbol.final.local?.nombre }}</span>
                     </div>
-                    <span class="w-8 h-8 rounded-xl bg-black/40 border border-white/15 flex items-center justify-center font-black text-sm text-white">
+                    <span
+                      class="w-8 h-8 rounded-xl bg-black/40 border border-white/15 flex items-center justify-center font-black text-sm text-white">
                       {{ arbol.final.golesLocal !== null ? arbol.final.golesLocal : '-' }}
                     </span>
                   </div>
 
-                  <div class="p-2.5 rounded-xl bg-[#07152b] border border-white/10 flex items-center justify-between gap-2">
+                  <div
+                    class="p-2.5 rounded-xl bg-[#07152b] border border-white/10 flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2.5">
-                      <div class="w-10 h-10 rounded-xl bg-[#0d274c] border border-amber-400/40 p-1 flex items-center justify-center shrink-0">
+                      <div
+                        class="w-10 h-10 rounded-xl bg-[#0d274c] border border-amber-400/40 p-1 flex items-center justify-center shrink-0">
                         @if (arbol.final.visitante?.logoUrl) {
-                        <img [src]="getClubLogoUrl(arbol.final.visitante.logoUrl)" class="w-full h-full object-contain rounded-lg" />
+                        <img [src]="getClubLogoUrl(arbol.final.visitante.logoUrl)"
+                          class="w-full h-full object-contain rounded-lg" />
                         } @else {
-                        <span class="text-[10px] font-black text-amber-300">{{ getClubInitials(arbol.final.visitante) }}</span>
+                        <span class="text-[10px] font-black text-amber-300">{{ getClubInitials(arbol.final.visitante)
+                          }}</span>
                         }
                       </div>
                       <span class="text-xs sm:text-sm font-black text-white">{{ arbol.final.visitante?.nombre }}</span>
                     </div>
-                    <span class="w-8 h-8 rounded-xl bg-black/40 border border-white/15 flex items-center justify-center font-black text-sm text-white">
+                    <span
+                      class="w-8 h-8 rounded-xl bg-black/40 border border-white/15 flex items-center justify-center font-black text-sm text-white">
                       {{ arbol.final.golesVisitante !== null ? arbol.final.golesVisitante : '-' }}
                     </span>
                   </div>
@@ -1010,18 +1052,21 @@
               <!-- TERCER PUESTO (SI EXISTE) -->
               @if (arbol.tercerPuesto; as tercer) {
               <div class="bg-[#071326] border border-sky-400/30 rounded-2xl overflow-hidden shadow-lg mt-2">
-                <div class="px-3.5 py-1.5 bg-[#0b1f3a] border-b border-white/10 flex items-center justify-between text-xs font-bold text-sky-200">
+                <div
+                  class="px-3.5 py-1.5 bg-[#0b1f3a] border-b border-white/10 flex items-center justify-between text-xs font-bold text-sky-200">
                   <span>3° Y 4° PUESTO (PODIO)</span>
                   <span class="text-[9px] uppercase">{{ tercer.estado }}</span>
                 </div>
                 <div class="p-3 flex flex-col gap-2 text-xs">
                   <div class="flex items-center justify-between">
                     <span class="text-white">{{ tercer.local?.nombre }}</span>
-                    <span class="font-black text-sky-300">{{ tercer.golesLocal !== null ? tercer.golesLocal : '-' }}</span>
+                    <span class="font-black text-sky-300">{{ tercer.golesLocal !== null ? tercer.golesLocal : '-'
+                      }}</span>
                   </div>
                   <div class="flex items-center justify-between">
                     <span class="text-white">{{ tercer.visitante?.nombre }}</span>
-                    <span class="font-black text-sky-300">{{ tercer.golesVisitante !== null ? tercer.golesVisitante : '-' }}</span>
+                    <span class="font-black text-sky-300">{{ tercer.golesVisitante !== null ? tercer.golesVisitante :
+                      '-' }}</span>
                   </div>
                 </div>
               </div>
@@ -1038,13 +1083,17 @@
 
 <!-- MODAL ACTA DIGITAL HOMOLOGADA (DETALLE COMPLETO) -->
 @if (partidoActaSeleccionado(); as acta) {
-<div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-fade-in" (click)="cerrarActa()">
-  <div class="relative w-full max-w-3xl bg-court-card border border-border-subtle rounded-2xl p-5 sm:p-6 shadow-2xl flex flex-col gap-5 max-h-[92vh] overflow-y-auto custom-scrollbar" (click)="$event.stopPropagation()">
-    
+<div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-fade-in"
+  (click)="cerrarActa()">
+  <div
+    class="relative w-full max-w-3xl bg-court-card border border-border-subtle rounded-2xl p-5 sm:p-6 shadow-2xl flex flex-col gap-5 max-h-[92vh] overflow-y-auto custom-scrollbar"
+    (click)="$event.stopPropagation()">
+
     <!-- Modal Header -->
     <div class="flex items-center justify-between border-b border-white/10 pb-3">
       <div class="flex items-center gap-2.5">
-        <div class="size-8 rounded-lg bg-primary-container/20 text-primary flex items-center justify-center border border-primary/30">
+        <div
+          class="size-8 rounded-lg bg-primary-container/20 text-primary flex items-center justify-center border border-primary/30">
           <span class="material-symbols-outlined text-xl">description</span>
         </div>
         <div>
@@ -1054,7 +1103,8 @@
           </p>
         </div>
       </div>
-      <button (click)="cerrarActa()" class="p-1 rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors cursor-pointer">
+      <button (click)="cerrarActa()"
+        class="p-1 rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors cursor-pointer">
         <span class="material-symbols-outlined text-xl">close</span>
       </button>
     </div>
@@ -1066,7 +1116,8 @@
           <span class="size-2 rounded-full bg-emerald-400"></span>
           <span>Fecha: <strong>{{ acta.fechaStr }}</strong> • Hora: <strong>{{ acta.horaStr }} hs</strong></span>
         </span>
-        <span class="font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase text-[10px]">
+        <span
+          class="font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase text-[10px]">
           {{ acta.estado }}
         </span>
       </div>
@@ -1074,7 +1125,8 @@
       <!-- Marcador Principal -->
       <div class="grid grid-cols-7 items-center py-3 border-y border-white/5">
         <div class="col-span-3 text-center sm:text-left flex flex-col sm:flex-row items-center gap-3">
-          <div class="size-11 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center font-black text-amber-400 text-xs shrink-0 overflow-hidden">
+          <div
+            class="size-11 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center font-black text-amber-400 text-xs shrink-0 overflow-hidden">
             @if (acta.clubLogoUrl) {
             <img [src]="getClubLogoUrl(acta.clubLogoUrl)" class="w-full h-full object-cover" />
             } @else {
@@ -1097,7 +1149,8 @@
         </div>
 
         <div class="col-span-3 text-center sm:text-right flex flex-col sm:flex-row-reverse items-center gap-3">
-          <div class="size-11 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center font-black text-slate-400 text-xs shrink-0 overflow-hidden">
+          <div
+            class="size-11 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center font-black text-slate-400 text-xs shrink-0 overflow-hidden">
             @if (acta.rivalLogoUrl) {
             <img [src]="getClubLogoUrl(acta.rivalLogoUrl)" class="w-full h-full object-cover" />
             } @else {
@@ -1106,13 +1159,15 @@
           </div>
           <div>
             <strong class="block text-sm text-slate-200 font-extrabold">{{ acta.rivalNombre }}</strong>
-            <span class="text-[10px] font-bold text-slate-400 uppercase">{{ acta.esLocal ? 'Visitante' : 'Local' }}</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase">{{ acta.esLocal ? 'Visitante' : 'Local'
+              }}</span>
           </div>
         </div>
       </div>
 
       <!-- Autoridades y Datos Oficiales -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-text-secondary bg-court-base/60 p-3 rounded-lg border border-white/5">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-text-secondary bg-court-base/60 p-3 rounded-lg border border-white/5">
         <p><span class="font-bold text-white">Sede / Cancha:</span> {{ acta.cancha }}</p>
         <p><span class="font-bold text-white">Árbitros:</span> {{ acta.duplaArbitral }}</p>
         <p><span class="font-bold text-white">Cronometrista:</span> {{ acta.cronometrista || 'Mesa Oficial FJH' }}</p>
@@ -1120,7 +1175,8 @@
         <p><span class="font-bold text-amber-400">Goleador del Partido:</span> {{ acta.goleadorDestacado }}</p>
         }
         @if (acta.observaciones) {
-        <p class="col-span-1 sm:col-span-2 text-slate-300"><span class="font-bold text-amber-400">Observaciones del Veedor:</span> {{ acta.observaciones }}</p>
+        <p class="col-span-1 sm:col-span-2 text-slate-300"><span class="font-bold text-amber-400">Observaciones del
+            Veedor:</span> {{ acta.observaciones }}</p>
         }
       </div>
     </div>
@@ -1141,7 +1197,7 @@
             <span class="text-xs font-black text-primary uppercase">{{ acta.clubNombre }}</span>
             <span class="text-[10px] text-text-muted font-bold">{{ acta.jugadoresClub.length }} atletas</span>
           </div>
-          
+
           <div class="overflow-x-auto max-h-56 custom-scrollbar">
             <table class="w-full text-left text-xs">
               <thead class="text-[10px] font-bold uppercase text-text-muted border-b border-white/5">
@@ -1166,7 +1222,8 @@
                   </td>
                   <td class="py-1.5 text-center font-bold text-sky-400">{{ j.goles || '-' }}</td>
                   <td class="py-1.5 text-center font-bold text-amber-400">{{ j.amarillas > 0 ? j.amarillas : '-' }}</td>
-                  <td class="py-1.5 text-center font-bold text-sky-300">{{ j.dosMinutos > 0 ? (j.dosMinutos + "x") : '-' }}</td>
+                  <td class="py-1.5 text-center font-bold text-sky-300">{{ j.dosMinutos > 0 ? (j.dosMinutos + "x") : '-'
+                    }}</td>
                   <td class="py-1.5 text-center">
                     @if (j.azul) {
                     <span class="px-1 rounded bg-blue-600 text-white font-black text-[9px]">AZ</span>
@@ -1220,7 +1277,8 @@
                   </td>
                   <td class="py-1.5 text-center font-bold text-sky-400">{{ j.goles || '-' }}</td>
                   <td class="py-1.5 text-center font-bold text-amber-400">{{ j.amarillas > 0 ? j.amarillas : '-' }}</td>
-                  <td class="py-1.5 text-center font-bold text-sky-300">{{ j.dosMinutos > 0 ? (j.dosMinutos + "x") : '-' }}</td>
+                  <td class="py-1.5 text-center font-bold text-sky-300">{{ j.dosMinutos > 0 ? (j.dosMinutos + "x") : '-'
+                    }}</td>
                   <td class="py-1.5 text-center">
                     @if (j.azul) {
                     <span class="px-1 rounded bg-blue-600 text-white font-black text-[9px]">AZ</span>
@@ -1250,11 +1308,11 @@
       <span class="text-[10px] text-text-muted">
         Documento oficial certificado bajo reglamentos FJH y CAH.
       </span>
-      <button (click)="cerrarActa()" class="px-5 py-2 rounded-xl bg-court-card-active hover:bg-surface-bright text-white text-xs font-bold transition-all border border-border-subtle cursor-pointer">
+      <button (click)="cerrarActa()"
+        class="px-5 py-2 rounded-xl bg-court-card-active hover:bg-surface-bright text-white text-xs font-bold transition-all border border-border-subtle cursor-pointer">
         Cerrar Acta
       </button>
     </div>
   </div>
 </div>
 }
-
