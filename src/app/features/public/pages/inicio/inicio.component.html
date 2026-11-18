@@ -263,9 +263,9 @@
                 @if (torneosGoleadores().length > 0) {
                 <select class="category-select-pill" [value]="activeScorerTorneoId()"
                   (change)="selectScorerTorneo($any($event.target).value)" aria-label="Filtrar goleadores por torneo">
-                  <option value="all">Global FJH (Por Categoría)</option>
+                  <option value="all">Global FJH (Todas las Competencias)</option>
                   @for (t of torneosGoleadores(); track t.id) {
-                  <option [value]="t.id">{{ t.nombre }}</option>
+                  <option [value]="t.id">{{ t.nombre }} ({{ t.categoria }}{{ t.rama ? ' - ' + t.rama : '' }})</option>
                   }
                 </select>
                 }

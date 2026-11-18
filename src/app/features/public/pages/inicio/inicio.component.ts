@@ -12,6 +12,7 @@ import { PublicNavbarComponent } from '../../../../shared/components/public-navb
 export interface MatchDisplay {
   id: string;
   torneoId?: string;
+  torneoEstado?: string;
   competition: string;
   category: string;
   rama: string;
@@ -291,8 +292,16 @@ export class InicioComponent {
 
         if (tournaments.length === 0) return of([]);
 
+        // Excluir partidos de torneos marcados como Finalizado o Archivados
+        const torneosVigentes = tournaments.filter((t) => {
+          const est = (t.estado || '').toLowerCase().trim();
+          return est !== 'finalizado' && est !== 'concluido' && est !== 'archive' && est !== 'archivado';
+        });
+
+        if (torneosVigentes.length === 0) return of([]);
+
         return forkJoin(
-          tournaments.map((tournament) =>
+          torneosVigentes.map((tournament) =>
             this.partidosService.getFixtureByTorneo(tournament.id).pipe(
               map((partidos) =>
                 partidos.map((p) => this.transformarPartido(p, tournament))
@@ -375,6 +384,7 @@ export class InicioComponent {
     return {
       id: p.id,
       torneoId: p.torneoId || torneo.id,
+      torneoEstado: torneo.estado,
       competition: `${torneo.nombre} · ${cat} (${rama})`,
       category: cat,
       rama,
