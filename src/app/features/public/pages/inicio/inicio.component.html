@@ -258,13 +258,13 @@
               <h2>Top Goleadores</h2>
             </div>
             <div class="scorer-filters-container">
-              <!-- Fila superior: Selector de Torneo (Global vs Individual) + Rama -->
+              <!-- Fila superior: Selector de Torneo (Global vs Individual, excluyendo +35) + Rama -->
               <div class="filter-pills-row" style="gap: 6px; align-items: center; flex-wrap: wrap;">
-                @if (torneos().length > 0) {
+                @if (torneosGoleadores().length > 0) {
                 <select class="category-select-pill" [value]="activeScorerTorneoId()"
                   (change)="selectScorerTorneo($any($event.target).value)" aria-label="Filtrar goleadores por torneo">
-                  <option value="all">Global FJH (Todos)</option>
-                  @for (t of torneos(); track t.id) {
+                  <option value="all">Global FJH (Por Categoría)</option>
+                  @for (t of torneosGoleadores(); track t.id) {
                   <option [value]="t.id">{{ t.nombre }}</option>
                   }
                 </select>
@@ -304,7 +304,7 @@
                 <span>Líder de Goleo</span>
               </div>
               <h3>{{ leader.nombre }}</h3>
-              <small>{{ leader.club }}</small>
+              <small>{{ leader.club }}@if (leader.categoria) { · {{ leader.categoria }} }</small>
             </div>
             <div class="top-scorer-stat">
               <strong>{{ leader.goles }}</strong>
@@ -335,7 +335,7 @@
           <div class="ranking">
             <div class="ranking-head">
               <span>Pos</span>
-              <span>Jugador / Club</span>
+              <span>Jugador / Club · Categoría</span>
               <span style="text-align: center;">PJ</span>
               <span style="text-align: right;">Goles</span>
             </div>
@@ -344,7 +344,7 @@
               <b class="pos-badge">{{ player.pos }}</b>
               <span class="player-info">
                 <strong>{{ player.nombre }}</strong>
-                <small>{{ player.club }}</small>
+                <small>{{ player.club }}@if (player.categoria) { · {{ player.categoria }} }</small>
               </span>
               <span class="pj-stat">{{ player.pj }}</span>
               <strong class="goles-stat">{{ player.goles }}</strong>

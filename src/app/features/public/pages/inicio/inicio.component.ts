@@ -40,6 +40,7 @@ export interface GoleadorItem {
   club: string;
   clubLogo?: string | null;
   clubSiglas?: string;
+  categoria?: string;
   pj: number;
   goles: number;
 }
@@ -79,6 +80,13 @@ export class InicioComponent {
 
   // Datos principales reactivos
   protected readonly torneos = signal<Torneo[]>([]);
+  // Torneos válidos para el Top Goleadores (excluye estrictamente torneos +35 / Maxi)
+  protected readonly torneosGoleadores = computed(() =>
+    this.torneos().filter((t) => {
+      const info = `${t.categoria || ''} ${t.nombre || ''}`.toLowerCase();
+      return !info.includes('+35') && !info.includes('maxi') && !info.includes('veteran') && !/\b35\b/.test(info);
+    })
+  );
   protected readonly activeTorneo = signal<Torneo | null>(null);
   protected readonly allMatches = signal<MatchDisplay[]>([]);
   protected readonly tablaPosiciones = signal<PosicionClub[]>([]);
@@ -205,11 +213,26 @@ export class InicioComponent {
 
   protected selectScorerCategory(cat: string): void {
     this.activeScorerCategory.set(cat);
+    if (cat !== 'Todas' && this.activeScorerTorneoId() !== 'all') {
+      const selectedT = this.torneosGoleadores().find((t) => t.id === this.activeScorerTorneoId());
+      const tCat = `${selectedT?.categoria || ''} ${selectedT?.nombre || ''}`.toLowerCase();
+      if (selectedT && !tCat.includes(cat.toLowerCase())) {
+        this.activeScorerTorneoId.set('all');
+      }
+    }
     this.cargarGoleadores();
   }
 
   protected selectScorerTorneo(torneoId: string): void {
     this.activeScorerTorneoId.set(torneoId);
+    if (torneoId !== 'all') {
+      const selectedT = this.torneosGoleadores().find((t) => t.id === torneoId);
+      const tCat = `${selectedT?.categoria || ''} ${selectedT?.nombre || ''}`.toLowerCase();
+      if (tCat.includes('primera')) this.activeScorerCategory.set('Primera');
+      else if (tCat.includes('juvenil')) this.activeScorerCategory.set('Juveniles');
+      else if (tCat.includes('cadete')) this.activeScorerCategory.set('Cadetes');
+      else if (tCat.includes('menor')) this.activeScorerCategory.set('Menores');
+    }
     this.cargarGoleadores();
   }
 
@@ -296,8 +319,17 @@ export class InicioComponent {
     this.partidosService.getGoleadores(torneoIdFiltro, generoFiltro, categoriaFiltro).pipe(
       catchError(() => of([]))
     ).subscribe((gols) => {
-      // Si la categoría/torneo seleccionada tiene goleadores, mostrarla; si no, dejar vacío el ranking
-      this.goleadores.set(gols || []);
+      // Filtrar de forma segura cualquier registro que pudiera corresponder a +35
+      const filtrados = (gols || []).filter((g: any) => {
+        const catStr = `${g.categoria || ''} ${g.club || ''}`.toLowerCase();
+        return !catStr.includes('+35') && !catStr.includes('maxi');
+      });
+      this.goleadores.set(
+        filtrados.map((item: any, idx: number) => ({
+          ...item,
+          pos: idx + 1,
+        }))
+      );
     });
   }
 
